@@ -14,10 +14,15 @@
 // SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-only WITH Classpath-exception-2.0
 // *****************************************************************************
 
-export type Mode = 'NEW' | 'EDIT';
+import * as React from '@theia/core/shared/react';
+import { ColumnData } from '../common/types';
 
-export type ActiveTab = 'COLUMN' | 'DATA';
-
-export interface ColumnData {
-    id: number;
+export interface NexaDatabaseColumnItemProps {
+    column: ColumnData;
 }
+
+export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({ column }) => (
+    <div>
+        컬럼 ID: {column.id}
+    </div>
+);

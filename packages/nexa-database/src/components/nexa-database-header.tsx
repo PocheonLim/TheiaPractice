@@ -26,25 +26,24 @@ export const NexaDatabaseHeader: React.FC<NexaDatabaseHeaderProps> = ({ mode, on
     <div className="nexa-database-header">
         <div className="nexa-database-header-menu">
             <div className="nexa-database-header-left">
-                <span>{mode === 'NEW' ? 'New Table:' : 'Edit Table:'}</span>
+                {mode === 'NEW' ? 'New Table:' : 'Edit Table:'}
                 <input type="text" placeholder="Enter table name" />
                 {mode === 'EDIT' && <button>Rename</button>}
             </div>
-            <div className="nexa-database-header-center">
+            <div className="nexa-database-header-right">
                 {mode === 'NEW' ? (
-                    <button onClick={() => onChangeMode('EDIT')}>Switch to Edit</button>
+                    <>
+                        <button>Import CSV</button>
+                        <button>Create</button>
+                        <button onClick={() => onChangeMode('EDIT')}>Switch to Edit</button>
+                    </>
                 ) : (
                     <button onClick={() => onChangeMode('NEW')}>Switch to New</button>
                 )}
             </div>
-            <div className="nexa-database-header-right">
-                {mode === 'NEW' && (
-                    <>
-                        <button>Import CSV</button>
-                        <button>Save CSV</button>
-                    </>
-                )}
-            </div>
+        </div>
+        <div className='nexa-database-header-textarea'>
+            <textarea placeholder='Add Table Description' />
         </div>
     </div>
 );

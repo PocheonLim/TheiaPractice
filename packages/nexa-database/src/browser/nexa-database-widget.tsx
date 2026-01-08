@@ -18,7 +18,11 @@ import { injectable, postConstruct } from '@theia/core/shared/inversify';
 import { ReactWidget } from '@theia/core/lib/browser';
 import * as React from '@theia/core/shared/react';
 import { NexaDatabaseHeader } from '../components/nexa-database-header';
-import { Mode } from '../common/types';
+import { NexaDatabaseTabbar } from '../components/nexa-database-tabbar';
+import { NexaDatabaseColumn } from '../components/nexa-database-column';
+import { NexaDatabaseData } from '../components/nexa-database-data';
+
+import { Mode, ActiveTab } from '../common/types';
 
 @injectable()
 export class NexaDatabaseWidget extends ReactWidget {
@@ -26,9 +30,15 @@ export class NexaDatabaseWidget extends ReactWidget {
     static readonly LABEL = 'Nexa Database Widget';
 
     private mode: Mode = 'NEW';
+    private activeTab: ActiveTab = 'COLUMN';
 
     setMode = (mode: Mode): void => {
         this.mode = mode;
+        this.update();
+    };
+
+    setActiveTab = (activeTab: ActiveTab): void => {
+        this.activeTab = activeTab;
         this.update();
     };
 
@@ -43,11 +53,14 @@ export class NexaDatabaseWidget extends ReactWidget {
 
     protected render(): React.ReactNode {
         return (
-            <div>
+            <div className='nexa-database-widget'>
                 <NexaDatabaseHeader mode={this.mode} onChangeMode={mode => this.setMode(mode)} />
-                <div>
-                    <p>위젯 본문 내용</p>
-                </div>
+                <NexaDatabaseTabbar activeTab={this.activeTab} onChangeActiveTab={activeTab => this.setActiveTab(activeTab)} />
+                {this.activeTab === 'COLUMN' ? (
+                    <NexaDatabaseColumn />
+                ) : (
+                    <NexaDatabaseData />
+                )}
             </div>
         );
     }

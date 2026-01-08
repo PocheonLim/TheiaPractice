@@ -1,0 +1,59 @@
+.nexa-database-column {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    background-color: whitesmoke;
+    padding: 10px;
+}
+
+.nexa-database-column-title {
+    display: flex;
+    justify-content: space-between;
+    width: 95%;
+    padding: 10px 20px 10px 20px;
+}
+
+.nexa-database-column-grid {
+    display: flex;
+    flex-direction: column;
+    width: 95%;
+    height: 100%;
+    background-color: white;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.nexa-database-column-grid-title {
+    display: flex;
+    justify-content: space-between;
+    background-color: whitesmoke;
+    border-bottom: 1px solid #ccc;
+    height: 5%;
+    padding: 10px 20px 10px 80px;
+}
+
+.nexa-database-column-grid-title-left {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.nexa-database-column-grid-title-left span {
+    font-weight: bold;
+    font-size: 12px;
+    color: #666;
+}
+
+.nexa-database-column-grid-title-right {
+    display: flex;
+    align-items: center;
+}
+
+.nexa-database-column-grid-title-right span {
+    font-weight: bold;
+    font-size: 12px;
+    color: #666;
+}

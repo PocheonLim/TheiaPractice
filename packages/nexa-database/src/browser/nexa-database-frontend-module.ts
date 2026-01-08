@@ -19,6 +19,12 @@ import { NexaDatabaseContribution } from './nexa-database-contribution';
 import { bindViewContribution, WidgetFactory } from '@theia/core/lib/browser';
 import { NexaDatabaseWidget } from './nexa-database-widget';
 
+import '../../src/browser/style/header.css';
+import '../../src/browser/style/tabbar.css';
+import '../../src/browser/style/column.css';
+import '../../src/browser/style/widget.css';
+import '../../src/browser/style/columnItem.css';
+
 export default new ContainerModule((bind: interfaces.Bind) => {
     bindViewContribution(bind, NexaDatabaseContribution);
     bind(NexaDatabaseWidget).toSelf();

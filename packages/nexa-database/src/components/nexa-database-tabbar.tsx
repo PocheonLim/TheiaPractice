@@ -13,3 +13,18 @@
 //
 // SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-only WITH Classpath-exception-2.0
 // *****************************************************************************
+
+import * as React from '@theia/core/shared/react';
+import { ActiveTab } from '../common/types';
+
+export interface NexaDatabaseTabbarProps {
+    activeTab: ActiveTab
+    onChangeActiveTab: (activeTab: ActiveTab) => void;
+}
+
+export const NexaDatabaseTabbar: React.FC<NexaDatabaseTabbarProps> = ({ activeTab, onChangeActiveTab }: NexaDatabaseTabbarProps) => (
+    <div className='nexa-database-tabbar'>
+        <button onClick={() => onChangeActiveTab('COLUMN')}>Column</button>
+        <button onClick={() => onChangeActiveTab('DATA')}>Data</button>
+    </div>
+);

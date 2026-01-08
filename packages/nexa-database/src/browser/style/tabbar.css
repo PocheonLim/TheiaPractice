@@ -1,0 +1,6 @@
+.nexa-database-tabbar {
+    display: flex;
+    padding: 15px;
+    border-bottom: 2px solid #ccc;
+    gap: 10px;
+}
