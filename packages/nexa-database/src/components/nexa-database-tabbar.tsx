@@ -13,17 +13,3 @@
 //
 // SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-only WITH Classpath-exception-2.0
 // *****************************************************************************
-
-import { ContainerModule, interfaces } from '@theia/core/shared/inversify';
-import { NexaDatabaseContribution } from './nexa-database-contribution';
-import { bindViewContribution, WidgetFactory } from '@theia/core/lib/browser';
-import { NexaDatabaseWidget } from './nexa-database-widget';
-
-export default new ContainerModule((bind: interfaces.Bind) => {
-    bindViewContribution(bind, NexaDatabaseContribution);
-    bind(NexaDatabaseWidget).toSelf();
-    bind(WidgetFactory).toDynamicValue(ctx => ({
-        id: NexaDatabaseWidget.ID,
-        createWidget: () => ctx.container.get<NexaDatabaseWidget>(NexaDatabaseWidget)
-    }));
-});

@@ -17,11 +17,20 @@
 import { injectable, postConstruct } from '@theia/core/shared/inversify';
 import { ReactWidget } from '@theia/core/lib/browser';
 import * as React from '@theia/core/shared/react';
+import { NexaDatabaseHeader } from '../components/nexa-database-header';
+import { Mode } from '../common/types';
 
 @injectable()
 export class NexaDatabaseWidget extends ReactWidget {
     static readonly ID = 'nexaDatabaseWidget';
     static readonly LABEL = 'Nexa Database Widget';
+
+    private mode: Mode = 'NEW';
+
+    setMode = (mode: Mode): void => {
+        this.mode = mode;
+        this.update();
+    };
 
     @postConstruct()
     init(): void {
@@ -35,7 +44,10 @@ export class NexaDatabaseWidget extends ReactWidget {
     protected render(): React.ReactNode {
         return (
             <div>
-                임시 위젯
+                <NexaDatabaseHeader mode={this.mode} onChangeMode={mode => this.setMode(mode)} />
+                <div>
+                    <p>위젯 본문 내용</p>
+                </div>
             </div>
         );
     }
