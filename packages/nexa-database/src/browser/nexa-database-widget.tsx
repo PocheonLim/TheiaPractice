@@ -69,7 +69,6 @@ export class NexaDatabaseWidget extends ReactWidget {
     };
 
     handleAddRow = (): void => {
-        // 다른 row가 edit 중이면 자동 cancel
         this.rows = this.rows.map(row => ({ ...row, isEditing: false }));
 
         const emptyValues: Record<string, string> = {};
@@ -78,7 +77,7 @@ export class NexaDatabaseWidget extends ReactWidget {
         }
         const newRow: RowData = {
             values: emptyValues,
-            isEditing: true // 새로 추가된 row는 자동으로 edit 상태
+            isEditing: true
         };
         this.rows = [newRow, ...this.rows];
         this.update();
@@ -90,7 +89,6 @@ export class NexaDatabaseWidget extends ReactWidget {
     };
 
     handleEditRow = (index: number): void => {
-        // 다른 row의 edit 상태를 모두 false로 변경
         this.rows = this.rows.map((row, i) => ({
             ...row,
             isEditing: i === index

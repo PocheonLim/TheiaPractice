@@ -49,7 +49,7 @@ export const NexaDatabaseDataItem: React.FC<NexaDatabaseDataItemProps> = ({ rowD
     };
 
     const handleCancel = () => {
-        setEditedValues(rowData.values); // 원래 값으로 되돌림
+        setEditedValues(rowData.values);
         onCancel();
     };
 

@@ -31,7 +31,6 @@
     justify-content: space-between;
     align-items: center;
     width: 93%;
-    height: 5%;
     padding: 10px 20px 10px 20px;
     background-color: white;
     border-radius: 5px;
@@ -68,8 +67,4 @@
     background-color: whitesmoke;
     border-bottom: 1px solid #ccc;
     padding: 5px 80px 5px 5px;
-}
-
-.nexa-database-data-grid-column {
-
 }
