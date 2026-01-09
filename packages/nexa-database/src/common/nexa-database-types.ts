@@ -41,4 +41,5 @@ export interface ColumnData {
 
 export interface RowData {
     values: Record<string, string>;
+    isEditing?: boolean;
 }

@@ -69,21 +69,46 @@ export class NexaDatabaseWidget extends ReactWidget {
     };
 
     handleAddRow = (): void => {
+        // 다른 row가 edit 중이면 자동 cancel
+        this.rows = this.rows.map(row => ({ ...row, isEditing: false }));
+
         const emptyValues: Record<string, string> = {};
         for (const column of this.columns) {
             emptyValues[column.name] = '';
         }
-
         const newRow: RowData = {
-            values: emptyValues
+            values: emptyValues,
+            isEditing: true // 새로 추가된 row는 자동으로 edit 상태
         };
-
-        this.rows = [...this.rows, newRow];
+        this.rows = [newRow, ...this.rows];
         this.update();
     };
 
     handleDeleteRow = (index: number): void => {
         this.rows = this.rows.filter((_, i) => i !== index);
+        this.update();
+    };
+
+    handleEditRow = (index: number): void => {
+        // 다른 row의 edit 상태를 모두 false로 변경
+        this.rows = this.rows.map((row, i) => ({
+            ...row,
+            isEditing: i === index
+        }));
+        this.update();
+    };
+
+    handleSaveRow = (index: number, newValues: Record<string, string>): void => {
+        this.rows = this.rows.map((row, i) =>
+            i === index ? { values: newValues, isEditing: false } : row
+        );
+        this.update();
+    };
+
+    handleCancelRow = (index: number): void => {
+        this.rows = this.rows.map((row, i) =>
+            i === index ? { ...row, isEditing: false } : row
+        );
         this.update();
     };
 
@@ -114,6 +139,9 @@ export class NexaDatabaseWidget extends ReactWidget {
                         rows={this.rows}
                         onAddRow={this.handleAddRow}
                         onDeleteRow={this.handleDeleteRow}
+                        onEditRow={this.handleEditRow}
+                        onSaveRow={this.handleSaveRow}
+                        onCancelRow={this.handleCancelRow}
                     />
                 )}
             </div>

@@ -19,24 +19,67 @@ import { RowData } from '../common/nexa-database-types';
 
 export interface NexaDatabaseDataItemProps {
     rowData: RowData;
+    onEdit: () => void;
+    onSave: (newValues: Record<string, string>) => void;
+    onCancel: () => void;
     onDelete: () => void;
 }
 
-export const NexaDatabaseDataItem: React.FC<NexaDatabaseDataItemProps> = ({ rowData, onDelete }) => {
-    const valueEntries = Object.entries(rowData.values);
-    console.log('rowData.values:', rowData.values);
-    console.log('valueEntries:', valueEntries);
-    console.log('valueEntries.length:', valueEntries.length);
+export const NexaDatabaseDataItem: React.FC<NexaDatabaseDataItemProps> = ({ rowData, onEdit, onSave, onCancel, onDelete }) => {
+    // 현재 편집 중인 값을 로컬 상태로 관리
+    const [editedValues, setEditedValues] = React.useState<Record<string, string>>(rowData.values);
+
+    // rowData가 변경되면 editedValues도 업데이트
+    React.useEffect(() => {
+        setEditedValues(rowData.values);
+    }, [rowData.values]);
+
+    const valueEntries = Object.entries(editedValues);
+    const isEditing = rowData.isEditing || false;
+
+    const handleInputChange = (columnName: string, newValue: string) => {
+        setEditedValues({
+            ...editedValues,
+            [columnName]: newValue
+        });
+    };
+
+    const handleSave = () => {
+        onSave(editedValues);
+    };
+
+    const handleCancel = () => {
+        setEditedValues(rowData.values); // 원래 값으로 되돌림
+        onCancel();
+    };
 
     return (
         <div className='nexa-database-data-item'>
             {valueEntries.map(([columnName, value]) => (
                 <div key={columnName} className='nexa-database-data-item-cell'>
-                    <input type='text' placeholder={value} />
+                    {isEditing ? (
+                        <input
+                            type='text'
+                            value={value}
+                            onChange={e => handleInputChange(columnName, e.target.value)}
+                        />
+                    ) : (
+                        <span>{value}</span>
+                    )}
                 </div>
             ))}
             <div className='nexa-database-data-item-action'>
-                <button onClick={onDelete}>Delete</button>
+                {isEditing ? (
+                    <>
+                        <button onClick={handleSave}>Save</button>
+                        <button onClick={handleCancel}>Cancel</button>
+                    </>
+                ) : (
+                    <>
+                        <button onClick={onEdit}>Edit</button>
+                        <button onClick={onDelete}>Delete</button>
+                    </>
+                )}
             </div>
         </div>
     );

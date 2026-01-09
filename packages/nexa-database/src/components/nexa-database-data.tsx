@@ -23,9 +23,12 @@ export interface NexaDatabaseDataProps {
     rows: RowData[];
     onAddRow: () => void;
     onDeleteRow: (index: number) => void;
+    onEditRow: (index: number) => void;
+    onSaveRow: (index: number, newValues: Record<string, string>) => void;
+    onCancelRow: (index: number) => void;
 }
 
-export const NexaDatabaseData: React.FC<NexaDatabaseDataProps> = ({ columns, rows, onAddRow, onDeleteRow }) => (
+export const NexaDatabaseData: React.FC<NexaDatabaseDataProps> = ({ columns, rows, onAddRow, onDeleteRow, onEditRow, onSaveRow, onCancelRow }) => (
     <div className='nexa-database-data'>
         <div className='nexa-database-data-title'>
             <div className='nexa-database-data-title-left'>
@@ -62,7 +65,11 @@ export const NexaDatabaseData: React.FC<NexaDatabaseDataProps> = ({ columns, row
             </div>
             {rows.map((row, index) => (
                 <NexaDatabaseDataItem
+                    key={index}
                     rowData={row}
+                    onEdit={() => onEditRow(index)}
+                    onSave={newValues => onSaveRow(index, newValues)}
+                    onCancel={() => onCancelRow(index)}
                     onDelete={() => onDeleteRow(index)}
                 />
             ))}
