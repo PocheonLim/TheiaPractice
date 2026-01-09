@@ -18,6 +18,23 @@ export type Mode = 'NEW' | 'EDIT';
 
 export type ActiveTab = 'COLUMN' | 'DATA';
 
+export type PresetKey =
+    | 'uuid'
+    | 'auto_increment_id'
+    | 'created_time'
+    | 'text'
+    | 'checkbox'
+    | 'number'
+    | 'json'
+    | 'date'
+    | 'datetime'
+    | 'foreign_key'
+    | 'custom';
+
 export interface ColumnData {
-    id: number;
+    name: string;
+    preset?: PresetKey;
+    primaryKey: boolean;
+    notNull: boolean;
+    unique: boolean;
 }

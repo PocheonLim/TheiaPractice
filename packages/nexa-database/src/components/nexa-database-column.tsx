@@ -21,9 +21,11 @@ import { NexaDataBaseColumnItem } from './nexa-database-column-item';
 export interface NexaDatabaseColumnProps {
     columns: ColumnData[];
     onAddColumn: () => void;
+    onUpdateColumn: (index: number, column: ColumnData) => void;
+    onDeleteColumn: (index: number) => void;
 }
 
-export const NexaDatabaseColumn: React.FC<NexaDatabaseColumnProps> = ({ columns, onAddColumn }: NexaDatabaseColumnProps) => (
+export const NexaDatabaseColumn: React.FC<NexaDatabaseColumnProps> = ({ columns, onAddColumn, onUpdateColumn, onDeleteColumn }: NexaDatabaseColumnProps) => (
     <div className='nexa-database-column'>
         <div className='nexa-database-column-title'>
             <div className='nexa-database-column-title-left'>
@@ -46,11 +48,15 @@ export const NexaDatabaseColumn: React.FC<NexaDatabaseColumnProps> = ({ columns,
                 </div>
             </div>
             <div className='nexa-database-column-grid-content'>
-                {columns.map(column => (
-                    <NexaDataBaseColumnItem key={column.id} column={column} />
+                {columns.map((column, index) => (
+                    <NexaDataBaseColumnItem
+                        key={index}
+                        column={column}
+                        onUpdate={updatedColumn => onUpdateColumn(index, updatedColumn)}
+                        onDelete={() => onDeleteColumn(index)}
+                    />
                 ))}
             </div>
         </div>
     </div>
 );
-

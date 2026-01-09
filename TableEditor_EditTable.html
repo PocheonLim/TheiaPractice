@@ -1,0 +1,3222 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MySQL Table Editor - Enhanced</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            font-size: 13px;
+            color: #1a1a1a;
+            background: #fafafa;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background: #fff;
+            border-bottom: 1px solid #e5e5e5;
+            padding: 14px 24px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .header-left {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .table-name {
+            color: #0066ff;
+            font-weight: 600;
+            font-size: 24px;
+            border: none;
+            border-bottom: 2px solid transparent;
+            padding: 2px 8px;
+            background: transparent;
+            transition: all 0.2s;
+            font-family: inherit;
+            outline: none;
+            min-width: 200px;
+        }
+
+        .table-name:hover {
+            border-bottom-color: #e0e0e0;
+            background: #f8f9fa;
+        }
+
+        .table-name:focus {
+            border-bottom-color: #0066ff;
+            background: #f0f7ff;
+        }
+
+        .table-description {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #666;
+            resize: vertical;
+            min-height: 36px;
+            max-height: 80px;
+            font-family: inherit;
+        }
+
+        .table-description:focus {
+            outline: none;
+            border-color: #0066ff;
+        }
+
+        .table-description::placeholder {
+            color: #999;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            padding-top: 4px;
+        }
+
+        /* Buttons */
+        button {
+            padding: 8px 16px;
+            border: 1px solid #d0d0d0;
+            background: #fff;
+            color: #1a1a1a;
+            font-size: 13px;
+            font-weight: 500;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            background: #f5f5f5;
+            border-color: #b0b0b0;
+        }
+
+        button.primary {
+            background: #0066ff;
+            color: #fff;
+            border-color: #0066ff;
+        }
+
+        button.primary:hover {
+            background: #0052cc;
+            border-color: #0052cc;
+        }
+
+        button.secondary {
+            background: #f5f5f5;
+            font-size: 12px;
+            padding: 6px 12px;
+        }
+
+        button.danger {
+            color: #d32f2f;
+            border-color: #d32f2f;
+        }
+
+        button.danger:hover {
+            background: #ffebee;
+        }
+
+        button.link {
+            background: none;
+            border: none;
+            color: #0066ff;
+            padding: 4px 8px;
+            text-decoration: underline;
+            font-size: 12px;
+        }
+
+        button.link:hover {
+            background: #f0f7ff;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            background: #fff;
+            border-bottom: 2px solid #e5e5e5;
+            padding: 0 24px;
+        }
+
+        .tab {
+            padding: 14px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            color: #666;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            color: #1a1a1a;
+        }
+
+        .tab.active {
+            color: #0066ff;
+            border-bottom-color: #0066ff;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .tab-content.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Common Content Styles */
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+            overflow: hidden;
+        }
+
+        .content-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .content-toolbar h2 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .toolbar-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        /* Columns Tab */
+        .columns-list-container {
+            flex: 1;
+            overflow: auto;
+            background: #fff;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+        }
+
+        .columns-header {
+            display: grid;
+            grid-template-columns: 40px 50px 200px 180px 80px 80px 1fr 100px;
+            align-items: center;
+            padding: 10px 12px;
+            gap: 12px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e5e5e5;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            font-size: 11px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .column-row-wrapper {
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .column-row-wrapper:last-child {
+            border-bottom: none;
+        }
+
+        .column-row-wrapper:hover {
+            background: #fafafa;
+        }
+
+        .column-row {
+            display: grid;
+            grid-template-columns: 40px 50px 200px 180px 80px 80px 1fr 100px;
+            align-items: center;
+            padding: 10px 12px;
+            gap: 12px;
+            cursor: pointer;
+        }
+        
+        .column-row.editing {
+            background: #fff9e6;
+            border-left: 3px solid #f57c00;
+        }
+
+        .expand-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: #666;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+
+        .expand-btn:hover {
+            color: #0066ff;
+        }
+
+        .expand-btn.expanded {
+            transform: rotate(90deg);
+        }
+
+        .col-icon {
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .col-name input,
+        .col-preset select {
+            width: 100%;
+            padding: 6px 8px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 13px;
+            background: #fff;
+        }
+
+        .col-name input {
+            font-weight: 500;
+        }
+
+        .col-preset select {
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #0066ff;
+        }
+
+        .col-pk {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .col-pk input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .col-type {
+            color: #666;
+            font-size: 12px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .col-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .col-actions button {
+            padding: 4px 8px;
+            font-size: 11px;
+        }
+
+        /* Detail Panel */
+        .column-detail {
+            padding: 16px 12px;
+            background: #f8f9fa;
+            border-top: 1px solid #e5e5e5;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+        }
+
+        .detail-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .detail-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .detail-field input[type="text"],
+        .detail-field input[type="number"],
+        .detail-field textarea,
+        .detail-field select {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 13px;
+            background: #fff;
+            font-family: inherit;
+        }
+
+        .detail-field textarea {
+            resize: vertical;
+            min-height: 60px;
+            max-height: 120px;
+        }
+
+        .detail-field input:disabled {
+            background: #f5f5f5;
+            color: #999;
+            cursor: not-allowed;
+        }
+
+        .checkbox-field {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 0;
+        }
+
+        .checkbox-field input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .checkbox-field label {
+            font-size: 13px;
+            color: #1a1a1a;
+            cursor: pointer;
+        }
+
+        .help-icon {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            background: #999;
+            color: #fff;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 14px;
+            font-size: 10px;
+            cursor: help;
+        }
+
+        .help-text {
+            font-size: 11px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .preset-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            background: #e3f2fd;
+            color: #1976d2;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .preset-badge.custom {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        /* FK Selector */
+        .fk-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .fk-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        /* Data Tab Styles */
+        .data-grid-container {
+            flex: 1;
+            overflow: auto;
+            background: #fff;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .data-grid {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-grid thead {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: #f8f9fa;
+        }
+
+        .data-grid th {
+            padding: 10px 12px;
+            text-align: left;
+            font-size: 11px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #e5e5e5;
+            background: #f8f9fa;
+        }
+
+        .data-grid th .header-content {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: space-between;
+        }
+
+        .data-grid th .column-name {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .data-grid th .sort-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 2px 4px;
+            color: #999;
+            font-size: 12px;
+            transition: color 0.2s;
+        }
+
+        .data-grid th .sort-btn:hover {
+            color: #0066ff;
+        }
+
+        .data-grid th .sort-btn.active {
+            color: #0066ff;
+        }
+
+        .data-grid td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 13px;
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .data-grid tbody tr:hover {
+            background: #fafafa;
+        }
+
+        .data-grid tbody tr.editing {
+            background: #fff9e6;
+        }
+
+        .data-grid td input {
+            width: 100%;
+            padding: 4px 6px;
+            border: 1px solid #d0d0d0;
+            border-radius: 3px;
+            font-size: 13px;
+        }
+
+        .data-grid td input:focus {
+            outline: none;
+            border-color: #0066ff;
+        }
+
+        .data-grid .actions-cell {
+            white-space: nowrap;
+        }
+
+        .data-grid .actions-cell button {
+            padding: 4px 8px;
+            font-size: 11px;
+            margin-right: 4px;
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            padding: 12px;
+            background: #fff;
+            border: 1px solid #e5e5e5;
+            border-radius: 6px;
+        }
+
+        .filter-bar input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .filter-bar input:focus {
+            outline: none;
+            border-color: #0066ff;
+        }
+
+        .filter-bar select {
+            padding: 8px 12px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 13px;
+            background: #fff;
+        }
+
+        .empty-state {
+            padding: 60px 24px;
+            text-align: center;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .empty-state-text {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .empty-state-subtext {
+            font-size: 13px;
+        }
+
+        /* Import Data Modal */
+        .import-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .import-modal-content {
+            position: relative;
+            background-color: white;
+            margin: 5% auto;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 900px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .import-modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #e5e5e5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .import-modal-header h2 {
+            margin: 0;
+            font-size: 20px;
+            color: #1a1a1a;
+        }
+
+        .import-close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            color: #999;
+            cursor: pointer;
+            padding: 0;
+            width: 28px;
+            height: 28px;
+            line-height: 1;
+        }
+
+        .import-close-btn:hover {
+            color: #333;
+        }
+
+        .import-modal-body {
+            padding: 24px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .import-info-box {
+            padding: 12px 16px;
+            background: #f0f7ff;
+            border-left: 3px solid #0066ff;
+            border-radius: 4px;
+            margin-bottom: 24px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .import-section {
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .import-section:last-child {
+            border-bottom: none;
+        }
+
+        .import-section h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+        }
+
+        .import-file-upload {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .import-upload-btn {
+            padding: 10px 20px;
+            background: #0066ff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .import-upload-btn:hover {
+            background: #0052cc;
+        }
+
+        .import-filename {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .mapping-container {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e5e5e5;
+            border-radius: 6px;
+        }
+
+        .mapping-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .mapping-table thead {
+            position: sticky;
+            top: 0;
+            background: #f8f9fa;
+            z-index: 10;
+        }
+
+        .mapping-table th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 2px solid #e5e5e5;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+
+        .mapping-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .mapping-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .mapping-table select {
+            width: 100%;
+            padding: 6px 8px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .mapping-arrow {
+            text-align: center;
+            color: #999;
+        }
+
+        .mapping-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .mapping-status.matched {
+            color: #28a745;
+            background: #e8f5e9;
+        }
+
+        .mapping-status.skipped {
+            color: #ffc107;
+            background: #fff8e1;
+        }
+
+        .mapping-preview {
+            color: #666;
+            font-size: 12px;
+            max-width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .mapping-stats {
+            margin-top: 12px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .import-mode-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            border: 2px solid #e5e5e5;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .radio-option:hover {
+            border-color: #0066ff;
+            background: #f0f7ff;
+        }
+
+        .radio-option input[type="radio"] {
+            margin-top: 2px;
+        }
+
+        .radio-option input[type="radio"]:checked ~ div {
+            color: #0066ff;
+        }
+
+        .radio-option div {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .radio-option strong {
+            font-size: 14px;
+        }
+
+        .radio-option span {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .import-preview {
+            margin-top: 16px;
+            padding: 12px;
+            background: #fff8e1;
+            border-left: 3px solid #ffc107;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .import-modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #e5e5e5;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .import-btn-cancel,
+        .import-btn-import {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+        }
+
+        .import-btn-cancel {
+            background: white;
+            color: #333;
+            border: 1px solid #d0d0d0;
+        }
+
+        .import-btn-cancel:hover {
+            background: #f5f5f5;
+        }
+
+        .import-btn-import {
+            background: #0066ff;
+            color: white;
+        }
+
+        .import-btn-import:hover {
+            background: #0052cc;
+        }
+
+        .import-btn-import:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+    <!-- PapaParse for CSV parsing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <h1 style="display: flex; align-items: center; gap: 12px;">
+                    <span>Edit Table:</span> 
+                    <input type="text" class="table-name" id="tableName" value="users" placeholder="table_name" maxlength="64">
+                    <button onclick="renameTable()" class="secondary" style="font-size: 13px; padding: 6px 12px;" title="Rename table">
+                        ✓ Rename
+                    </button>
+                </h1>
+                <textarea 
+                    class="table-description" 
+                    placeholder="Add table description..."
+                    id="tableDescription"
+                    oninput="updateTableDescription(this.value)">User accounts and authentication information</textarea>
+            </div>
+            <div class="header-actions">
+                <!-- Edit 모드에서는 Import CSV와 Save Changes 버튼 숨김 -->
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('columns')">Columns</div>
+            <div class="tab" onclick="switchTab('data')">Data</div>
+        </div>
+
+        <!-- Columns Tab -->
+        <div id="columnsTab" class="tab-content active">
+            <div class="content-wrapper">
+                <div class="content-toolbar">
+                    <h2>Table Columns</h2>
+                    <button onclick="addColumn()" class="secondary">+ Add Column</button>
+                </div>
+
+                <div class="columns-list-container">
+                    <div class="columns-header">
+                        <div></div>
+                        <div>PK</div>
+                        <div>Column Name</div>
+                        <div>Preset</div>
+                        <div>Nullable</div>
+                        <div>Unique</div>
+                        <div>Type Definition</div>
+                        <div>Actions</div>
+                    </div>
+                    <div id="columnsBody"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Tab -->
+        <div id="dataTab" class="tab-content">
+            <div class="content-wrapper">
+                <div class="content-toolbar">
+                    <h2>Table Data</h2>
+                    <div class="toolbar-actions">
+                        <span id="rowCount" style="color: #666; font-size: 12px;">0 rows</span>
+                        <button onclick="openImportDataModal()" class="secondary">📥 Import Data</button>
+                        <button onclick="addRow()" class="secondary">+ Add Row</button>
+                        <button onclick="refreshData()" class="secondary">🔄 Refresh</button>
+                    </div>
+                </div>
+
+                <div class="filter-bar">
+                    <input type="text" 
+                           id="searchInput" 
+                           placeholder="Search across all columns..." 
+                           oninput="filterData()">
+                    <select id="filterColumn" onchange="filterData()">
+                        <option value="">All columns</option>
+                    </select>
+                </div>
+
+                <div class="data-grid-container" id="dataGridContainer">
+                    <!-- Data grid will be rendered here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // MySQL Presets Configuration
+        // MySQL Presets Configuration
+        const PRESETS = {
+            uuid: {
+                name: 'UUID',
+                icon: '🆔',
+                description: 'Universally Unique Identifier (CHAR(36) with UUID() default)',
+                defaults: {
+                    type: 'CHAR',
+                    length: '36',
+                    nullable: false,
+                    unique: true,
+                    default_mode: 'sql_expression',
+                    default_value: 'UUID()',
+                    comment: ''
+                },
+                fields: [
+                    'comment'
+                ]
+            },
+            auto_increment_id: {
+                name: 'Auto-incrementing Integer ID',
+                icon: '🔢',
+                description: 'Auto-incrementing primary key (INT UNSIGNED AUTO_INCREMENT)',
+                defaults: {
+                    type: 'INT',
+                    nullable: false,
+                    is_pk: true,
+                    auto_increment: true,
+                    unsigned: true,
+                    comment: ''
+                },
+                fields: [
+                    'comment'
+                ]
+            },
+            created_time: {
+                name: 'Created Time',
+                icon: '📅',
+                description: 'Record creation timestamp (TIMESTAMP with CURRENT_TIMESTAMP default)',
+                defaults: {
+                    type: 'TIMESTAMP',
+                    nullable: false,
+                    default_mode: 'sql_expression',
+                    default_value: 'CURRENT_TIMESTAMP',
+                    comment: ''
+                },
+                fields: [
+                    'comment'
+                ]
+            },
+            text: {
+                name: 'TEXT',
+                icon: '📝',
+                description: 'Text column',
+                defaults: {
+                    type: 'TEXT',
+                    nullable: true,
+                    unique: false,
+                    default_mode: 'no_default',
+                    default_value: '',
+                    comment: ''
+                },
+                fields: [
+                    {
+                        type: 'select',
+                        name: 'type',
+                        label: 'Database Type',
+                        options: [
+                            { value: 'TEXT', label: 'TEXT (default)' },
+                            { value: 'VARCHAR', label: 'VARCHAR' },
+                            { value: 'CHAR', label: 'CHAR' },
+                            { value: 'TINYTEXT', label: 'TINYTEXT' },
+                            { value: 'MEDIUMTEXT', label: 'MEDIUMTEXT' },
+                            { value: 'LONGTEXT', label: 'LONGTEXT' }
+                        ]
+                    },
+                    {
+                        type: 'conditional',
+                        condition: (col) => col.type === 'VARCHAR' || col.type === 'CHAR',
+                        field: {
+                            type: 'text',
+                            name: 'length',
+                            label: 'Length',
+                            placeholder: 'e.g., 255'
+                        }
+                    },
+                    'nullable',
+                    'unique',
+                    'default_mode',
+                    {
+                        type: 'conditional',
+                        condition: (col) => col.default_mode === 'default_value',
+                        field: {
+                            type: 'text',
+                            name: 'default_value',
+                            label: 'Default Value',
+                            placeholder: "e.g., 'hello', ''"
+                        }
+                    },
+                    {
+                        type: 'conditional',
+                        condition: (col) => col.default_mode === 'sql_expression',
+                        field: {
+                            type: 'text',
+                            name: 'default_value',
+                            label: 'SQL Expression',
+                            placeholder: "e.g., UPPER('default')"
+                        }
+                    },
+                    'comment'
+                ]
+            },
+            checkbox: {
+                name: 'Checkbox',
+                icon: '☑️',
+                description: 'Boolean/Checkbox field',
+                defaults: {
+                    type: 'TINYINT',
+                    length: '1',
+                    nullable: true,
+                    unique: false,
+                    default_mode: 'default_value',
+                    default_value: '0',
+                    default_checked: false,
+                    comment: ''
+                },
+                fields: [
+                    {
+                        type: 'select',
+                        name: 'type',
+                        label: 'Database Type',
+                        options: [{ value: 'TINYINT', label: 'TINYINT(1) / BOOLEAN' }]
+                    },
+                    'nullable',
+                    'unique',
+                    'default_mode',
+                    {
+                        type: 'conditional',
+                        condition: (col) => col.default_mode === 'default_value',
+                        field: {
+                            type: 'boolean',
+                            name: 'default_checked',
+                            label: 'Default Checked'
+                        }
+                    },
+                    {
+                        type: 'conditional',
+                        condition: (col) => col.default_mode === 'sql_expression',
+                        field: 'default_value'
+                    },
+                    'comment'
+                ]
+            },
+            number: {
+                name: 'Number',
+                icon: '🔢',
+                description: 'Numeric column',
+                defaults: {
+                    number_type: 'integer',
+                    type: 'INT',
+                    nullable: true,
+                    unique: false,
+                    unsigned: false,
+                    default_mode: 'default_value',
+                    default_value: '0',
+                    comment: ''
+                },
+                fields: [
+                    {
+                        type: 'select',
+                        name: 'number_type',
+                        label: 'Number Type',
+                        options: [
+                            { value: 'integer', label: 'Integer' },
+                            { value: 'decimal', label: 'Decimal' },
+                            { value: 'float', label: 'Float' }
+                        ]
+                    },
+                    {
+                        type: 'conditional',
+                        condition: (col) => col.number_type === 'decimal',
+                        field: {
+                            type: 'select',
+                            name: 'decimal_places',
+                            label: 'Decimal Places',
+                            options: [
+                                { value: 1, label: '1 (1.0)' },
+                                { value: 2, label: '2 (1.00)' },
+                                { value: 3, label: '3 (1.000)' },
+                                { value: 4, label: '4 (1.0000)' },
+                                { value: 5, label: '5 (1.00000)' },
+                                { value: 6, label: '6 (1.000000)' },
+                                { value: 7, label: '7 (1.0000000)' },
+                                { value: 8, label: '8 (1.00000000)' },
+                                { value: 9, label: '9 (1.000000000)' },
+                                { value: 10, label: '10 (1.0000000000)' }
+                            ]
+                        }
+                    },
+                    {
+                        type: 'conditional',
+                        condition: (col) => col.number_type === 'integer',
+                        field: {
+                            type: 'select',
+                            name: 'type',
+                            label: 'Database Type',
+                            options: [
+                                { value: 'SMALLINT', label: 'SMALLINT' },
+                                { value: 'INT', label: 'INT (default)' },
+                                { value: 'BIGINT', label: 'BIGINT' }
+                            ]
+                        }
+                    },
+                    {
+                        type: 'conditional',
+                        condition: (col) => col.number_type === 'decimal',
+                        field: {
+                            type: 'select',
+                            name: 'type',
+                            label: 'Database Type',
+                            options: [{ value: 'DECIMAL', label: 'DECIMAL' }]
+                        }
+                    },
+                    {
+                        type: 'conditional',
+                        condition: (col) => col.number_type === 'float',
+                        field: {
+                            type: 'select',
+                            name: 'type',
+                            label: 'Database Type',
+                            options: [
+                                { value: 'FLOAT', label: 'FLOAT' },
+                                { value: 'DOUBLE', label: 'DOUBLE (default)' }
+                            ]
+                        }
+                    },
+                    {
+                        type: 'boolean',
+                        name: 'unsigned',
+                        label: 'Unsigned (양수만)'
+                    },
+                    'nullable',
+                    'unique',
+                    'default_mode',
+                    {
+                        type: 'conditional',
+                        condition: (col) => col.default_mode === 'default_value',
+                        field: {
+                            type: 'text',
+                            name: 'default_value',
+                            label: 'Default Value',
+                            placeholder: 'e.g., 0, 100, -50'
+                        }
+                    },
+                    {
+                        type: 'conditional',
+                        condition: (col) => col.default_mode === 'sql_expression',
+                        field: {
+                            type: 'text',
+                            name: 'default_value',
+                            label: 'SQL Expression',
+                            placeholder: 'e.g., FLOOR(RAND() * 100)'
+                        }
+                    },
+                    'comment'
+                ]
+            },
+            json: {
+                name: 'JSON',
+                icon: '{}',
+                description: 'JSON data type',
+                defaults: {
+                    type: 'JSON',
+                    nullable: true,
+                    unique: false,
+                    default_mode: 'no_default',
+                    default_value: '',
+                    comment: ''
+                },
+                fields: [
+                    {
+                        type: 'select',
+                        name: 'type',
+                        label: 'Database Type',
+                        options: [{ value: 'JSON', label: 'JSON' }]
+                    },
+                    'nullable',
+                    'unique',
+                    'default_mode',
+                    {
+                        type: 'conditional',
+                        condition: (col) => col.default_mode === 'default_value',
+                        field: {
+                            type: 'text',
+                            name: 'default_value',
+                            label: 'Default Value',
+                            placeholder: 'e.g., {}, [], {"key": "value"}'
+                        }
+                    },
+                    {
+                        type: 'conditional',
+                        condition: (col) => col.default_mode === 'sql_expression',
+                        field: {
+                            type: 'text',
+                            name: 'default_value',
+                            label: 'SQL Expression',
+                            placeholder: "e.g., (JSON_OBJECT('key', 'value'))"
+                        }
+                    },
+                    'comment'
+                ]
+            },
+            date: {
+                name: 'Date',
+                icon: '📆',
+                description: 'Date only (no time)',
+                defaults: {
+                    type: 'DATE',
+                    nullable: true,
+                    unique: false,
+                    default_mode: 'no_default',
+                    default_value: '',
+                    comment: ''
+                },
+                fields: [
+                    {
+                        type: 'select',
+                        name: 'type',
+                        label: 'Database Type',
+                        options: [{ value: 'DATE', label: 'DATE' }]
+                    },
+                    'nullable',
+                    'unique',
+                    'default_mode',
+                    {
+                        type: 'conditional',
+                        condition: (col) => col.default_mode === 'default_value',
+                        field: {
+                            type: 'text',
+                            name: 'default_value',
+                            label: 'Default Value',
+                            placeholder: "e.g., '2024-01-01'"
+                        }
+                    },
+                    {
+                        type: 'conditional',
+                        condition: (col) => col.default_mode === 'sql_expression',
+                        field: {
+                            type: 'text',
+                            name: 'default_value',
+                            label: 'SQL Expression',
+                            placeholder: 'e.g., CURDATE()'
+                        }
+                    },
+                    'comment'
+                ]
+            },
+            datetime: {
+                name: 'Date + Time',
+                icon: '🕐',
+                description: 'Date and time',
+                defaults: {
+                    type: 'DATETIME',
+                    nullable: true,
+                    unique: false,
+                    on_update_timestamp: false,
+                    default_mode: 'sql_expression',
+                    default_value: 'CURRENT_TIMESTAMP',
+                    comment: ''
+                },
+                fields: [
+                    {
+                        type: 'select',
+                        name: 'type',
+                        label: 'Database Type',
+                        options: [
+                            { value: 'DATETIME', label: 'DATETIME' },
+                            { value: 'TIMESTAMP', label: 'TIMESTAMP' }
+                        ]
+                    },
+                    {
+                        type: 'boolean',
+                        name: 'on_update_timestamp',
+                        label: 'On Update Timestamp'
+                    },
+                    'nullable',
+                    'unique',
+                    'default_mode',
+                    {
+                        type: 'conditional',
+                        condition: (col) => col.default_mode === 'default_value',
+                        field: {
+                            type: 'text',
+                            name: 'default_value',
+                            label: 'Default Value',
+                            placeholder: "e.g., '2024-01-01 12:00:00'"
+                        }
+                    },
+                    {
+                        type: 'conditional',
+                        condition: (col) => col.default_mode === 'sql_expression',
+                        field: {
+                            type: 'text',
+                            name: 'default_value',
+                            label: 'SQL Expression',
+                            placeholder: 'e.g., CURRENT_TIMESTAMP, NOW()'
+                        }
+                    },
+                    'comment'
+                ]
+            },
+            foreign_key: {
+                name: 'Foreign Key',
+                icon: '🔗',
+                description: 'Reference to another table',
+                defaults: {
+                    nullable: true,
+                    fk_table: '',
+                    fk_column: '',
+                    on_delete: 'NO ACTION',
+                    on_update: 'NO ACTION',
+                    comment: ''
+                },
+                fields: [
+                    {
+                        type: 'fk_selector',
+                        name: 'fk_config',
+                        label: 'Foreign Key Configuration'
+                    },
+                    'nullable',
+                    'comment'
+                ]
+            },
+            custom: {
+                name: 'Custom',
+                icon: '⚙️',
+                description: 'Manually configure all options',
+                defaults: {
+                    type: 'VARCHAR',
+                    length: '255',
+                    nullable: true,
+                    unique: false,
+                    default_mode: 'no_default',
+                    default_value: '',
+                    comment: ''
+                },
+                fields: [
+                    {
+                        type: 'select',
+                        name: 'type',
+                        label: 'Database Type',
+                        options: [
+                            { value: 'VARCHAR', label: 'VARCHAR' },
+                            { value: 'CHAR', label: 'CHAR' },
+                            { value: 'BINARY', label: 'BINARY' },
+                            { value: 'VARBINARY', label: 'VARBINARY' },
+                            { value: 'TINYTEXT', label: 'TINYTEXT' },
+                            { value: 'TEXT', label: 'TEXT' },
+                            { value: 'MEDIUMTEXT', label: 'MEDIUMTEXT' },
+                            { value: 'LONGTEXT', label: 'LONGTEXT' },
+                            { value: 'TINYINT', label: 'TINYINT' },
+                            { value: 'SMALLINT', label: 'SMALLINT' },
+                            { value: 'MEDIUMINT', label: 'MEDIUMINT' },
+                            { value: 'INT', label: 'INT' },
+                            { value: 'BIGINT', label: 'BIGINT' },
+                            { value: 'DECIMAL', label: 'DECIMAL' },
+                            { value: 'FLOAT', label: 'FLOAT' },
+                            { value: 'DOUBLE', label: 'DOUBLE' },
+                            { value: 'DATE', label: 'DATE' },
+                            { value: 'DATETIME', label: 'DATETIME' },
+                            { value: 'TIMESTAMP', label: 'TIMESTAMP' },
+                            { value: 'TIME', label: 'TIME' },
+                            { value: 'YEAR', label: 'YEAR' },
+                            { value: 'JSON', label: 'JSON' },
+                            { value: 'TINYBLOB', label: 'TINYBLOB' },
+                            { value: 'BLOB', label: 'BLOB' },
+                            { value: 'MEDIUMBLOB', label: 'MEDIUMBLOB' },
+                            { value: 'LONGBLOB', label: 'LONGBLOB' },
+                            { value: 'ENUM', label: 'ENUM' },
+                            { value: 'SET', label: 'SET' }
+                        ]
+                    },
+                    {
+                        type: 'conditional',
+                        condition: (col) => ['VARCHAR', 'CHAR', 'BINARY', 'VARBINARY'].includes(col.type),
+                        field: {
+                            type: 'text',
+                            name: 'length',
+                            label: 'Length (Required)',
+                            placeholder: 'e.g., 255'
+                        }
+                    },
+                    {
+                        type: 'conditional',
+                        condition: (col) => col.type === 'DECIMAL',
+                        field: {
+                            type: 'text',
+                            name: 'precision',
+                            label: 'Precision (Required)',
+                            placeholder: 'e.g., 10,2'
+                        }
+                    },
+                    {
+                        type: 'conditional',
+                        condition: (col) => col.type === 'ENUM' || col.type === 'SET',
+                        field: {
+                            type: 'text',
+                            name: 'values',
+                            label: 'Values (Required)',
+                            placeholder: "e.g., 'small', 'medium', 'large'"
+                        }
+                    },
+                    {
+                        type: 'conditional',
+                        condition: (col) => ['TINYINT', 'SMALLINT', 'MEDIUMINT', 'INT', 'BIGINT', 'DECIMAL', 'FLOAT', 'DOUBLE'].includes(col.type),
+                        field: {
+                            type: 'boolean',
+                            name: 'unsigned',
+                            label: 'Unsigned'
+                        }
+                    },
+                    {
+                        type: 'conditional',
+                        condition: (col) => ['TINYINT', 'SMALLINT', 'MEDIUMINT', 'INT', 'BIGINT'].includes(col.type),
+                        field: {
+                            type: 'boolean',
+                            name: 'auto_increment',
+                            label: 'Auto Increment'
+                        }
+                    },
+                    {
+                        type: 'conditional',
+                        condition: (col) => col.type === 'DATETIME' || col.type === 'TIMESTAMP',
+                        field: {
+                            type: 'boolean',
+                            name: 'on_update_timestamp',
+                            label: 'On Update Timestamp'
+                        }
+                    },
+                    'nullable',
+                    'unique',
+                    'default_mode',
+                    {
+                        type: 'conditional',
+                        condition: (col) => col.default_mode === 'default_value',
+                        field: {
+                            type: 'text',
+                            name: 'default_value',
+                            label: 'Default Value',
+                            placeholder: 'Enter default value'
+                        }
+                    },
+                    {
+                        type: 'conditional',
+                        condition: (col) => col.default_mode === 'sql_expression',
+                        field: {
+                            type: 'text',
+                            name: 'default_value',
+                            label: 'SQL Expression',
+                            placeholder: 'e.g., CURRENT_TIMESTAMP, UUID(), (JSON_OBJECT())'
+                        }
+                    },
+                    'comment'
+                ]
+            }
+        };
+
+        // Table State
+        let tableDescription = 'User accounts and authentication information';
+        
+        // 초기 컬럼 데이터 (서버에서 로드된 기존 테이블 또는 빈 배열)
+        let columns = [
+            // 신규 테이블 생성 시나리오: 빈 배열로 시작
+            // columns = [];
+            
+            // 기존 테이블 편집 시나리오: 서버에서 로드된 컬럼들
+            {
+                id: 1,
+                name: 'id',
+                preset: 'auto_increment_id',
+                ...PRESETS.auto_increment_id.defaults
+            },
+            {
+                id: 2,
+                name: 'email',
+                preset: 'text',
+                type: 'VARCHAR',
+                length: '255',
+                nullable: false,
+                unique: true,
+                default_mode: 'no_default',
+                default_value: '',
+                comment: 'User email address'
+            },
+            {
+                id: 3,
+                name: 'is_active',
+                preset: 'checkbox',
+                ...PRESETS.checkbox.defaults,
+                default_checked: true,
+                default_value: '1',
+                comment: 'Whether the user account is active'
+            },
+            {
+                id: 4,
+                name: 'created_at',
+                preset: 'created_time',
+                ...PRESETS.created_time.defaults,
+                comment: 'Account creation timestamp'
+            }
+        ];
+        
+        // 모드 자동 설정: 컬럼이 있으면 편집 모드, 없으면 신규 생성 모드
+        let isEditMode = columns.length > 0;
+        
+        // 원본 스키마 (편집 모드일 때만 사용)
+        let originalColumns = [];
+        
+        // 편집 모드일 경우 원본 저장
+        if (isEditMode) {
+            originalColumns = JSON.parse(JSON.stringify(columns));
+        }
+        
+        // 현재 편집 중인 컬럼 인덱스 (편집 모드 전용)
+        let editingColumn = null;
+
+        let expandedColumns = new Set();
+
+        // Sample Data for Data Tab
+        let tableData = [
+            { id: 1, email: 'john@example.com', is_active: 1, created_at: '2024-01-15 10:30:00' },
+            { id: 2, email: 'jane@example.com', is_active: 1, created_at: '2024-01-16 14:20:00' },
+            { id: 3, email: 'bob@example.com', is_active: 0, created_at: '2024-01-17 09:15:00' },
+            { id: 4, email: 'alice@example.com', is_active: 1, created_at: '2024-01-18 16:45:00' },
+            { id: 5, email: 'charlie@example.com', is_active: 1, created_at: '2024-01-19 11:00:00' }
+        ];
+
+        let filteredData = [...tableData];
+        let sortColumn = null;
+        let sortDirection = 'asc';
+        let editingRow = null;
+
+        // Available tables for FK
+        const availableTables = [
+            {
+                name: 'users',
+                columns: [
+                    { name: 'id', type: 'INT', isUnique: true },
+                    { name: 'email', type: 'VARCHAR(255)', isUnique: true },
+                    { name: 'username', type: 'VARCHAR(100)', isUnique: false }
+                ]
+            },
+            {
+                name: 'posts',
+                columns: [
+                    { name: 'id', type: 'INT', isUnique: true },
+                    { name: 'uuid', type: 'CHAR(36)', isUnique: true },
+                    { name: 'title', type: 'VARCHAR(255)', isUnique: false }
+                ]
+            }
+        ];
+
+        // ============ COLUMNS TAB FUNCTIONS ============
+
+        function renderColumns() {
+            const container = document.getElementById('columnsBody');
+            container.innerHTML = columns.map((col, idx) => {
+                const preset = PRESETS[col.preset] || PRESETS.custom;
+                const isExpanded = expandedColumns.has(idx);
+                const isEditing = editingColumn === idx;
+                
+                // 편집 모드에서는 편집 중인 row만 활성화, 신규 모드는 모두 활성화
+                const isDisabled = isEditMode && !isEditing;
+                
+                return `
+                    <div class="column-row-wrapper">
+                        <div class="column-row ${isEditing ? 'editing' : ''}" onclick="${isDisabled ? '' : `toggleExpand(${idx})`}">
+                            <button class="expand-btn ${isExpanded ? 'expanded' : ''}" 
+                                    onclick="event.stopPropagation(); toggleExpand(${idx})"
+                                    ${isDisabled ? 'disabled' : ''}>
+                                ▶
+                            </button>
+                            <div class="col-pk">
+                                <input type="checkbox" 
+                                       ${col.is_pk ? 'checked' : ''} 
+                                       ${isDisabled ? 'disabled' : ''}
+                                       onclick="event.stopPropagation(); handlePKChange(${idx}, this.checked)">
+                            </div>
+                            <div class="col-name">
+                                <input type="text" value="${col.name}" 
+                                       ${isDisabled ? 'disabled' : ''}
+                                       onclick="event.stopPropagation()"
+                                       onchange="updateColumn(${idx}, 'name', this.value)">
+                            </div>
+                            <div class="col-preset">
+                                <select onclick="event.stopPropagation()" 
+                                        onchange="changePreset(${idx}, this.value)"
+                                        ${isDisabled ? 'disabled' : ''}>
+                                    ${Object.entries(PRESETS).map(([key, p]) => `
+                                        <option value="${key}" ${col.preset === key ? 'selected' : ''}>
+                                            ${p.icon} ${p.name}
+                                        </option>
+                                    `).join('')}
+                                </select>
+                            </div>
+                            <div class="col-pk">
+                                <input type="checkbox" 
+                                       ${col.nullable ? 'checked' : ''}
+                                       ${col.is_pk || isDisabled ? 'disabled' : ''}
+                                       onclick="event.stopPropagation(); updateColumn(${idx}, 'nullable', this.checked)">
+                            </div>
+                            <div class="col-pk">
+                                <input type="checkbox" 
+                                       ${col.unique ? 'checked' : ''}
+                                       ${isDisabled ? 'disabled' : ''}
+                                       onclick="event.stopPropagation(); updateColumn(${idx}, 'unique', this.checked)">
+                            </div>
+                            <div class="col-type">${getTypeDefinition(col)}</div>
+                            <div class="col-actions">
+                                ${isEditMode ? `
+                                    ${isEditing || col._isNew ? `
+                                        <button class="primary" onclick="event.stopPropagation(); saveColumnEdit(${idx})">
+                                            Save
+                                        </button>
+                                        <button onclick="event.stopPropagation(); cancelColumnEdit(${idx})">
+                                            Cancel
+                                        </button>
+                                    ` : `
+                                        <button onclick="event.stopPropagation(); editColumn(${idx})">
+                                            Edit
+                                        </button>
+                                        <button class="danger" onclick="event.stopPropagation(); deleteColumn(${idx})">
+                                            Delete
+                                        </button>
+                                    `}
+                                ` : `
+                                    <button class="danger" onclick="event.stopPropagation(); deleteColumn(${idx})">
+                                        Delete
+                                    </button>
+                                `}
+                            </div>
+                        </div>
+                        ${isExpanded && !isDisabled ? renderDetailPanel(col, idx, preset) : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getTypeDefinition(col) {
+            let def = col.type;
+            
+            if (col.length && ['VARCHAR', 'CHAR', 'TINYINT', 'SMALLINT', 'INT', 'BIGINT'].includes(col.type)) {
+                def += `(${col.length})`;
+            } else if (col.type === 'DECIMAL' && col.decimal_places) {
+                const precision = col.precision || (10 + parseInt(col.decimal_places));
+                def += `(${precision},${col.decimal_places})`;
+            }
+            
+            if (col.unsigned) def += ' UNSIGNED';
+            if (col.auto_increment) def += ' AUTO_INCREMENT';
+            if (col.on_update_timestamp) def += ' ON UPDATE CURRENT_TIMESTAMP';
+            
+            return def;
+        }
+
+        function renderDetailPanel(col, idx, preset) {
+            let html = '<div class="column-detail">';
+            
+            html += `
+                <div style="grid-column: 1 / -1; margin-bottom: 8px;">
+                    <span class="preset-badge ${col.preset === 'custom' ? 'custom' : ''}">
+                        ${preset.icon} ${preset.name}
+                    </span>
+                    <span style="margin-left: 8px; font-size: 12px; color: #666;">${preset.description}</span>
+                </div>
+            `;
+
+            preset.fields.forEach(field => {
+                if (typeof field === 'string') {
+                    html += renderStandardField(field, col, idx);
+                } else if (field.type === 'conditional') {
+                    if (field.condition(col)) {
+                        if (typeof field.field === 'string') {
+                            html += renderStandardField(field.field, col, idx);
+                        } else {
+                            html += renderField(field.field, col, idx);
+                        }
+                    }
+                } else if (field.type === 'fk_selector') {
+                    html += renderFKSelector(col, idx);
+                } else {
+                    html += renderField(field, col, idx);
+                }
+            });
+
+            html += '</div>';
+            return html;
+        }
+
+        function renderStandardField(fieldName, col, idx) {
+            if (fieldName === 'nullable') {
+                return `
+                    <div class="detail-field">
+                        <div class="checkbox-field">
+                            <input type="checkbox" id="nullable_${idx}" 
+                                   ${col.nullable ? 'checked' : ''}
+                                   ${col.is_pk ? 'disabled' : ''}
+                                   onchange="updateColumn(${idx}, 'nullable', this.checked)">
+                            <label for="nullable_${idx}">Nullable ${col.is_pk ? '(PK must be NOT NULL)' : ''}</label>
+                        </div>
+                    </div>
+                `;
+            } else if (fieldName === 'unique') {
+                return `
+                    <div class="detail-field">
+                        <div class="checkbox-field">
+                            <input type="checkbox" id="unique_${idx}" 
+                                   ${col.unique ? 'checked' : ''}
+                                   onchange="updateColumn(${idx}, 'unique', this.checked)">
+                            <label for="unique_${idx}">Unique</label>
+                        </div>
+                    </div>
+                `;
+            } else if (fieldName === 'default_mode') {
+                return `
+                    <div class="detail-field">
+                        <label class="detail-label">Default</label>
+                        <select onchange="updateColumn(${idx}, 'default_mode', this.value)">
+                            <option value="no_default" ${(col.default_mode || 'no_default') === 'no_default' ? 'selected' : ''}>No Default</option>
+                            <option value="default_value" ${col.default_mode === 'default_value' ? 'selected' : ''}>Default Value</option>
+                            <option value="sql_expression" ${col.default_mode === 'sql_expression' ? 'selected' : ''}>SQL Expression</option>
+                        </select>
+                    </div>
+                `;
+            } else if (fieldName === 'default_value') {
+                const isDisabled = (col.default_mode || 'no_default') === 'no_default';
+                const placeholder = col.default_mode === 'sql_expression' 
+                    ? 'e.g., CURRENT_TIMESTAMP, UUID()' 
+                    : getDefaultValuePlaceholder(col);
+                return `
+                    <div class="detail-field">
+                        <label class="detail-label">
+                            ${col.default_mode === 'sql_expression' ? 'SQL Expression' : 'Default Value'}
+                        </label>
+                        <input type="text" value="${col.default_value || ''}" 
+                               onchange="updateColumn(${idx}, 'default_value', this.value)"
+                               placeholder="${placeholder}"
+                               ${isDisabled ? 'disabled' : ''}>
+                    </div>
+                `;
+            } else if (fieldName === 'comment') {
+                return `
+                    <div class="detail-field" style="grid-column: 1 / -1;">
+                        <label class="detail-label">Comment</label>
+                        <textarea 
+                            placeholder="Add column description or notes..."
+                            onchange="updateColumn(${idx}, 'comment', this.value)">${col.comment || ''}</textarea>
+                    </div>
+                `;
+            }
+            return '';
+        }
+
+        function getDefaultValuePlaceholder(col) {
+            if (col.preset === 'number') return 'e.g., 0';
+            if (col.preset === 'json') return 'e.g., {}';
+            if (col.preset === 'text') return 'e.g., hello';
+            return 'Enter default value';
+        }
+
+        function renderField(field, col, idx) {
+            if (field.type === 'select') {
+                return `
+                    <div class="detail-field">
+                        <label class="detail-label">
+                            ${field.label}
+                            ${field.help ? `<span class="help-icon" title="${field.help}">?</span>` : ''}
+                        </label>
+                        <select onchange="updateColumn(${idx}, '${field.name}', this.value)">
+                            ${field.options.map(opt => `
+                                <option value="${opt.value}" ${col[field.name] === opt.value ? 'selected' : ''}>
+                                    ${opt.label}
+                                </option>
+                            `).join('')}
+                        </select>
+                        ${field.help ? `<div class="help-text">${field.help}</div>` : ''}
+                    </div>
+                `;
+            } else if (field.type === 'boolean') {
+                return `
+                    <div class="detail-field">
+                        <div class="checkbox-field">
+                            <input type="checkbox" id="${field.name}_${idx}" 
+                                   ${col[field.name] ? 'checked' : ''}
+                                   onchange="updateColumn(${idx}, '${field.name}', this.checked)">
+                            <label for="${field.name}_${idx}">${field.label}</label>
+                        </div>
+                        ${field.help ? `<div class="help-text">${field.help}</div>` : ''}
+                    </div>
+                `;
+            } else if (field.type === 'text' || field.type === 'number') {
+                return `
+                    <div class="detail-field">
+                        <label class="detail-label">${field.label}</label>
+                        <input type="${field.type}" value="${col[field.name] || ''}"
+                               ${field.placeholder ? `placeholder="${field.placeholder}"` : ''}
+                               onchange="updateColumn(${idx}, '${field.name}', this.value)">
+                        ${field.help ? `<div class="help-text">${field.help}</div>` : ''}
+                    </div>
+                `;
+            }
+            return '';
+        }
+
+        function renderFKSelector(col, idx) {
+            const selectedTable = availableTables.find(t => t.name === col.fk_table);
+            const columns = selectedTable ? selectedTable.columns : [];
+            
+            return `
+                <div class="detail-field" style="grid-column: 1 / -1;">
+                    <label class="detail-label">Foreign Key Configuration</label>
+                    <div class="fk-selector">
+                        <select onchange="updateColumn(${idx}, 'fk_table', this.value)">
+                            <option value="">Select table...</option>
+                            ${availableTables.map(table => `
+                                <option value="${table.name}" ${col.fk_table === table.name ? 'selected' : ''}>
+                                    ${table.name}
+                                </option>
+                            `).join('')}
+                        </select>
+                        
+                        <select ${!col.fk_table ? 'disabled' : ''} 
+                                onchange="updateColumn(${idx}, 'fk_column', this.value)">
+                            <option value="">Select column...</option>
+                            ${columns.map(column => `
+                                <option value="${column.name}" 
+                                        ${col.fk_column === column.name ? 'selected' : ''}
+                                        ${!column.isUnique ? 'disabled' : ''}>
+                                    ${column.name} (${column.type}) ${!column.isUnique ? '- Not unique' : ''}
+                                </option>
+                            `).join('')}
+                        </select>
+                        
+                        <div class="fk-actions">
+                            <div class="detail-field" style="margin: 0;">
+                                <label class="detail-label">On Delete</label>
+                                <select onchange="updateColumn(${idx}, 'on_delete', this.value)">
+                                    <option value="NO ACTION" ${col.on_delete === 'NO ACTION' ? 'selected' : ''}>No Action</option>
+                                    <option value="RESTRICT" ${col.on_delete === 'RESTRICT' ? 'selected' : ''}>Restrict</option>
+                                    <option value="CASCADE" ${col.on_delete === 'CASCADE' ? 'selected' : ''}>Cascade</option>
+                                    <option value="SET NULL" ${col.on_delete === 'SET NULL' ? 'selected' : ''}>Set Null</option>
+                                </select>
+                            </div>
+                            <div class="detail-field" style="margin: 0;">
+                                <label class="detail-label">On Update</label>
+                                <select onchange="updateColumn(${idx}, 'on_update', this.value)">
+                                    <option value="NO ACTION" ${col.on_update === 'NO ACTION' ? 'selected' : ''}>No Action</option>
+                                    <option value="RESTRICT" ${col.on_update === 'RESTRICT' ? 'selected' : ''}>Restrict</option>
+                                    <option value="CASCADE" ${col.on_update === 'CASCADE' ? 'selected' : ''}>Cascade</option>
+                                    <option value="SET NULL" ${col.on_update === 'SET NULL' ? 'selected' : ''}>Set Null</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function handlePKChange(idx, checked) {
+            if (checked) {
+                columns.forEach((col, i) => {
+                    col.is_pk = (i === idx);
+                });
+                columns[idx].nullable = false;
+            } else {
+                columns[idx].is_pk = false;
+            }
+            
+            renderColumns();
+        }
+
+        function toggleExpand(idx) {
+            if (expandedColumns.has(idx)) {
+                expandedColumns.delete(idx);
+            } else {
+                expandedColumns.add(idx);
+            }
+            renderColumns();
+        }
+
+        function updateColumn(idx, field, value) {
+            // PK 컬럼은 nullable을 true로 변경할 수 없음
+            if (field === 'nullable' && columns[idx].is_pk && value === true) {
+                alert('Primary Key columns cannot be nullable');
+                renderColumns();
+                return;
+            }
+            
+            const column = columns[idx];
+            
+            // 값 업데이트
+            column[field] = value;
+            
+            if (field === 'default_checked') {
+                column.default_value = value ? '1' : '0';
+            }
+            
+            if (field === 'number_type') {
+                if (value === 'integer') {
+                    column.type = 'INT';
+                    delete column.decimal_places;
+                } else if (value === 'decimal') {
+                    column.type = 'DECIMAL';
+                    column.decimal_places = column.decimal_places || 2;
+                } else if (value === 'float') {
+                    column.type = 'DOUBLE';
+                    delete column.decimal_places;
+                }
+            }
+            
+            if (field === 'fk_table') {
+                column.fk_column = '';
+            }
+            
+            renderColumns();
+        }
+        
+        // 컬럼 편집 시작 (편집 모드 전용)
+        function editColumn(idx) {
+            editingColumn = idx;
+            renderColumns();
+        }
+        
+        // 컬럼 편집 저장 (편집 모드 전용)
+        function saveColumnEdit(idx) {
+            const column = columns[idx];
+            const tableName = document.getElementById('tableName').value.trim();
+            const isNewColumn = column._isNew || false;
+            
+            let operation, sql, message;
+            
+            if (isNewColumn) {
+                // 새 컬럼 추가
+                operation = 'alter_table_add_column';
+                sql = `ALTER TABLE ${tableName} ADD COLUMN ${column.name} ${column.type}`;
+                message = '추가';
+            } else {
+                // 기존 컬럼 수정
+                operation = 'alter_table_modify_column';
+                sql = `ALTER TABLE ${tableName} MODIFY COLUMN ${column.name} ${column.type}`;
+                message = '수정';
+            }
+            
+            // 공통 SQL 속성
+            if (column.length) sql += `(${column.length})`;
+            if (!column.nullable) sql += ' NOT NULL';
+            if (column.auto_increment) sql += ' AUTO_INCREMENT';
+            if (column.unique) sql += ' UNIQUE';
+            if (column.default_value) {
+                if (column.default_value.includes('CURRENT_TIMESTAMP')) {
+                    sql += ` DEFAULT ${column.default_value}`;
+                } else {
+                    sql += ` DEFAULT '${column.default_value}'`;
+                }
+            }
+            sql += ';';
+            
+            const payload = {
+                operation: operation,
+                database: 'nexacro_db',
+                table_name: tableName,
+                column: column
+            };
+            
+            console.log(`${operation.toUpperCase()}:`, JSON.stringify(payload, null, 2));
+            
+            if (confirm(`컬럼 "${column.name}"을 ${message}하시겠습니까?\n\n${sql}`)) {
+                if (isNewColumn) {
+                    // 새 컬럼은 _isNew 플래그 제거하고 원본에 추가
+                    delete column._isNew;
+                    originalColumns.push(JSON.parse(JSON.stringify(column)));
+                } else {
+                    // 기존 컬럼은 원본 업데이트
+                    const originalIdx = originalColumns.findIndex(c => c.id === column.id);
+                    if (originalIdx >= 0) {
+                        originalColumns[originalIdx] = JSON.parse(JSON.stringify(column));
+                    }
+                }
+                
+                editingColumn = null;
+                alert(`✅ 컬럼이 ${message}되었습니다.`);
+                renderColumns();
+            }
+        }
+        
+        // 컬럼 편집 취소 (편집 모드 전용)
+        function cancelColumnEdit(idx) {
+            const column = columns[idx];
+            
+            if (column._isNew) {
+                // 새 컬럼은 아예 삭제
+                columns.splice(idx, 1);
+            } else {
+                // 원본으로 되돌리기
+                const originalColumn = originalColumns.find(c => c.id === column.id);
+                if (originalColumn) {
+                    Object.assign(column, JSON.parse(JSON.stringify(originalColumn)));
+                }
+            }
+            
+            editingColumn = null;
+            renderColumns();
+        }
+        
+        // 컬럼 변경 여부 확인 헬퍼 함수 (더 이상 사용 안함)
+        function isColumnModified(current, original) {
+            const fields = ['name', 'type', 'length', 'nullable', 'unique', 'default_value', 
+                           'auto_increment', 'default_mode', 'is_pk', 'comment', 'unsigned',
+                           'on_update_timestamp', 'fk_table', 'fk_column', 'on_delete', 'on_update'];
+            
+            for (const field of fields) {
+                if (current[field] !== original[field]) {
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+
+        function changePreset(idx, presetKey) {
+            const preset = PRESETS[presetKey];
+            const currentName = columns[idx].name;
+            const currentId = columns[idx].id;
+            const currentIsPK = columns[idx].is_pk;
+            
+            columns[idx] = {
+                id: currentId,
+                name: currentName,
+                preset: presetKey,
+                ...JSON.parse(JSON.stringify(preset.defaults))
+            };
+            
+            // auto_increment_id 프리셋 선택 시에만 자동으로 PK 설정
+            if (presetKey === 'auto_increment_id') {
+                columns.forEach((col, i) => {
+                    col.is_pk = (i === idx);
+                });
+                columns[idx].nullable = false;
+            } else {
+                // 다른 프리셋으로 변경 시 기존 PK 상태 유지
+                columns[idx].is_pk = currentIsPK;
+                if (currentIsPK) {
+                    columns[idx].nullable = false;
+                }
+            }
+            
+            renderColumns();
+        }
+
+        function addColumn() {
+            const newId = Math.max(...columns.map(c => c.id), 0) + 1;
+            const newColumn = {
+                id: newId,
+                name: 'new_column',
+                preset: 'text',
+                ...JSON.parse(JSON.stringify(PRESETS.text.defaults))
+            };
+            
+            if (isEditMode) {
+                // 편집 모드: 새 컬럼 플래그 추가하고 자동으로 편집 모드 진입
+                newColumn._isNew = true;
+                columns.push(newColumn);
+                editingColumn = columns.length - 1;
+            } else {
+                // 신규 모드: 로컬에만 추가 (나중에 CREATE TABLE 시 일괄 생성)
+                columns.push(newColumn);
+            }
+            
+            renderColumns();
+        }
+
+        function deleteColumn(idx) {
+            const column = columns[idx];
+            
+            if (!confirm(`컬럼 "${column.name}"을 삭제하시겠습니까?`)) {
+                return;
+            }
+            
+            if (isEditMode) {
+                // 편집 모드: 즉시 ALTER TABLE DROP COLUMN 실행
+                const tableName = document.getElementById('tableName').value.trim();
+                
+                const payload = {
+                    operation: 'alter_table_drop_column',
+                    database: 'nexacro_db',
+                    table_name: tableName,
+                    column_name: column.name
+                };
+                
+                console.log('ALTER TABLE DROP COLUMN:', JSON.stringify(payload, null, 2));
+                
+                // 서버 응답 시뮬레이션
+                alert(`✅ 컬럼 "${column.name}"이 삭제되었습니다.\n\nALTER TABLE ${tableName} DROP COLUMN ${column.name};`);
+                
+                columns.splice(idx, 1);
+                // 원본에서도 제거
+                const originalIdx = originalColumns.findIndex(c => c.id === column.id);
+                if (originalIdx >= 0) {
+                    originalColumns.splice(originalIdx, 1);
+                }
+            } else {
+                // 신규 모드: 바로 삭제
+                columns.splice(idx, 1);
+            }
+            
+            expandedColumns.delete(idx);
+            renderColumns();
+        }
+        
+        // 복원 함수는 더 이상 필요 없음 (즉시 삭제하므로)
+        function restoreColumn(idx) {
+            // 편집 모드에서는 사용하지 않음
+        }
+
+        // ============ DATA TAB FUNCTIONS ============
+
+        function renderDataGrid() {
+            const container = document.getElementById('dataGridContainer');
+            const filterSelect = document.getElementById('filterColumn');
+            
+            // Update filter column options
+            filterSelect.innerHTML = '<option value="">All columns</option>' +
+                columns.map(col => `<option value="${col.name}">${col.name}</option>`).join('');
+            
+            // Update row count
+            document.getElementById('rowCount').textContent = `${filteredData.length} rows`;
+            
+            if (filteredData.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <div class="empty-state-text">No data found</div>
+                        <div class="empty-state-subtext">Add a new row to get started</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '<table class="data-grid"><thead><tr>';
+            
+            // Render headers with sort buttons
+            columns.forEach(col => {
+                const isSorted = sortColumn === col.name;
+                const sortIcon = isSorted ? (sortDirection === 'asc' ? '↑' : '↓') : '⇅';
+                html += `
+                    <th>
+                        <div class="header-content">
+                            <div class="column-name">
+                                ${col.is_pk ? '🔑 ' : ''}${col.name}
+                            </div>
+                            <button class="sort-btn ${isSorted ? 'active' : ''}" 
+                                    onclick="sortData('${col.name}')"
+                                    title="Sort by ${col.name}">
+                                ${sortIcon}
+                            </button>
+                        </div>
+                    </th>
+                `;
+            });
+            
+            html += '<th>Actions</th></tr></thead><tbody>';
+            
+            // Render data rows
+            filteredData.forEach((row, idx) => {
+                const isEditing = editingRow === idx;
+                html += `<tr class="${isEditing ? 'editing' : ''}">`;
+                
+                columns.forEach(col => {
+                    const value = row[col.name] ?? '';
+                    if (isEditing) {
+                        html += `<td><input type="text" value="${value}" id="edit_${col.name}"></td>`;
+                    } else {
+                        html += `<td title="${value}">${value}</td>`;
+                    }
+                });
+                
+                html += `<td class="actions-cell">`;
+                if (isEditing) {
+                    html += `
+                        <button onclick="saveRow(${idx})" class="primary">Save</button>
+                        <button onclick="cancelEdit()">Cancel</button>
+                    `;
+                } else {
+                    html += `
+                        <button onclick="editRow(${idx})">Edit</button>
+                        <button onclick="deleteRow(${idx})" class="danger">Delete</button>
+                    `;
+                }
+                html += `</td></tr>`;
+            });
+            
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        function sortData(columnName) {
+            if (sortColumn === columnName) {
+                sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                sortColumn = columnName;
+                sortDirection = 'asc';
+            }
+            
+            filteredData.sort((a, b) => {
+                let aVal = a[columnName];
+                let bVal = b[columnName];
+                
+                // Handle null/undefined
+                if (aVal == null) return 1;
+                if (bVal == null) return -1;
+                
+                // String comparison
+                if (typeof aVal === 'string' && typeof bVal === 'string') {
+                    aVal = aVal.toLowerCase();
+                    bVal = bVal.toLowerCase();
+                }
+                
+                if (sortDirection === 'asc') {
+                    return aVal > bVal ? 1 : -1;
+                } else {
+                    return aVal < bVal ? 1 : -1;
+                }
+            });
+            
+            renderDataGrid();
+        }
+
+        function filterData() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const filterColumn = document.getElementById('filterColumn').value;
+            
+            filteredData = tableData.filter(row => {
+                if (!searchTerm) return true;
+                
+                if (filterColumn) {
+                    const value = String(row[filterColumn] || '').toLowerCase();
+                    return value.includes(searchTerm);
+                } else {
+                    return Object.values(row).some(val => 
+                        String(val || '').toLowerCase().includes(searchTerm)
+                    );
+                }
+            });
+            
+            renderDataGrid();
+        }
+
+        function addRow() {
+            editingRow = null;
+            const newRow = {};
+            columns.forEach(col => {
+                if (col.auto_increment) {
+                    newRow[col.name] = Math.max(...tableData.map(r => r[col.name] || 0), 0) + 1;
+                } else if (col.default_value && col.default_mode === 'default_value') {
+                    newRow[col.name] = col.default_value;
+                } else {
+                    newRow[col.name] = '';
+                }
+            });
+            tableData.unshift(newRow);
+            filteredData = [...tableData];
+            editingRow = 0;
+            renderDataGrid();
+        }
+
+        function editRow(idx) {
+            editingRow = idx;
+            renderDataGrid();
+        }
+
+        function saveRow(idx) {
+            const row = filteredData[idx];
+            columns.forEach(col => {
+                const input = document.getElementById(`edit_${col.name}`);
+                if (input) {
+                    row[col.name] = input.value;
+                }
+            });
+            editingRow = null;
+            renderDataGrid();
+            console.log('Saved row:', row);
+        }
+
+        function cancelEdit() {
+            if (editingRow === 0 && !filteredData[0].id) {
+                // Cancel new row creation
+                tableData.shift();
+                filteredData = [...tableData];
+            }
+            editingRow = null;
+            renderDataGrid();
+        }
+
+        function deleteRow(idx) {
+            const row = filteredData[idx];
+            if (confirm(`Delete this row?`)) {
+                const dataIdx = tableData.indexOf(row);
+                tableData.splice(dataIdx, 1);
+                filteredData = [...tableData];
+                renderDataGrid();
+            }
+        }
+
+        function refreshData() {
+            console.log('Refreshing data...');
+            filteredData = [...tableData];
+            editingRow = null;
+            renderDataGrid();
+        }
+
+        // ============ COMMON FUNCTIONS ============
+
+        function updateTableDescription(value) {
+            tableDescription = value;
+        }
+
+        function saveTable() {
+            const tableName = document.getElementById('tableName').value.trim();
+            
+            if (isEditMode) {
+                // 편집 모드에서는 모든 작업이 즉시 실행되므로 Save Table 버튼이 필요 없음
+                alert('편집 모드에서는 각 작업(ADD/MODIFY/DELETE)이 즉시 실행됩니다.\n\n변경된 컬럼의 "💾 Save" 버튼을 눌러 수정사항을 저장하세요.');
+                return;
+            }
+            
+            // 신규 테이블 생성 모드
+            const payload = {
+                operation: 'create_table',
+                database: 'nexacro_db',
+                table_name: tableName,
+                description: tableDescription,
+                columns: columns,
+                data: tableData
+            };
+            
+            console.log('Creating table:', JSON.stringify(payload, null, 2));
+            
+            // SQL 미리보기 생성
+            let sql = `CREATE TABLE ${tableName} (\n`;
+            const columnDefs = columns.map(col => {
+                let def = `  ${col.name} ${col.type}`;
+                if (col.length) def += `(${col.length})`;
+                if (!col.nullable) def += ' NOT NULL';
+                if (col.auto_increment) def += ' AUTO_INCREMENT';
+                if (col.unique && !col.is_pk) def += ' UNIQUE';
+                if (col.default_value) {
+                    if (col.default_value.includes('CURRENT_TIMESTAMP')) {
+                        def += ` DEFAULT ${col.default_value}`;
+                    } else {
+                        def += ` DEFAULT '${col.default_value}'`;
+                    }
+                }
+                return def;
+            });
+            sql += columnDefs.join(',\n');
+            const pkColumn = columns.find(c => c.is_pk);
+            if (pkColumn) {
+                sql += `,\n  PRIMARY KEY (${pkColumn.name})`;
+            }
+            sql += '\n);';
+            
+            if (confirm(`테이블 "${tableName}"을 생성하시겠습니까?\n\n${sql}`)) {
+                alert('✅ 테이블이 생성되었습니다!\n\n자세한 내용은 콘솔을 확인하세요.');
+            }
+        }
+        
+        // 테이블 이름 변경 (편집 모드 전용)
+        function renameTable() {
+            const currentName = 'users'; // 원래 테이블 이름 (서버에서 로드된 값)
+            const newName = document.getElementById('tableName').value.trim();
+            
+            if (!newName) {
+                alert('테이블 이름을 입력하세요.');
+                document.getElementById('tableName').value = currentName;
+                return;
+            }
+            
+            if (newName === currentName) {
+                alert('변경된 이름이 없습니다.');
+                return;
+            }
+            
+            const payload = {
+                operation: 'alter_table_rename',
+                database: 'nexacro_db',
+                old_table_name: currentName,
+                new_table_name: newName
+            };
+            
+            console.log('ALTER TABLE RENAME:', JSON.stringify(payload, null, 2));
+            
+            const sql = `ALTER TABLE ${currentName} RENAME TO ${newName};`;
+            
+            if (confirm(`테이블 이름을 변경하시겠습니까?\n\n${sql}`)) {
+                alert(`✅ 테이블 이름이 "${currentName}"에서 "${newName}"(으)로 변경되었습니다.`);
+                // 실제로는 여기서 서버 응답을 받아 currentName을 업데이트해야 함
+            } else {
+                // 취소 시 원래 이름으로 복원
+                document.getElementById('tableName').value = currentName;
+            }
+        }
+
+        // ============ CSV IMPORT FUNCTIONS ============
+
+        /**
+         * CSV 파일 파싱
+         */
+        function parseCSVFile(file) {
+            return new Promise((resolve, reject) => {
+                Papa.parse(file, {
+                    header: true,
+                    dynamicTyping: false,
+                    skipEmptyLines: true,
+                    complete: function(results) {
+                        resolve(results);
+                    },
+                    error: function(error) {
+                        reject(error);
+                    }
+                });
+            });
+        }
+
+        /**
+         * CSV 파일 업로드 처리 (신규 테이블 생성 모드 전용)
+         */
+        const csvFileInput = document.getElementById('csvFileInput');
+        if (csvFileInput) {
+            csvFileInput.addEventListener('change', async function(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                try {
+                    // CSV 파싱
+                    const results = await parseCSVFile(file);
+                    
+                    if (!results.data || results.data.length === 0) {
+                        alert('CSV 파일에 데이터가 없습니다.');
+                        return;
+                    }
+                    
+                    // 컬럼 생성
+                    const csvColumns = generateColumnsFromCSV(results);
+                    
+                    // 기존 컬럼 교체 확인
+                    if (columns.length > 0) {
+                        if (!confirm('기존 컬럼을 CSV 컬럼으로 교체하시겠습니까?')) {
+                            // 기존 컬럼 유지하고 CSV 컬럼 추가
+                            const maxId = Math.max(...columns.map(c => c.id), 0);
+                            csvColumns.forEach((col, idx) => {
+                                col.id = maxId + idx + 1;
+                            });
+                            columns = [...columns, ...csvColumns];
+                        } else {
+                            // 기존 컬럼 교체
+                            columns = csvColumns;
+                        }
+                    } else {
+                        columns = csvColumns;
+                    }
+                    
+                    // 테이블명 제안
+                    const suggestedName = file.name.replace('.csv', '').toLowerCase().replace(/[^a-z0-9_]/g, '_');
+                    if (confirm(`테이블명을 "${suggestedName}"로 변경하시겠습니까?`)) {
+                        document.getElementById('tableName').value = suggestedName;
+                    }
+                    
+                    // 컬럼 리스트 렌더링
+                    renderColumns();
+                    
+                    alert(`✅ CSV 파일 로드 완료!\n\n${csvColumns.length}개 컬럼이 추가되었습니다.`);
+                    
+                } catch (error) {
+                    alert('CSV 파일 처리 실패: ' + error.message);
+                    console.error(error);
+                }
+                
+                // 파일 입력 초기화
+                event.target.value = '';
+            });
+        }
+
+        /**
+         * CSV 데이터로부터 컬럼 정의 생성
+         */
+        function generateColumnsFromCSV(parseResults) {
+            const headers = parseResults.meta.fields;
+            const data = parseResults.data;
+            
+            if (!headers || headers.length === 0) {
+                throw new Error('CSV에서 컬럼을 찾을 수 없습니다');
+            }
+            
+            const newColumns = headers.map((header, idx) => {
+                // 컬럼의 모든 값 수집
+                const columnValues = data.map(row => row[header]);
+                
+                // 타입 추론
+                const inferredType = inferColumnType(columnValues);
+                
+                return {
+                    id: idx + 1,
+                    name: sanitizeColumnName(header),
+                    preset: 'custom',
+                    type: inferredType.type,
+                    length: inferredType.length || null,
+                    precision: inferredType.precision || null,
+                    decimal_places: inferredType.decimal_places || null,
+                    values: inferredType.values || null,
+                    nullable: true,
+                    unique: false,
+                    is_pk: false,
+                    unsigned: inferredType.unsigned || false,
+                    auto_increment: false,
+                    default_mode: 'no_default',
+                    default_value: null,
+                    on_update_timestamp: false,
+                    comment: 'From CSV: ' + header,
+                    original_name: header
+                };
+            });
+            
+            // 첫 번째 컬럼이 'id'이고 정수형이면 PK로 설정
+            if (newColumns.length > 0) {
+                const firstCol = newColumns[0];
+                if (firstCol.name === 'id' && ['TINYINT', 'SMALLINT', 'MEDIUMINT', 'INT', 'BIGINT'].includes(firstCol.type)) {
+                    firstCol.is_pk = true;
+                    firstCol.nullable = false;
+                    firstCol.auto_increment = true;
+                }
+            }
+            
+            return newColumns;
+        }
+
+        /**
+         * 컬럼 타입 추론
+         */
+        function inferColumnType(values) {
+            const nonNullValues = values.filter(v => v !== null && v !== undefined && v !== '');
+            
+            if (nonNullValues.length === 0) {
+                return { type: 'VARCHAR', length: 255 };
+            }
+            
+            // Boolean 체크
+            const boolValues = nonNullValues.filter(v => 
+                ['true', 'false', '1', '0', 'yes', 'no'].includes(String(v).toLowerCase())
+            );
+            if (boolValues.length === nonNullValues.length) {
+                return { type: 'TINYINT', length: 1 };
+            }
+            
+            // 정수 체크
+            const intValues = nonNullValues.filter(v => /^-?\d+$/.test(String(v)));
+            if (intValues.length === nonNullValues.length) {
+                const nums = intValues.map(v => parseInt(v));
+                const min = Math.min(...nums);
+                const max = Math.max(...nums);
+                
+                const unsigned = min >= 0;
+                
+                if (unsigned) {
+                    if (max <= 255) return { type: 'TINYINT', unsigned: true };
+                    if (max <= 65535) return { type: 'SMALLINT', unsigned: true };
+                    if (max <= 16777215) return { type: 'MEDIUMINT', unsigned: true };
+                    if (max <= 4294967295) return { type: 'INT', unsigned: true };
+                    return { type: 'BIGINT', unsigned: true };
+                } else {
+                    if (min >= -128 && max <= 127) return { type: 'TINYINT' };
+                    if (min >= -32768 && max <= 32767) return { type: 'SMALLINT' };
+                    if (min >= -8388608 && max <= 8388607) return { type: 'MEDIUMINT' };
+                    if (min >= -2147483648 && max <= 2147483647) return { type: 'INT' };
+                    return { type: 'BIGINT' };
+                }
+            }
+            
+            // 소수 체크
+            const floatValues = nonNullValues.filter(v => /^-?\d+\.\d+$/.test(String(v)));
+            if (floatValues.length === nonNullValues.length) {
+                const maxDecimals = Math.max(...floatValues.map(v => {
+                    const parts = String(v).split('.');
+                    return parts[1] ? parts[1].length : 0;
+                }));
+                return { 
+                    type: 'DECIMAL', 
+                    precision: 10 + maxDecimals,
+                    decimal_places: maxDecimals
+                };
+            }
+            
+            // 날짜 체크
+            const dateValues = nonNullValues.filter(v => !isNaN(Date.parse(String(v))));
+            if (dateValues.length === nonNullValues.length) {
+                const hasTime = dateValues.some(v => String(v).includes(':'));
+                return { type: hasTime ? 'DATETIME' : 'DATE' };
+            }
+            
+            // JSON 체크
+            const jsonValues = nonNullValues.filter(v => {
+                try {
+                    JSON.parse(String(v));
+                    return true;
+                } catch {
+                    return false;
+                }
+            });
+            if (jsonValues.length === nonNullValues.length) {
+                return { type: 'JSON' };
+            }
+            
+            // 문자열 - 길이에 따라 VARCHAR 또는 TEXT
+            const maxLength = Math.max(...nonNullValues.map(v => String(v).length));
+            if (maxLength <= 255) {
+                return { type: 'VARCHAR', length: Math.min(255, maxLength + 50) };
+            } else if (maxLength <= 65535) {
+                return { type: 'TEXT' };
+            } else {
+                return { type: 'MEDIUMTEXT' };
+            }
+        }
+
+        /**
+         * 컬럼명 정제 (MySQL 규칙 준수)
+         */
+        function sanitizeColumnName(name) {
+            return name
+                .toLowerCase()
+                .replace(/\s+/g, '_')
+                .replace(/[^a-z0-9_]/g, '')
+                .replace(/^(\d)/, '_$1');
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(tab + 'Tab').classList.add('active');
+            
+            if (tab === 'data') {
+                renderDataGrid();
+            }
+        }
+
+        // ============ IMPORT DATA TO EXISTING TABLE ============
+
+        let importCSVData = null;
+        let importCSVHeaders = [];
+        let columnMapping = {};
+
+        /**
+         * Import Data 모달 열기
+         */
+        function openImportDataModal() {
+            const tableName = document.getElementById('tableName').value.trim();
+            
+            if (!tableName) {
+                alert('테이블명을 먼저 입력해주세요.');
+                return;
+            }
+            
+            if (columns.length === 0) {
+                alert('컬럼이 없습니다. 먼저 컬럼을 추가하거나 "Import CSV"를 사용하세요.');
+                return;
+            }
+            
+            // 모달 초기화
+            importCSVData = null;
+            importCSVHeaders = [];
+            columnMapping = {};
+            
+            document.getElementById('csvDataInput').value = '';
+            document.getElementById('importFileName').textContent = '';
+            document.getElementById('columnMappingSection').style.display = 'none';
+            document.getElementById('importModeSection').style.display = 'none';
+            document.getElementById('importDataBtn').disabled = true;
+            
+            // 테이블 정보 표시
+            document.getElementById('importTableName').textContent = tableName;
+            document.getElementById('tableInfoText').innerHTML = `
+                <strong>${tableName}</strong> 테이블에 데이터를 import합니다.<br>
+                현재 컬럼 수: ${columns.length}개<br>
+                컬럼: ${columns.map(c => c.name).join(', ')}
+            `;
+            
+            // 모달 표시
+            document.getElementById('importDataModal').style.display = 'block';
+        }
+
+        /**
+         * Import Data 모달 닫기
+         */
+        function closeImportDataModal() {
+            document.getElementById('importDataModal').style.display = 'none';
+        }
+
+        /**
+         * CSV 파일 업로드 (Import Data용)
+         */
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('csvDataInput').addEventListener('change', async function(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                try {
+                    // CSV 파싱
+                    const results = await parseCSVFile(file);
+                    
+                    if (!results.data || results.data.length === 0) {
+                        alert('CSV 파일에 데이터가 없습니다.');
+                        return;
+                    }
+                    
+                    importCSVData = results.data;
+                    importCSVHeaders = results.meta.fields;
+                    
+                    // 파일명 표시
+                    document.getElementById('importFileName').textContent = `${file.name} (${importCSVData.length} rows)`;
+                    
+                    // 컬럼 매핑
+                    updateColumnMapping();
+                    
+                } catch (error) {
+                    alert('CSV 파일 파싱 실패: ' + error.message);
+                    console.error(error);
+                }
+            });
+
+            // Import 모드 변경 이벤트
+            const radios = document.querySelectorAll('input[name="importMode"]');
+            radios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    const upsertSection = document.getElementById('upsertKeySection');
+                    if (this.value === 'upsert') {
+                        upsertSection.style.display = 'block';
+                        updateUpsertKeyOptions();
+                    } else {
+                        upsertSection.style.display = 'none';
+                    }
+                    updateImportPreview();
+                });
+            });
+        });
+
+        /**
+         * 컬럼 매핑 업데이트
+         */
+        function updateColumnMapping() {
+            // 자동 매핑
+            columnMapping = autoMapColumns(importCSVHeaders, columns);
+            
+            // UI 렌더링
+            renderColumnMapping();
+            
+            // Section 표시
+            document.getElementById('columnMappingSection').style.display = 'block';
+            document.getElementById('importModeSection').style.display = 'block';
+            
+            // Import 버튼 활성화
+            updateImportButton();
+        }
+
+        /**
+         * 컬럼 자동 매핑
+         */
+        function autoMapColumns(csvHeaders, tableColumns) {
+            const mapping = {};
+            
+            csvHeaders.forEach(csvCol => {
+                // 1순위: 정확히 일치
+                let matched = tableColumns.find(tc => 
+                    tc.name.toLowerCase() === csvCol.toLowerCase()
+                );
+                
+                // 2순위: 정규화 후 일치 (언더스코어, 공백, 하이픈 무시)
+                if (!matched) {
+                    const csvNorm = csvCol.toLowerCase().replace(/[_\s-]/g, '');
+                    matched = tableColumns.find(tc => 
+                        tc.name.toLowerCase().replace(/[_\s-]/g, '') === csvNorm
+                    );
+                }
+                
+                // 3순위: 포함 관계
+                if (!matched) {
+                    matched = tableColumns.find(tc => {
+                        const tcName = tc.name.toLowerCase();
+                        const csvName = csvCol.toLowerCase();
+                        return tcName.includes(csvName) || csvName.includes(tcName);
+                    });
+                }
+                
+                mapping[csvCol] = matched ? matched.name : null; // null = Skip
+            });
+            
+            return mapping;
+        }
+
+        /**
+         * 컬럼 매핑 UI 렌더링
+         */
+        function renderColumnMapping() {
+            const tbody = document.getElementById('mappingBody');
+            let html = '';
+            
+            let matchedCount = 0;
+            let skippedCount = 0;
+            
+            importCSVHeaders.forEach(csvCol => {
+                const tableCol = columnMapping[csvCol];
+                const status = tableCol ? 'matched' : 'skipped';
+                
+                if (tableCol) matchedCount++;
+                else skippedCount++;
+                
+                // 미리보기 데이터
+                const previewData = importCSVData.slice(0, 3).map(row => row[csvCol]).join(', ');
+                const preview = previewData.length > 30 ? previewData.substring(0, 30) + '...' : previewData;
+                
+                html += `
+                    <tr>
+                        <td><strong>${csvCol}</strong></td>
+                        <td class="mapping-arrow">→</td>
+                        <td>
+                            <select onchange="updateMapping('${csvCol}', this.value)">
+                                <option value="">-- Skip --</option>
+                                ${columns.map(tc => `
+                                    <option value="${tc.name}" ${tableCol === tc.name ? 'selected' : ''}>
+                                        ${tc.name} (${tc.type})
+                                    </option>
+                                `).join('')}
+                            </select>
+                        </td>
+                        <td>
+                            <span class="mapping-status ${status}">
+                                ${tableCol ? '✅ Matched' : '⚠️ Skipped'}
+                            </span>
+                        </td>
+                        <td class="mapping-preview">${preview}</td>
+                    </tr>
+                `;
+            });
+            
+            tbody.innerHTML = html;
+            
+            // 통계 표시
+            document.getElementById('mappingStats').innerHTML = `
+                매핑 완료: <strong>${matchedCount}개</strong> / 건너뛰기: <strong>${skippedCount}개</strong> / 총 CSV 컬럼: <strong>${importCSVHeaders.length}개</strong>
+            `;
+            
+            // Preview 업데이트
+            updateImportPreview();
+        }
+
+        /**
+         * 매핑 수동 변경
+         */
+        function updateMapping(csvCol, tableCol) {
+            columnMapping[csvCol] = tableCol || null;
+            renderColumnMapping();
+            updateImportButton();
+        }
+
+        /**
+         * Upsert Key 옵션 업데이트
+         */
+        function updateUpsertKeyOptions() {
+            const select = document.getElementById('upsertKeySelect');
+            select.innerHTML = '';
+            
+            const pkColumns = columns.filter(col => col.is_pk);
+            
+            if (pkColumns.length === 0) {
+                select.innerHTML = '<option value="">-- No Primary Key --</option>';
+                return;
+            }
+            
+            pkColumns.forEach(col => {
+                const option = document.createElement('option');
+                option.value = col.name;
+                option.textContent = col.name;
+                select.appendChild(option);
+            });
+        }
+
+        /**
+         * Import 미리보기 업데이트
+         */
+        function updateImportPreview() {
+            const mode = document.querySelector('input[name="importMode"]:checked')?.value || 'append';
+            const mappedCount = Object.values(columnMapping).filter(v => v !== null).length;
+            const rowCount = importCSVData ? importCSVData.length : 0;
+            
+            let previewText = '';
+            
+            if (mode === 'append') {
+                previewText = `📌 <strong>${rowCount}개 행</strong>이 테이블에 추가됩니다. (기존 데이터 유지)`;
+            } else if (mode === 'replace') {
+                previewText = `⚠️ 기존 데이터가 모두 삭제되고, <strong>${rowCount}개 행</strong>이 새로 삽입됩니다.`;
+            } else if (mode === 'upsert') {
+                previewText = `🔄 <strong>${rowCount}개 행</strong>이 Upsert됩니다. (중복 키: 업데이트 / 신규: 삽입)`;
+            }
+            
+            previewText += `<br>매핑된 컬럼: <strong>${mappedCount}개</strong>`;
+            
+            document.getElementById('importPreview').innerHTML = previewText;
+        }
+
+        /**
+         * Import 버튼 활성화 여부
+         */
+        function updateImportButton() {
+            const hasMapping = Object.values(columnMapping).some(v => v !== null);
+            document.getElementById('importDataBtn').disabled = !hasMapping;
+        }
+
+        /**
+         * Import Data 실행
+         */
+        function executeImportData() {
+            const tableName = document.getElementById('tableName').value.trim();
+            const mode = document.querySelector('input[name="importMode"]:checked')?.value || 'append';
+            const upsertKey = document.getElementById('upsertKeySelect')?.value || null;
+            
+            // 매핑된 데이터만 필터링
+            const mappedData = importCSVData.map(row => {
+                const mapped = {};
+                Object.entries(columnMapping).forEach(([csvCol, tableCol]) => {
+                    if (tableCol) {
+                        mapped[tableCol] = row[csvCol];
+                    }
+                });
+                return mapped;
+            });
+            
+            const rowCount = mappedData.length;
+            const modeText = mode === 'append' ? '추가' : mode === 'replace' ? '교체' : 'upsert';
+            
+            if (!confirm(`${rowCount}개 행을 ${tableName} 테이블에 ${modeText} 모드로 import하시겠습니까?`)) {
+                return;
+            }
+            
+            try {
+                // tableData에 추가 (Append 모드)
+                if (mode === 'append') {
+                    tableData = [...tableData, ...mappedData];
+                } else if (mode === 'replace') {
+                    tableData = mappedData;
+                } else if (mode === 'upsert') {
+                    // Upsert 로직 (간단 구현)
+                    mappedData.forEach(newRow => {
+                        const existingIdx = tableData.findIndex(row => row[upsertKey] === newRow[upsertKey]);
+                        if (existingIdx >= 0) {
+                            tableData[existingIdx] = { ...tableData[existingIdx], ...newRow };
+                        } else {
+                            tableData.push(newRow);
+                        }
+                    });
+                }
+                
+                filteredData = [...tableData];
+                
+                // API 호출 로그 (실제로는 서버에 전송)
+                const payload = {
+                    operation: 'import_data',
+                    database: 'nexacro_db',
+                    table_name: tableName,
+                    mode: mode,
+                    primary_key: upsertKey,
+                    column_mapping: columnMapping,
+                    data: mappedData,
+                    options: {
+                        batch_size: 1000
+                    }
+                };
+                
+                console.log('Import Data Request:', JSON.stringify(payload, null, 2));
+                
+                // Data 탭으로 전환하고 데이터 렌더링
+                switchTab('data');
+                renderDataGrid();
+                
+                alert(`✅ ${rowCount}개 행이 성공적으로 import되었습니다!`);
+                closeImportDataModal();
+                
+            } catch (error) {
+                alert('Import 실패: ' + error.message);
+                console.error(error);
+            }
+        }
+
+        // Initialize
+        renderColumns();
+    </script>
+
+    <!-- Import Data Modal -->
+    <div id="importDataModal" class="import-modal" style="display: none;">
+        <div class="import-modal-content">
+            <div class="import-modal-header">
+                <h2>📥 Import Data to "<span id="importTableName"></span>"</h2>
+                <button class="import-close-btn" onclick="closeImportDataModal()">&times;</button>
+            </div>
+            
+            <div class="import-modal-body">
+                <!-- 현재 테이블 정보 -->
+                <div class="import-info-box">
+                    <div id="tableInfoText"></div>
+                </div>
+                
+                <!-- Step 1: Upload CSV -->
+                <div class="import-section">
+                    <h3>Step 1: Upload CSV File</h3>
+                    <div class="import-file-upload">
+                        <input type="file" id="csvDataInput" accept=".csv" style="display: none;">
+                        <button onclick="document.getElementById('csvDataInput').click()" class="import-upload-btn">
+                            📂 Choose CSV File
+                        </button>
+                        <span id="importFileName" class="import-filename"></span>
+                    </div>
+                </div>
+                
+                <!-- Step 2: Column Mapping -->
+                <div id="columnMappingSection" class="import-section" style="display: none;">
+                    <h3>Step 2: Column Mapping</h3>
+                    <div class="mapping-container">
+                        <table class="mapping-table">
+                            <thead>
+                                <tr>
+                                    <th>CSV Column</th>
+                                    <th></th>
+                                    <th>Table Column</th>
+                                    <th>Status</th>
+                                    <th>Preview</th>
+                                </tr>
+                            </thead>
+                            <tbody id="mappingBody"></tbody>
+                        </table>
+                    </div>
+                    <div id="mappingStats" class="mapping-stats"></div>
+                </div>
+                
+                <!-- Step 3: Import Mode -->
+                <div id="importModeSection" class="import-section" style="display: none;">
+                    <h3>Step 3: Import Mode</h3>
+                    <div class="import-mode-options">
+                        <label class="radio-option">
+                            <input type="radio" name="importMode" value="append" checked>
+                            <div>
+                                <strong>Append</strong>
+                                <span>기존 데이터 유지하고 새 데이터 추가</span>
+                            </div>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="importMode" value="replace">
+                            <div>
+                                <strong>Replace</strong>
+                                <span>기존 데이터 삭제 후 새 데이터로 교체</span>
+                            </div>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="importMode" value="upsert">
+                            <div>
+                                <strong>Upsert</strong>
+                                <span>중복 키 업데이트, 없으면 삽입</span>
+                            </div>
+                        </label>
+                    </div>
+                    
+                    <div id="upsertKeySection" style="display: none; margin-top: 16px;">
+                        <label style="font-weight: 600; display: block; margin-bottom: 8px;">Primary Key for Upsert:</label>
+                        <select id="upsertKeySelect" style="width: 100%; padding: 8px; border: 1px solid #d0d0d0; border-radius: 4px;"></select>
+                    </div>
+                    
+                    <div id="importPreview" class="import-preview"></div>
+                </div>
+            </div>
+            
+            <div class="import-modal-footer">
+                <button onclick="closeImportDataModal()" class="import-btn-cancel">Cancel</button>
+                <button onclick="executeImportData()" class="import-btn-import" id="importDataBtn" disabled>
+                    Import Data
+                </button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

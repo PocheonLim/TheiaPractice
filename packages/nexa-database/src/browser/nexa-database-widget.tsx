@@ -32,7 +32,6 @@ export class NexaDatabaseWidget extends ReactWidget {
     private mode: Mode = 'NEW';
     private activeTab: ActiveTab = 'COLUMN';
     private columns: ColumnData[] = [];
-    private nextId: number = 1;
 
     setMode = (mode: Mode): void => {
         this.mode = mode;
@@ -46,10 +45,25 @@ export class NexaDatabaseWidget extends ReactWidget {
 
     handleAddColumn = (): void => {
         const newColumn: ColumnData = {
-            id: this.nextId
+            name: 'new_column',
+            preset: 'uuid',
+            primaryKey: false,
+            notNull: false,
+            unique: false
         };
         this.columns = [...this.columns, newColumn];
-        this.nextId = this.nextId + 1;
+        this.update();
+    };
+
+    handleUpdateColumn = (index: number, updatedColumn: ColumnData): void => {
+        this.columns = this.columns.map((col, i) =>
+            i === index ? updatedColumn : col
+        );
+        this.update();
+    };
+
+    handleDeleteColumn = (index: number): void => {
+        this.columns = this.columns.filter((_, i) => i !== index);
         this.update();
     };
 
@@ -68,7 +82,12 @@ export class NexaDatabaseWidget extends ReactWidget {
                 <NexaDatabaseHeader mode={this.mode} onChangeMode={mode => this.setMode(mode)} />
                 <NexaDatabaseTabbar activeTab={this.activeTab} onChangeActiveTab={activeTab => this.setActiveTab(activeTab)} />
                 {this.activeTab === 'COLUMN' ? (
-                    <NexaDatabaseColumn columns={this.columns} onAddColumn={this.handleAddColumn} />
+                    <NexaDatabaseColumn
+                        columns={this.columns}
+                        onAddColumn={this.handleAddColumn}
+                        onUpdateColumn={this.handleUpdateColumn}
+                        onDeleteColumn={this.handleDeleteColumn}
+                    />
                 ) : (
                     <NexaDatabaseData />
                 )}
