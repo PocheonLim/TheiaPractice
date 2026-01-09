@@ -15,7 +15,7 @@
 // *****************************************************************************
 
 import * as React from '@theia/core/shared/react';
-import { ColumnData } from '../common/types';
+import { ColumnData } from '../common/nexa-database-types';
 
 export interface NexaDatabaseColumnItemProps {
     column: ColumnData;

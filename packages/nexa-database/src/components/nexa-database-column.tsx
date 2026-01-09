@@ -15,50 +15,42 @@
 // *****************************************************************************
 
 import * as React from '@theia/core/shared/react';
-import { ColumnData } from '../common/types';
+import { ColumnData } from '../common/nexa-database-types';
 import { NexaDataBaseColumnItem } from './nexa-database-column-item';
 
-export const NexaDatabaseColumn: React.FC = () => {
-    const [columns, setColumns] = React.useState<ColumnData[]>([]);
-    const [nextId, setNextId] = React.useState(1);
+export interface NexaDatabaseColumnProps {
+    columns: ColumnData[];
+    onAddColumn: () => void;
+}
 
-    const handleAddColumn = () => {
-        const newColumn: ColumnData = {
-            id: nextId
-        };
-        setColumns([...columns, newColumn]);
-        setNextId(nextId + 1);
-    };
-
-    return (
-        <div className='nexa-database-column'>
-            <div className='nexa-database-column-title'>
-                <>
-                    Table Column
-                </>
-                <button onClick={handleAddColumn}>+Add Column</button>
+export const NexaDatabaseColumn: React.FC<NexaDatabaseColumnProps> = ({ columns, onAddColumn }: NexaDatabaseColumnProps) => (
+    <div className='nexa-database-column'>
+        <div className='nexa-database-column-title'>
+            <div className='nexa-database-column-title-left'>
+                Table Column
             </div>
-            <div className='nexa-database-column-grid'>
-                <div className='nexa-database-column-grid-title'>
-                    <div className='nexa-database-column-grid-title-left'>
-                        <span>PK</span>
-                        <span>COLUMN NAME</span>
-                        <span>PRESET</span>
-                        <span>NULLABLE</span>
-                        <span>UNIQUE</span>
-                        <span>TYPE DEFINITION</span>
-                    </div>
-                    <div className='nexa-database-column-grid-title-right'>
-                        <span>ACTIONS</span>
-                    </div>
+            <button onClick={onAddColumn}>+Add Column</button>
+        </div>
+        <div className='nexa-database-column-grid'>
+            <div className='nexa-database-column-grid-title'>
+                <div className='nexa-database-column-grid-title-left'>
+                    <span>PK</span>
+                    <span>COLUMN NAME</span>
+                    <span>PRESET</span>
+                    <span>NULLABLE</span>
+                    <span>UNIQUE</span>
+                    <span>TYPE DEFINITION</span>
                 </div>
-                <div className='nexa-database-column-grid-content'>
-                    {columns.map(column => (
-                        <NexaDataBaseColumnItem key={column.id} column={column} />
-                    ))}
+                <div className='nexa-database-column-grid-title-right'>
+                    <span>ACTIONS</span>
                 </div>
+            </div>
+            <div className='nexa-database-column-grid-content'>
+                {columns.map(column => (
+                    <NexaDataBaseColumnItem key={column.id} column={column} />
+                ))}
             </div>
         </div>
-    );
-};
+    </div>
+);
 

@@ -22,7 +22,7 @@ import { NexaDatabaseTabbar } from '../components/nexa-database-tabbar';
 import { NexaDatabaseColumn } from '../components/nexa-database-column';
 import { NexaDatabaseData } from '../components/nexa-database-data';
 
-import { Mode, ActiveTab } from '../common/types';
+import { Mode, ActiveTab, ColumnData } from '../common/nexa-database-types';
 
 @injectable()
 export class NexaDatabaseWidget extends ReactWidget {
@@ -31,6 +31,8 @@ export class NexaDatabaseWidget extends ReactWidget {
 
     private mode: Mode = 'NEW';
     private activeTab: ActiveTab = 'COLUMN';
+    private columns: ColumnData[] = [];
+    private nextId: number = 1;
 
     setMode = (mode: Mode): void => {
         this.mode = mode;
@@ -39,6 +41,15 @@ export class NexaDatabaseWidget extends ReactWidget {
 
     setActiveTab = (activeTab: ActiveTab): void => {
         this.activeTab = activeTab;
+        this.update();
+    };
+
+    handleAddColumn = (): void => {
+        const newColumn: ColumnData = {
+            id: this.nextId
+        };
+        this.columns = [...this.columns, newColumn];
+        this.nextId = this.nextId + 1;
         this.update();
     };
 
@@ -57,7 +68,7 @@ export class NexaDatabaseWidget extends ReactWidget {
                 <NexaDatabaseHeader mode={this.mode} onChangeMode={mode => this.setMode(mode)} />
                 <NexaDatabaseTabbar activeTab={this.activeTab} onChangeActiveTab={activeTab => this.setActiveTab(activeTab)} />
                 {this.activeTab === 'COLUMN' ? (
-                    <NexaDatabaseColumn />
+                    <NexaDatabaseColumn columns={this.columns} onAddColumn={this.handleAddColumn} />
                 ) : (
                     <NexaDatabaseData />
                 )}

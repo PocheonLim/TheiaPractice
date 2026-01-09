@@ -15,7 +15,7 @@
 // *****************************************************************************
 
 import * as React from '@theia/core/shared/react';
-import { Mode } from '../common/types';
+import { Mode } from '../common/nexa-database-types';
 
 export interface NexaDatabaseHeaderProps {
     mode: Mode;

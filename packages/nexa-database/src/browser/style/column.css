@@ -16,6 +16,11 @@
     padding: 10px 20px 10px 20px;
 }
 
+.nexa-database-column-title-left {
+    font-weight: bold;
+    font-size: 18px;
+}
+
 .nexa-database-column-grid {
     display: flex;
     flex-direction: column;
@@ -32,7 +37,7 @@
     background-color: whitesmoke;
     border-bottom: 1px solid #ccc;
     height: 5%;
-    padding: 10px 20px 10px 80px;
+    padding: 5px 20px 5px 80px;
 }
 
 .nexa-database-column-grid-title-left {

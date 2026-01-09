@@ -15,7 +15,7 @@
 // *****************************************************************************
 
 import * as React from '@theia/core/shared/react';
-import { ActiveTab } from '../common/types';
+import { ActiveTab } from '../common/nexa-database-types';
 
 export interface NexaDatabaseTabbarProps {
     activeTab: ActiveTab
