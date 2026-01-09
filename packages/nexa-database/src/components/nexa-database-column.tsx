@@ -47,16 +47,14 @@ export const NexaDatabaseColumn: React.FC<NexaDatabaseColumnProps> = ({ columns,
                     <span>ACTIONS</span>
                 </div>
             </div>
-            <div className='nexa-database-column-grid-content'>
-                {columns.map((column, index) => (
-                    <NexaDataBaseColumnItem
-                        key={index}
-                        column={column}
-                        onUpdate={updatedColumn => onUpdateColumn(index, updatedColumn)}
-                        onDelete={() => onDeleteColumn(index)}
-                    />
-                ))}
-            </div>
+            {columns.map((column, index) => (
+                <NexaDataBaseColumnItem
+                    key={index}
+                    column={column}
+                    onUpdate={updatedColumn => onUpdateColumn(index, updatedColumn)}
+                    onDelete={() => onDeleteColumn(index)}
+                />
+            ))}
         </div>
     </div>
 );

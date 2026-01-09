@@ -22,7 +22,7 @@ import { NexaDatabaseTabbar } from '../components/nexa-database-tabbar';
 import { NexaDatabaseColumn } from '../components/nexa-database-column';
 import { NexaDatabaseData } from '../components/nexa-database-data';
 
-import { Mode, ActiveTab, ColumnData } from '../common/nexa-database-types';
+import { Mode, ActiveTab, ColumnData, RowData } from '../common/nexa-database-types';
 
 @injectable()
 export class NexaDatabaseWidget extends ReactWidget {
@@ -32,6 +32,7 @@ export class NexaDatabaseWidget extends ReactWidget {
     private mode: Mode = 'NEW';
     private activeTab: ActiveTab = 'COLUMN';
     private columns: ColumnData[] = [];
+    private rows: RowData[] = [];
 
     setMode = (mode: Mode): void => {
         this.mode = mode;
@@ -67,6 +68,25 @@ export class NexaDatabaseWidget extends ReactWidget {
         this.update();
     };
 
+    handleAddRow = (): void => {
+        const emptyValues: Record<string, string> = {};
+        for (const column of this.columns) {
+            emptyValues[column.name] = '';
+        }
+
+        const newRow: RowData = {
+            values: emptyValues
+        };
+
+        this.rows = [...this.rows, newRow];
+        this.update();
+    };
+
+    handleDeleteRow = (index: number): void => {
+        this.rows = this.rows.filter((_, i) => i !== index);
+        this.update();
+    };
+
     @postConstruct()
     init(): void {
         this.id = NexaDatabaseWidget.ID;
@@ -89,7 +109,12 @@ export class NexaDatabaseWidget extends ReactWidget {
                         onDeleteColumn={this.handleDeleteColumn}
                     />
                 ) : (
-                    <NexaDatabaseData />
+                    <NexaDatabaseData
+                        columns={this.columns}
+                        rows={this.rows}
+                        onAddRow={this.handleAddRow}
+                        onDeleteRow={this.handleDeleteRow}
+                    />
                 )}
             </div>
         );

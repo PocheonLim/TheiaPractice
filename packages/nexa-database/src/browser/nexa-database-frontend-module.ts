@@ -24,6 +24,8 @@ import '../../src/browser/style/tabbar.css';
 import '../../src/browser/style/column.css';
 import '../../src/browser/style/widget.css';
 import '../../src/browser/style/columnItem.css';
+import '../../src/browser/style/data.css';
+import '../../src/browser/style/dataItem.css';
 
 export default new ContainerModule((bind: interfaces.Bind) => {
     bindViewContribution(bind, NexaDatabaseContribution);

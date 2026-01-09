@@ -1,0 +1,19 @@
+.nexa-database-data-item {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    border: 1px solid #ccc;
+}
+
+.nexa-database-data-item-cell {
+    flex: 1;
+    padding: 4px 8px;
+}
+
+.nexa-database-data-item-action {
+    padding: 0 8px;
+}
+
+.nexa-database-data-item-action button {
+    padding: 4px 12px;
+}

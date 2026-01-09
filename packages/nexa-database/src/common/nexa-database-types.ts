@@ -38,3 +38,7 @@ export interface ColumnData {
     notNull: boolean;
     unique: boolean;
 }
+
+export interface RowData {
+    values: Record<string, string>;
+}
