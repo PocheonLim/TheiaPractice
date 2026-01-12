@@ -54,7 +54,7 @@ export class NexaDatabaseWidget extends ReactWidget {
             name: 'new_column',
             preset: 'uuid',
             primaryKey: false,
-            notNull: false,
+            nullable: false,
             unique: false,
             type: 'CHAR'
         };
@@ -145,6 +145,12 @@ export class NexaDatabaseWidget extends ReactWidget {
         this.update();
     };
 
+    handleImportCSV = (columns: ColumnData[], rows: Array<Record<string, string>>): void => {
+        this.columns = columns;
+        this.rows = rows.map(values => ({ values, isEditing: false }));
+        this.update();
+    };
+
     @postConstruct()
     init(): void {
         this.id = NexaDatabaseWidget.ID;
@@ -163,6 +169,7 @@ export class NexaDatabaseWidget extends ReactWidget {
                     columns={this.columns}
                     onChangeMode={mode => this.setMode(mode)}
                     onChangeTableName={this.handleReName}
+                    onImportCSV={this.handleImportCSV}
                 />
                 <NexaDatabaseTabbar activeTab={this.activeTab} onChangeActiveTab={activeTab => this.setActiveTab(activeTab)} />
                 {this.activeTab === 'COLUMN' ? (

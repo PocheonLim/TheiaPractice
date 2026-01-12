@@ -24,10 +24,12 @@ export interface NexaDatabaseHeaderProps {
     columns: ColumnData[];
     onChangeMode: (mode: Mode) => void;
     onChangeTableName: (name: string) => void;
+    onImportCSV: (columns: ColumnData[], rows: Array<Record<string, string>>) => void;
 }
 
-export const NexaDatabaseHeader: React.FC<NexaDatabaseHeaderProps> = ({ mode, tableName, columns, onChangeMode, onChangeTableName }: NexaDatabaseHeaderProps) => {
+export const NexaDatabaseHeader: React.FC<NexaDatabaseHeaderProps> = ({ mode, tableName, columns, onChangeMode, onChangeTableName, onImportCSV }: NexaDatabaseHeaderProps) => {
     const [localTableName, setLocalTableName] = React.useState<string>(tableName);
+    const fileInputRef = React.useRef<HTMLInputElement>();
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
         const newName = e.target.value;
@@ -41,11 +43,66 @@ export const NexaDatabaseHeader: React.FC<NexaDatabaseHeaderProps> = ({ mode, ta
         onChangeTableName(localTableName);
     };
 
+    const parseCSV = (csvText: string): { columns: ColumnData[]; rows: Array<Record<string, string>> } => {
+        const line = csvText.split('\n');
+        const lines = line.filter(str => str.trim());
+        if (lines.length === 0) {
+            return { columns: [], rows: [] };
+        }
+
+        const firstLine = lines[0].split(',');
+        const headers = firstLine.map(h => h.trim());
+        const parsedColumns: ColumnData[] = headers.map(header => ({
+            name: header,
+            preset: 'text',
+            primaryKey: false,
+            nullable: true,
+            unique: false,
+            type: 'TEXT'
+        }));
+
+        const parsedRows: Array<Record<string, string>> = [];
+        for (let i = 1; i < lines.length; i++) {
+            const value = lines[i].split(',');
+            const values = value.map(v => v.trim());
+            const row: Record<string, string> = {};
+            headers.forEach((header, index) => {
+                row[header] = values[index] || '';
+            });
+            parsedRows.push(row);
+        }
+
+        return { columns: parsedColumns, rows: parsedRows };
+    };
+
+    const handleImportClick = (): void => {
+        fileInputRef.current?.click();
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+        const file = e.target.files?.[0];
+        if (!file) {
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (event: ProgressEvent<FileReader>) => {
+            const csvText = event.target?.result as string;
+            const { columns: parsedColumns, rows: parsedRows } = parseCSV(csvText);
+            onImportCSV(parsedColumns, parsedRows);
+        };
+        reader.readAsText(file);
+
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
+    };
+
     const handleCreateSql = (): void => {
         let sql = `CREATE TABLE ${tableName} (\n`;
         const columnDefs = columns.map(col => {
             let def = `  ${col.name} ${col.type}`;
-            if (col.notNull) {
+            if (col.nullable) {
                 def += ' NOT NULL';
             }
             if (col.unique && !col.primaryKey) {
@@ -87,7 +144,14 @@ export const NexaDatabaseHeader: React.FC<NexaDatabaseHeaderProps> = ({ mode, ta
                 <div className="nexa-database-header-right">
                     {mode === 'NEW' ? (
                         <>
-                            <button>📁 Import CSV</button>
+                            <input
+                                ref={fileInputRef as React.LegacyRef<HTMLInputElement>}
+                                type="file"
+                                accept=".csv"
+                                style={{ display: 'none' }}
+                                onChange={handleFileChange}
+                            />
+                            <button onClick={handleImportClick}>📁 Import CSV</button>
                             <button onClick={handleCreateSql}>💾 Create</button>
                             <button onClick={() => onChangeMode('EDIT')}>Switch to Edit</button>
                         </>

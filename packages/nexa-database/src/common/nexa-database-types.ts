@@ -45,7 +45,7 @@ export interface ColumnData {
     name: string;
     preset?: PresetKey;
     primaryKey?: boolean;
-    notNull?: boolean;
+    nullable?: boolean;
     unique?: boolean;
     isEditing?: boolean;
     type?: string;

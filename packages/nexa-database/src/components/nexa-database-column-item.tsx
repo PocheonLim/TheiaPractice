@@ -72,9 +72,9 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
 
     const handleNotNullChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (isEditMode) {
-            setEditedColumn({ ...editedColumn, notNull: e.target.checked });
+            setEditedColumn({ ...editedColumn, nullable: e.target.checked });
         } else {
-            onUpdate({ ...column, notNull: e.target.checked });
+            onUpdate({ ...column, nullable: e.target.checked });
         }
     };
 
@@ -146,7 +146,7 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
                 <label>
                     <input
                         type="checkbox"
-                        checked={isEditMode ? editedColumn.notNull : column.notNull}
+                        checked={isEditMode ? editedColumn.nullable : column.nullable}
                         onChange={handleNotNullChange}
                         disabled={isReadOnly}
                     />
