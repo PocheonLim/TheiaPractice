@@ -127,5 +127,8 @@
     "vscode.microsoft-authentication",
     "ms-vscode.references-view",
     "ms-python.vscode-pylance"
-  ]
+  ],
+  "dependencies": {
+    "papaparse": "^5.5.3"
+  }
 }

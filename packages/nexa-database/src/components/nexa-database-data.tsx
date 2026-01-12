@@ -80,6 +80,12 @@ export const NexaDatabaseData: React.FC<NexaDatabaseDataProps> = ({ columns, row
     // 3단계: 필터링된 결과를 메모이제이션
     const filteredRowsWithIndex = React.useMemo(() => filterRows(), [rows, text, columnName]);
 
+    const refreshFilter = (): void => {
+        setText('');
+        setColumnName('ALL');
+        onRefresh();
+    };
+
     return (
         <div className='nexa-database-data'>
             <div className='nexa-database-data-title'>
@@ -90,7 +96,7 @@ export const NexaDatabaseData: React.FC<NexaDatabaseDataProps> = ({ columns, row
                     <span>{rows.length} rows</span>
                     <button>Import Data</button>
                     <button onClick={onAddRow}>+Add Row</button>
-                    <button onClick={onRefresh}>Refresh</button>
+                    <button onClick={refreshFilter}>Refresh</button>
                 </div>
             </div>
             <div className='nexa-database-data-search-container'>
