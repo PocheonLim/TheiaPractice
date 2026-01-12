@@ -33,6 +33,7 @@ export class NexaDatabaseWidget extends ReactWidget {
     private activeTab: ActiveTab = 'COLUMN';
     private columns: ColumnData[] = [];
     private rows: RowData[] = [];
+    private tableName: string;
 
     setMode = (mode: Mode): void => {
         this.mode = mode;
@@ -44,13 +45,18 @@ export class NexaDatabaseWidget extends ReactWidget {
         this.update();
     };
 
+    handleReName = (name: string): void => {
+        this.tableName = name;
+    };
+
     handleAddColumn = (): void => {
         const newColumn: ColumnData = {
             name: 'new_column',
             preset: 'uuid',
             primaryKey: false,
             notNull: false,
-            unique: false
+            unique: false,
+            type: 'CHAR'
         };
         this.columns = [...this.columns, newColumn];
         this.update();
@@ -144,7 +150,13 @@ export class NexaDatabaseWidget extends ReactWidget {
     protected render(): React.ReactNode {
         return (
             <div className='nexa-database-widget'>
-                <NexaDatabaseHeader mode={this.mode} onChangeMode={mode => this.setMode(mode)} />
+                <NexaDatabaseHeader
+                    mode={this.mode}
+                    tableName={this.tableName}
+                    columns={this.columns}
+                    onChangeMode={mode => this.setMode(mode)}
+                    onChangeTableName={this.handleReName}
+                />
                 <NexaDatabaseTabbar activeTab={this.activeTab} onChangeActiveTab={activeTab => this.setActiveTab(activeTab)} />
                 {this.activeTab === 'COLUMN' ? (
                     <NexaDatabaseColumn

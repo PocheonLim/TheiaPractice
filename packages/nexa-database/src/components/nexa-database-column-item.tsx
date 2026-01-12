@@ -86,6 +86,14 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
         }
     };
 
+    const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        if (isEditMode) {
+            setEditedColumn({ ...editedColumn, type: e.target.value as ColumnData['type'] });
+        } else {
+            onUpdate({ ...column, type: e.target.value as ColumnData['type'] });
+        }
+    };
+
     const handleSave = () => {
         if (onSave) {
             onSave(editedColumn);
@@ -110,7 +118,6 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
                         onChange={handlePrimaryKeyChange}
                         disabled={isReadOnly}
                     />
-                    PK
                 </label>
                 <input
                     type="text"
@@ -143,7 +150,6 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
                         onChange={handleNotNullChange}
                         disabled={isReadOnly}
                     />
-                    Not Null
                 </label>
                 <label>
                     <input
@@ -152,8 +158,21 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
                         onChange={handleUniqueChange}
                         disabled={isReadOnly}
                     />
-                    Unique
                 </label>
+                <select
+                    value={(isEditMode ? editedColumn.type : column.type) || 'CHAR'}
+                    onChange={handleTypeChange}
+                    disabled={isReadOnly}
+                >
+                    <option value="CHAR">CHAR</option>
+                    <option value="INT">INT</option>
+                    <option value="TIMESTAMP">TIMESTAMP</option>
+                    <option value="TEXT">TEXT</option>
+                    <option value="TINYINT">TINYINT</option>
+                    <option value="JSON">JSON</option>
+                    <option value="DATE">DATE</option>
+                    <option value="DATETIME">DATETIME</option>
+                </select>
             </div>
             <div className="column-item-actions">
                 {isEditMode ? (

@@ -15,35 +15,90 @@
 // *****************************************************************************
 
 import * as React from '@theia/core/shared/react';
-import { Mode } from '../common/nexa-database-types';
+import { ColumnData, Mode } from '../common/nexa-database-types';
+import { ConfirmDialog } from '@theia/core/lib/browser/dialogs';
 
 export interface NexaDatabaseHeaderProps {
     mode: Mode;
+    tableName: string;
+    columns: ColumnData[];
     onChangeMode: (mode: Mode) => void;
+    onChangeTableName: (name: string) => void;
 }
 
-export const NexaDatabaseHeader: React.FC<NexaDatabaseHeaderProps> = ({ mode, onChangeMode }: NexaDatabaseHeaderProps) => (
-    <div className="nexa-database-header">
-        <div className="nexa-database-header-menu">
-            <div className="nexa-database-header-left">
-                {mode === 'NEW' ? 'New Table:' : 'Edit Table:'}
-                <input type="text" placeholder="Enter table name" />
-                {mode === 'EDIT' && <button>Rename</button>}
+export const NexaDatabaseHeader: React.FC<NexaDatabaseHeaderProps> = ({ mode, tableName, columns, onChangeMode, onChangeTableName }: NexaDatabaseHeaderProps) => {
+    const [localTableName, setLocalTableName] = React.useState<string>(tableName);
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+        const newName = e.target.value;
+        setLocalTableName(newName);
+        if (mode === 'NEW') {
+            onChangeTableName(newName);
+        }
+    };
+
+    const handleRename = (): void => {
+        onChangeTableName(localTableName);
+    };
+
+    const handleCreateSql = (): void => {
+        let sql = `CREATE TABLE ${tableName} (\n`;
+        const columnDefs = columns.map(col => {
+            let def = `  ${col.name} ${col.type}`;
+            if (col.notNull) {
+                def += ' NOT NULL';
+            }
+            if (col.unique && !col.primaryKey) {
+                def += ' UNIQUE';
+            }
+            return def;
+        });
+        sql += columnDefs.join(',\n');
+        const pkColumn = columns.find(c => c.primaryKey);
+        if (pkColumn) {
+            sql += `,\n  PRIMARY KEY (${pkColumn.name})`;
+        }
+        sql += '\n);';
+
+        const createTableDialog = new ConfirmDialog({
+            title: '테이블 ' + { localTableName } + '을 생성하시겠습니까?',
+            msg: sql,
+            ok: '생성',
+            cancel: '취소'
+        });
+
+        createTableDialog.open();
+    };
+
+    return (
+        <div className="nexa-database-header">
+            <div className="nexa-database-header-menu">
+                <div className="nexa-database-header-left">
+                    {mode === 'NEW' ? 'New Table:' : 'Edit Table:'}
+                    <input
+                        type="text"
+                        placeholder="Enter table name"
+                        value={localTableName}
+                        onChange={handleInputChange}
+                    />
+                    {mode === 'EDIT' && <button onClick={handleRename}>Rename</button>}
+                </div>
+
+                <div className="nexa-database-header-right">
+                    {mode === 'NEW' ? (
+                        <>
+                            <button>📁 Import CSV</button>
+                            <button onClick={handleCreateSql}>💾 Create</button>
+                            <button onClick={() => onChangeMode('EDIT')}>Switch to Edit</button>
+                        </>
+                    ) : (
+                        <button onClick={() => onChangeMode('NEW')}>Switch to New</button>
+                    )}
+                </div>
             </div>
-            <div className="nexa-database-header-right">
-                {mode === 'NEW' ? (
-                    <>
-                        <button>Import CSV</button>
-                        <button>Create</button>
-                        <button onClick={() => onChangeMode('EDIT')}>Switch to Edit</button>
-                    </>
-                ) : (
-                    <button onClick={() => onChangeMode('NEW')}>Switch to New</button>
-                )}
+            <div className='nexa-database-header-textarea'>
+                <textarea placeholder='Add Table Description' />
             </div>
         </div>
-        <div className='nexa-database-header-textarea'>
-            <textarea placeholder='Add Table Description' />
-        </div>
-    </div>
-);
+    );
+};

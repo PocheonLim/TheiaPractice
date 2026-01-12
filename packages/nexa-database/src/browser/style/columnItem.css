@@ -8,8 +8,11 @@
 
 .column-item-left {
     display: flex;
-    align-items: center;
-    gap: 8px;
+    gap: 30px;
+}
+
+.column-item-left input {
+    width: 90px;
 }
 
 .column-item-actions {
