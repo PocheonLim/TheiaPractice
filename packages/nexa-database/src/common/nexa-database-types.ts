@@ -34,9 +34,10 @@ export type PresetKey =
 export interface ColumnData {
     name: string;
     preset?: PresetKey;
-    primaryKey: boolean;
-    notNull: boolean;
-    unique: boolean;
+    primaryKey?: boolean;
+    notNull?: boolean;
+    unique?: boolean;
+    isEditing?: boolean;
 }
 
 export interface RowData {

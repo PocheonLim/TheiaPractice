@@ -68,6 +68,28 @@ export class NexaDatabaseWidget extends ReactWidget {
         this.update();
     };
 
+    handleEditColumn = (index: number): void => {
+        this.columns = this.columns.map((col, i) => ({
+            ...col,
+            isEditing: i === index
+        }));
+        this.update();
+    };
+
+    handleSaveColumn = (index: number, updatedColumn: ColumnData): void => {
+        this.columns = this.columns.map((col, i) =>
+            i === index ? { ...updatedColumn, isEditing: false } : col
+        );
+        this.update();
+    };
+
+    handleCancelColumn = (index: number): void => {
+        this.columns = this.columns.map((col, i) =>
+            i === index ? { ...col, isEditing: false } : col
+        );
+        this.update();
+    };
+
     handleAddRow = (): void => {
         this.rows = this.rows.map(row => ({ ...row, isEditing: false }));
 
@@ -126,10 +148,14 @@ export class NexaDatabaseWidget extends ReactWidget {
                 <NexaDatabaseTabbar activeTab={this.activeTab} onChangeActiveTab={activeTab => this.setActiveTab(activeTab)} />
                 {this.activeTab === 'COLUMN' ? (
                     <NexaDatabaseColumn
+                        mode={this.mode}
                         columns={this.columns}
                         onAddColumn={this.handleAddColumn}
                         onUpdateColumn={this.handleUpdateColumn}
                         onDeleteColumn={this.handleDeleteColumn}
+                        onEditColumn={this.handleEditColumn}
+                        onSaveColumn={this.handleSaveColumn}
+                        onCancelColumn={this.handleCancelColumn}
                     />
                 ) : (
                     <NexaDatabaseData

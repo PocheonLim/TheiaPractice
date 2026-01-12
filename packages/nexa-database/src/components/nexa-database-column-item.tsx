@@ -15,33 +15,88 @@
 // *****************************************************************************
 
 import * as React from '@theia/core/shared/react';
-import { ColumnData } from '../common/nexa-database-types';
+import { ColumnData, Mode } from '../common/nexa-database-types';
 
 export interface NexaDatabaseColumnItemProps {
     column: ColumnData;
+    mode: Mode;
     onUpdate: (column: ColumnData) => void;
     onDelete: () => void;
+    onEdit?: () => void;
+    onSave?: (column: ColumnData) => void;
+    onCancel?: () => void;
 }
 
-export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({ column, onUpdate, onDelete }) => {
+export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
+    column,
+    mode,
+    onUpdate,
+    onDelete,
+    onEdit,
+    onSave,
+    onCancel
+}: NexaDatabaseColumnItemProps) => {
+    const [editedColumn, setEditedColumn] = React.useState<ColumnData>(column);
+
+    React.useEffect(() => {
+        setEditedColumn(column);
+    }, [column]);
+
+    const isEditing = column.isEditing || false;
+    const isEditMode = mode === 'EDIT';
+    const isReadOnly = isEditMode && !isEditing;
+
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        onUpdate({ ...column, name: e.target.value });
+        if (isEditMode) {
+            setEditedColumn({ ...editedColumn, name: e.target.value });
+        } else {
+            onUpdate({ ...column, name: e.target.value });
+        }
     };
 
     const handlePresetChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        onUpdate({ ...column, preset: e.target.value as ColumnData['preset'] });
+        if (isEditMode) {
+            setEditedColumn({ ...editedColumn, preset: e.target.value as ColumnData['preset'] });
+        } else {
+            onUpdate({ ...column, preset: e.target.value as ColumnData['preset'] });
+        }
     };
 
     const handlePrimaryKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        onUpdate({ ...column, primaryKey: e.target.checked });
+        if (isEditMode) {
+            setEditedColumn({ ...editedColumn, primaryKey: e.target.checked });
+        } else {
+            onUpdate({ ...column, primaryKey: e.target.checked });
+        }
     };
 
     const handleNotNullChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        onUpdate({ ...column, notNull: e.target.checked });
+        if (isEditMode) {
+            setEditedColumn({ ...editedColumn, notNull: e.target.checked });
+        } else {
+            onUpdate({ ...column, notNull: e.target.checked });
+        }
     };
 
     const handleUniqueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        onUpdate({ ...column, unique: e.target.checked });
+        if (isEditMode) {
+            setEditedColumn({ ...editedColumn, unique: e.target.checked });
+        } else {
+            onUpdate({ ...column, unique: e.target.checked });
+        }
+    };
+
+    const handleSave = () => {
+        if (onSave) {
+            onSave(editedColumn);
+        }
+    };
+
+    const handleCancel = () => {
+        setEditedColumn(column);
+        if (onCancel) {
+            onCancel();
+        }
     };
 
     return (
@@ -51,18 +106,24 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({ 
                 <label>
                     <input
                         type="checkbox"
-                        checked={column.primaryKey}
+                        checked={isEditMode ? editedColumn.primaryKey : column.primaryKey}
                         onChange={handlePrimaryKeyChange}
+                        disabled={isReadOnly}
                     />
                     PK
                 </label>
                 <input
                     type="text"
-                    value={column.name}
+                    value={isEditMode ? editedColumn.name : column.name}
                     onChange={handleNameChange}
                     placeholder="column_name"
+                    disabled={isReadOnly}
                 />
-                <select value={column.preset || 'custom'} onChange={handlePresetChange}>
+                <select
+                    value={(isEditMode ? editedColumn.preset : column.preset) || 'custom'}
+                    onChange={handlePresetChange}
+                    disabled={isReadOnly}
+                >
                     <option value="uuid">UUID</option>
                     <option value="auto_increment_id">Auto Increment ID</option>
                     <option value="created_time">Created Time</option>
@@ -75,19 +136,41 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({ 
                     <option value="foreign_key">Foreign Key</option>
                     <option value="custom">Custom</option>
                 </select>
-                <input
-                    type="checkbox"
-                    checked={column.notNull}
-                    onChange={handleNotNullChange}
-                />
-                <input
-                    type="checkbox"
-                    checked={column.unique}
-                    onChange={handleUniqueChange}
-                />
+                <label>
+                    <input
+                        type="checkbox"
+                        checked={isEditMode ? editedColumn.notNull : column.notNull}
+                        onChange={handleNotNullChange}
+                        disabled={isReadOnly}
+                    />
+                    Not Null
+                </label>
+                <label>
+                    <input
+                        type="checkbox"
+                        checked={isEditMode ? editedColumn.unique : column.unique}
+                        onChange={handleUniqueChange}
+                        disabled={isReadOnly}
+                    />
+                    Unique
+                </label>
             </div>
             <div className="column-item-actions">
-                <button onClick={onDelete}>Delete</button>
+                {isEditMode ? (
+                    isEditing ? (
+                        <>
+                            <button onClick={handleSave}>Save</button>
+                            <button onClick={handleCancel}>Cancel</button>
+                        </>
+                    ) : (
+                        <>
+                            <button onClick={onEdit}>Edit</button>
+                            <button onClick={onDelete}>Delete</button>
+                        </>
+                    )
+                ) : (
+                    <button onClick={onDelete}>Delete</button>
+                )}
             </div>
         </div>
     );

@@ -15,17 +15,30 @@
 // *****************************************************************************
 
 import * as React from '@theia/core/shared/react';
-import { ColumnData } from '../common/nexa-database-types';
+import { ColumnData, Mode } from '../common/nexa-database-types';
 import { NexaDataBaseColumnItem } from './nexa-database-column-item';
 
 export interface NexaDatabaseColumnProps {
+    mode: Mode;
     columns: ColumnData[];
     onAddColumn: () => void;
     onUpdateColumn: (index: number, column: ColumnData) => void;
     onDeleteColumn: (index: number) => void;
+    onEditColumn?: (index: number) => void;
+    onSaveColumn?: (index: number, column: ColumnData) => void;
+    onCancelColumn?: (index: number) => void;
 }
 
-export const NexaDatabaseColumn: React.FC<NexaDatabaseColumnProps> = ({ columns, onAddColumn, onUpdateColumn, onDeleteColumn }: NexaDatabaseColumnProps) => (
+export const NexaDatabaseColumn: React.FC<NexaDatabaseColumnProps> = ({
+    mode,
+    columns,
+    onAddColumn,
+    onUpdateColumn,
+    onDeleteColumn,
+    onEditColumn,
+    onSaveColumn,
+    onCancelColumn
+}: NexaDatabaseColumnProps) => (
     <div className='nexa-database-column'>
         <div className='nexa-database-column-title'>
             <div className='nexa-database-column-title-left'>
@@ -50,9 +63,13 @@ export const NexaDatabaseColumn: React.FC<NexaDatabaseColumnProps> = ({ columns,
             {columns.map((column, index) => (
                 <NexaDataBaseColumnItem
                     key={index}
+                    mode={mode}
                     column={column}
                     onUpdate={updatedColumn => onUpdateColumn(index, updatedColumn)}
                     onDelete={() => onDeleteColumn(index)}
+                    onEdit={() => onEditColumn?.(index)}
+                    onSave={updatedColumn => onSaveColumn?.(index, updatedColumn)}
+                    onCancel={() => onCancelColumn?.(index)}
                 />
             ))}
         </div>
