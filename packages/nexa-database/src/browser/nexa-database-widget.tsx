@@ -138,6 +138,13 @@ export class NexaDatabaseWidget extends ReactWidget {
         this.update();
     };
 
+    handleRefresh = (): void => {
+        this.rows.forEach(col => {
+            col.isEditing = false;
+        });
+        this.update();
+    };
+
     @postConstruct()
     init(): void {
         this.id = NexaDatabaseWidget.ID;
@@ -178,6 +185,7 @@ export class NexaDatabaseWidget extends ReactWidget {
                         onEditRow={this.handleEditRow}
                         onSaveRow={this.handleSaveRow}
                         onCancelRow={this.handleCancelRow}
+                        onRefresh={this.handleRefresh}
                     />
                 )}
             </div>

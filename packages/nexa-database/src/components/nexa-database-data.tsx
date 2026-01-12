@@ -26,13 +26,14 @@ export interface NexaDatabaseDataProps {
     onEditRow: (index: number) => void;
     onSaveRow: (index: number, newValues: Record<string, string>) => void;
     onCancelRow: (index: number) => void;
+    onRefresh: () => void;
 }
 
-export const NexaDatabaseData: React.FC<NexaDatabaseDataProps> = ({ columns, rows, onAddRow, onDeleteRow, onEditRow, onSaveRow, onCancelRow }) => {
+export const NexaDatabaseData: React.FC<NexaDatabaseDataProps> = ({ columns, rows, onAddRow, onDeleteRow, onEditRow, onSaveRow, onCancelRow, onRefresh }) => {
     const [text, setText] = React.useState('');
     const [columnName, setColumnName] = React.useState('ALL');
 
-    // 1단계: 단일 row가 검색 조건에 맞는지 확인하는 함수
+    // 1단계: 단일 row가 검색 조건에 맞는지 확인
     const isRowMatchingSearch = (row: RowData, searchText: string, targetColumn: string): boolean => {
         // 모든 컬럼에서 검색
         if (targetColumn === 'ALL') {
@@ -89,7 +90,7 @@ export const NexaDatabaseData: React.FC<NexaDatabaseDataProps> = ({ columns, row
                     <span>{rows.length} rows</span>
                     <button>Import Data</button>
                     <button onClick={onAddRow}>+Add Row</button>
-                    <button>Refresh</button>
+                    <button onClick={onRefresh}>Refresh</button>
                 </div>
             </div>
             <div className='nexa-database-data-search-container'>
