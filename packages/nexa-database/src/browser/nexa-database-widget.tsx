@@ -47,6 +47,7 @@ export class NexaDatabaseWidget extends ReactWidget {
 
     handleReName = (name: string): void => {
         this.tableName = name;
+        this.update();
     };
 
     handleAddColumn = (): void => {
@@ -185,6 +186,7 @@ export class NexaDatabaseWidget extends ReactWidget {
                     />
                 ) : (
                     <NexaDatabaseRow
+                        tableName={this.tableName}
                         columns={this.columns}
                         rows={this.rows}
                         onAddRow={this.handleAddRow}

@@ -1,0 +1,7 @@
+.nexa-database-row-dialog-column {
+    display: flex;
+}
+
+.nexa-database-row-dialog-column div {
+    flex: 1;
+}

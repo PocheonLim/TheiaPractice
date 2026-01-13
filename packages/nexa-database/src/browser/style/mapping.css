@@ -1,0 +1,66 @@
+.info-csv {
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(211, 234, 248);
+    border-radius: 5px;
+    border-left: 4px solid blue;
+    padding: 5px 0px 5px 8px;
+}
+
+.info-csv strong {
+    font-size: 14px;
+    font-weight: 600;
+    color: black;
+}
+
+.nexa-database-row-mapping-grid-container {
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    border: 1px solid;
+    background-color: white;
+}
+
+.nexa-database-row-mapping-grid-container-header {
+    display: flex;
+    border-radius: 10px;
+    width: 100%;
+    background-color: whitesmoke;
+}
+
+.nexa-database-row-mapping-grid-container-header div {
+    flex: 1;
+}
+
+.import-mode-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.radio-option {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    border: 2px solid slategray;
+    border-radius: 8px;
+    cursor: pointer;
+    gap: 10px;
+}
+
+.radio-option:hover {
+    border-color: blue;
+    background-color: skyblue;
+}
+
+.radio-option-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
+
+.radio-option-content strong {
+    font-size: 14px;
+    font-weight: 600;
+}

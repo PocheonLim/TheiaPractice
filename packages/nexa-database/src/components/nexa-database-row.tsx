@@ -17,8 +17,10 @@
 import * as React from '@theia/core/shared/react';
 import { ColumnData, RowData } from '../common/nexa-database-types';
 import { NexaDatabaseRowItem } from './nexa-database-row-item';
+import { NexaDatabaseRowDialog } from './nexa-database-row-dialog';
 
 export interface NexaDatabaseDataProps {
+    tableName: string;
     columns: ColumnData[];
     rows: RowData[];
     onAddRow: () => void;
@@ -29,7 +31,7 @@ export interface NexaDatabaseDataProps {
     onRefresh: () => void;
 }
 
-export const NexaDatabaseRow: React.FC<NexaDatabaseDataProps> = ({ columns, rows, onAddRow, onDeleteRow, onEditRow, onSaveRow, onCancelRow, onRefresh }) => {
+export const NexaDatabaseRow: React.FC<NexaDatabaseDataProps> = ({ tableName, columns, rows, onAddRow, onDeleteRow, onEditRow, onSaveRow, onCancelRow, onRefresh }) => {
     const [text, setText] = React.useState('');
     const [columnName, setColumnName] = React.useState('ALL');
 
@@ -86,6 +88,15 @@ export const NexaDatabaseRow: React.FC<NexaDatabaseDataProps> = ({ columns, rows
         onRefresh();
     };
 
+    const handleImportData = async (): Promise<void> => {
+        const dialog = new NexaDatabaseRowDialog({
+            tableName,
+            currentColumns: columns,
+            currentRows: rows
+        });
+        const result = await dialog.open();
+    };
+
     return (
         <div className='nexa-database-data'>
             <div className='nexa-database-data-title'>
@@ -94,7 +105,7 @@ export const NexaDatabaseRow: React.FC<NexaDatabaseDataProps> = ({ columns, rows
                 </div>
                 <div className='nexa-database-data-title-right'>
                     <span>{rows.length} rows</span>
-                    <button>Import Data</button>
+                    <button onClick={handleImportData}>Import Data</button>
                     <button onClick={onAddRow}>+Add Row</button>
                     <button onClick={refreshFilter}>Refresh</button>
                 </div>
