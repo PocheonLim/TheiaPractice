@@ -152,6 +152,20 @@ export class NexaDatabaseWidget extends ReactWidget {
         this.update();
     };
 
+    handleImportData = (importedRows: RowData[], mode: 'append' | 'replace' | 'upsert'): void => {
+        if (mode === 'append') {
+            // Append: 기존 데이터 유지하고 새 데이터 추가
+            this.rows = [...this.rows, ...importedRows];
+        } else if (mode === 'replace') {
+            // Replace: 기존 데이터 삭제 후 새 데이터로 교체
+            this.rows = importedRows;
+        } else if (mode === 'upsert') {
+            // 이해하고 변경
+            this.rows = importedRows;
+        }
+        this.update();
+    };
+
     @postConstruct()
     init(): void {
         this.id = NexaDatabaseWidget.ID;
@@ -195,6 +209,7 @@ export class NexaDatabaseWidget extends ReactWidget {
                         onSaveRow={this.handleSaveRow}
                         onCancelRow={this.handleCancelRow}
                         onRefresh={this.handleRefresh}
+                        onImportData={this.handleImportData}
                     />
                 )}
             </div>

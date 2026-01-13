@@ -29,9 +29,12 @@ export interface NexaDatabaseDataProps {
     onSaveRow: (index: number, newValues: Record<string, string>) => void;
     onCancelRow: (index: number) => void;
     onRefresh: () => void;
+    onImportData: (rows: RowData[], mode: 'append' | 'replace' | 'upsert') => void;
 }
 
-export const NexaDatabaseRow: React.FC<NexaDatabaseDataProps> = ({ tableName, columns, rows, onAddRow, onDeleteRow, onEditRow, onSaveRow, onCancelRow, onRefresh }) => {
+export const NexaDatabaseRow: React.FC<NexaDatabaseDataProps> = ({
+    tableName, columns, rows, onAddRow, onDeleteRow, onEditRow, onSaveRow, onCancelRow, onRefresh, onImportData
+}) => {
     const [text, setText] = React.useState('');
     const [columnName, setColumnName] = React.useState('ALL');
 
@@ -95,6 +98,41 @@ export const NexaDatabaseRow: React.FC<NexaDatabaseDataProps> = ({ tableName, co
             currentRows: rows
         });
         const result = await dialog.open();
+
+        if (!result) {
+            return;
+        }
+
+        // CSV 데이터를 테이블 컬럼 순서에 맞게 변환
+        const importedRows: RowData[] = result.rows.map(csvRow => {
+            const rowValues: Record<string, string> = {};
+
+            // 테이블의 각 컬럼에 대해
+            for (const tableColumn of columns) {
+                // 매핑에서 해당 테이블 컬럼과 매칭된 CSV 컬럼 찾기
+                let csvColumnName: string | undefined;
+                for (const [csvCol, tableCol] of result.mapping.entries()) {
+                    if (tableCol === tableColumn.name) {
+                        csvColumnName = csvCol;
+                        break;
+                    }
+                }
+
+                // 매칭된 CSV 컬럼이 있으면 값 복사, 없으면 빈 문자열
+                if (csvColumnName) {
+                    rowValues[tableColumn.name] = csvRow[csvColumnName];
+                } else {
+                    rowValues[tableColumn.name] = '';
+                }
+            }
+
+            return {
+                values: rowValues,
+                isEditing: false
+            };
+        });
+
+        onImportData(importedRows, result.importMode as 'append' | 'replace' | 'upsert');
     };
 
     return (
