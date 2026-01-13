@@ -25,7 +25,7 @@ export interface NexaDatabaseDataItemProps {
     onDelete: () => void;
 }
 
-export const NexaDatabaseDataItem: React.FC<NexaDatabaseDataItemProps> = ({ rowData, onEdit, onSave, onCancel, onDelete }) => {
+export const NexaDatabaseRowItem: React.FC<NexaDatabaseDataItemProps> = ({ rowData, onEdit, onSave, onCancel, onDelete }) => {
     // 현재 편집 중인 값을 로컬 상태로 관리
     const [editedValues, setEditedValues] = React.useState<Record<string, string>>(rowData.values);
 

@@ -17,6 +17,7 @@
 import * as React from '@theia/core/shared/react';
 import { ColumnData, Mode } from '../common/nexa-database-types';
 import { ConfirmDialog } from '@theia/core/lib/browser/dialogs';
+import { parseCSV } from '../common/nexa-database-csv-parser';
 
 export interface NexaDatabaseHeaderProps {
     mode: Mode;
@@ -41,38 +42,6 @@ export const NexaDatabaseHeader: React.FC<NexaDatabaseHeaderProps> = ({ mode, ta
 
     const handleRename = (): void => {
         onChangeTableName(localTableName);
-    };
-
-    const parseCSV = (csvText: string): { columns: ColumnData[]; rows: Array<Record<string, string>> } => {
-        const line = csvText.split('\n');
-        const lines = line.filter(str => str.trim());
-        if (lines.length === 0) {
-            return { columns: [], rows: [] };
-        }
-
-        const firstLine = lines[0].split(',');
-        const headers = firstLine.map(h => h.trim());
-        const parsedColumns: ColumnData[] = headers.map(header => ({
-            name: header,
-            preset: 'text',
-            primaryKey: false,
-            nullable: true,
-            unique: false,
-            type: 'TEXT'
-        }));
-
-        const parsedRows: Array<Record<string, string>> = [];
-        for (let i = 1; i < lines.length; i++) {
-            const value = lines[i].split(',');
-            const values = value.map(v => v.trim());
-            const row: Record<string, string> = {};
-            headers.forEach((header, index) => {
-                row[header] = values[index] || '';
-            });
-            parsedRows.push(row);
-        }
-
-        return { columns: parsedColumns, rows: parsedRows };
     };
 
     const handleImportClick = (): void => {

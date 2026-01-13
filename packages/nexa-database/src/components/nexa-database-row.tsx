@@ -16,7 +16,7 @@
 
 import * as React from '@theia/core/shared/react';
 import { ColumnData, RowData } from '../common/nexa-database-types';
-import { NexaDatabaseDataItem } from './nexa-database-data-item';
+import { NexaDatabaseRowItem } from './nexa-database-row-item';
 
 export interface NexaDatabaseDataProps {
     columns: ColumnData[];
@@ -29,7 +29,7 @@ export interface NexaDatabaseDataProps {
     onRefresh: () => void;
 }
 
-export const NexaDatabaseData: React.FC<NexaDatabaseDataProps> = ({ columns, rows, onAddRow, onDeleteRow, onEditRow, onSaveRow, onCancelRow, onRefresh }) => {
+export const NexaDatabaseRow: React.FC<NexaDatabaseDataProps> = ({ columns, rows, onAddRow, onDeleteRow, onEditRow, onSaveRow, onCancelRow, onRefresh }) => {
     const [text, setText] = React.useState('');
     const [columnName, setColumnName] = React.useState('ALL');
 
@@ -127,7 +127,7 @@ export const NexaDatabaseData: React.FC<NexaDatabaseDataProps> = ({ columns, row
                     <div>Action</div>
                 </div>
                 {filteredRowsWithIndex.map(({ row, originalIndex }) => (
-                    <NexaDatabaseDataItem
+                    <NexaDatabaseRowItem
                         key={originalIndex}
                         rowData={row}
                         onEdit={() => onEditRow(originalIndex)}

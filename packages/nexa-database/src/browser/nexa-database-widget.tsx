@@ -20,7 +20,7 @@ import * as React from '@theia/core/shared/react';
 import { NexaDatabaseHeader } from '../components/nexa-database-header';
 import { NexaDatabaseTabbar } from '../components/nexa-database-tabbar';
 import { NexaDatabaseColumn } from '../components/nexa-database-column';
-import { NexaDatabaseData } from '../components/nexa-database-data';
+import { NexaDatabaseRow } from '../components/nexa-database-row';
 
 import { Mode, ActiveTab, ColumnData, RowData } from '../common/nexa-database-types';
 
@@ -184,7 +184,7 @@ export class NexaDatabaseWidget extends ReactWidget {
                         onCancelColumn={this.handleCancelColumn}
                     />
                 ) : (
-                    <NexaDatabaseData
+                    <NexaDatabaseRow
                         columns={this.columns}
                         rows={this.rows}
                         onAddRow={this.handleAddRow}
