@@ -28,6 +28,7 @@ import '../../src/browser/style/data.css';
 import '../../src/browser/style/dataItem.css';
 import '../../src/browser/style/mapping.css';
 import '../../src/browser/style/dialogColumn.css';
+import '../../src/browser/style/detail.css';
 
 export default new ContainerModule((bind: interfaces.Bind) => {
     bindViewContribution(bind, NexaDatabaseContribution);

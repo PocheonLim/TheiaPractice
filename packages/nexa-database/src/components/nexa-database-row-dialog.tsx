@@ -163,10 +163,6 @@ export class NexaDatabaseRowDialog extends ReactDialog<ImportDataResult> {
     protected handleFileChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
         const file = e.target.files?.[0];
         if (!file) {
-            this.file = undefined;
-            this.previewData = undefined;
-            this.columnMapping.clear();
-            this.update();
             return;
         }
 

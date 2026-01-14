@@ -16,6 +16,7 @@
 
 import * as React from '@theia/core/shared/react';
 import { ColumnData, Mode } from '../common/nexa-database-types';
+import { NexaDatabaseColumnDetail } from './nexa-database-column-detail';
 
 export interface NexaDatabaseColumnItemProps {
     column: ColumnData;
@@ -37,10 +38,15 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
     onCancel
 }: NexaDatabaseColumnItemProps) => {
     const [editedColumn, setEditedColumn] = React.useState<ColumnData>(column);
+    const [isDetailOpen, setIsDetailOpen] = React.useState(false);
 
     React.useEffect(() => {
         setEditedColumn(column);
     }, [column]);
+
+    React.useEffect(() => {
+        setIsDetailOpen(false);
+    }, [mode]);
 
     const isEditing = column.isEditing || false;
     const isEditMode = mode === 'EDIT';
@@ -97,100 +103,133 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
     const handleSave = () => {
         if (onSave) {
             onSave(editedColumn);
+            setIsDetailOpen(false);
         }
     };
 
     const handleCancel = () => {
         setEditedColumn(column);
+        setIsDetailOpen(false);
         if (onCancel) {
             onCancel();
         }
     };
 
+    const handleEdit = () => {
+        setIsDetailOpen(true);
+        if (onEdit) {
+            onEdit();
+        }
+    };
+
+    const toggleDetail = () => {
+        if (!isReadOnly) {
+            setIsDetailOpen(!isDetailOpen);
+        }
+    };
+
     return (
-        <div className="column-item-container">
-            <div className="column-item-left">
-                <span className="drag-handle">▶</span>
-                <label>
+        <>
+            <div className="column-item-container">
+                <div className="column-item-left">
+                    <span
+                        className="drag-handle"
+                        onClick={toggleDetail}
+                        style={{
+                            transform: isDetailOpen ? 'rotate(90deg)' : 'rotate(0deg)',
+                            cursor: isReadOnly ? '' : 'pointer',
+                        }}
+                    >
+                        ▶
+                    </span>
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={isEditMode ? editedColumn.primaryKey : column.primaryKey}
+                            onChange={handlePrimaryKeyChange}
+                            disabled={isReadOnly}
+                        />
+                    </label>
                     <input
-                        type="checkbox"
-                        checked={isEditMode ? editedColumn.primaryKey : column.primaryKey}
-                        onChange={handlePrimaryKeyChange}
+                        type="text"
+                        value={isEditMode ? editedColumn.name : column.name}
+                        onChange={handleNameChange}
+                        placeholder="column_name"
                         disabled={isReadOnly}
                     />
-                </label>
-                <input
-                    type="text"
-                    value={isEditMode ? editedColumn.name : column.name}
-                    onChange={handleNameChange}
-                    placeholder="column_name"
+                    <select
+                        value={(isEditMode ? editedColumn.preset : column.preset) || 'custom'}
+                        onChange={handlePresetChange}
+                        disabled={isReadOnly}
+                    >
+                        <option value="uuid">UUID</option>
+                        <option value="auto_increment_id">Auto Increment ID</option>
+                        <option value="created_time">Created Time</option>
+                        <option value="text">Text</option>
+                        <option value="checkbox">Checkbox</option>
+                        <option value="number">Number</option>
+                        <option value="json">JSON</option>
+                        <option value="date">Date</option>
+                        <option value="datetime">DateTime</option>
+                        <option value="foreign_key">Foreign Key</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={isEditMode ? editedColumn.nullable : column.nullable}
+                            onChange={handleNotNullChange}
+                            disabled={isReadOnly}
+                        />
+                    </label>
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={isEditMode ? editedColumn.unique : column.unique}
+                            onChange={handleUniqueChange}
+                            disabled={isReadOnly}
+                        />
+                    </label>
+                    <select
+                        value={(isEditMode ? editedColumn.type : column.type) || 'CHAR'}
+                        onChange={handleTypeChange}
+                        disabled={isReadOnly}
+                    >
+                        <option value="CHAR">CHAR</option>
+                        <option value="INT">INT</option>
+                        <option value="TIMESTAMP">TIMESTAMP</option>
+                        <option value="TEXT">TEXT</option>
+                        <option value="TINYINT">TINYINT</option>
+                        <option value="JSON">JSON</option>
+                        <option value="DATE">DATE</option>
+                        <option value="DATETIME">DATETIME</option>
+                    </select>
+                </div>
+                <div className="column-item-actions">
+                    {isEditMode ? (
+                        isEditing ? (
+                            <>
+                                <button onClick={handleSave}>Save</button>
+                                <button onClick={handleCancel}>Cancel</button>
+                            </>
+                        ) : (
+                            <>
+                                <button onClick={handleEdit}>Edit</button>
+                                <button onClick={onDelete}>Delete</button>
+                            </>
+                        )
+                    ) : (
+                        <button onClick={onDelete}>Delete</button>
+                    )}
+                </div>
+            </div>
+            {isDetailOpen && (
+                <NexaDatabaseColumnDetail
+                    column={isEditMode ? editedColumn : column}
+                    onUpdate={isEditMode ? setEditedColumn : onUpdate}
                     disabled={isReadOnly}
                 />
-                <select
-                    value={(isEditMode ? editedColumn.preset : column.preset) || 'custom'}
-                    onChange={handlePresetChange}
-                    disabled={isReadOnly}
-                >
-                    <option value="uuid">UUID</option>
-                    <option value="auto_increment_id">Auto Increment ID</option>
-                    <option value="created_time">Created Time</option>
-                    <option value="text">Text</option>
-                    <option value="checkbox">Checkbox</option>
-                    <option value="number">Number</option>
-                    <option value="json">JSON</option>
-                    <option value="date">Date</option>
-                    <option value="datetime">DateTime</option>
-                    <option value="foreign_key">Foreign Key</option>
-                    <option value="custom">Custom</option>
-                </select>
-                <label>
-                    <input
-                        type="checkbox"
-                        checked={isEditMode ? editedColumn.nullable : column.nullable}
-                        onChange={handleNotNullChange}
-                        disabled={isReadOnly}
-                    />
-                </label>
-                <label>
-                    <input
-                        type="checkbox"
-                        checked={isEditMode ? editedColumn.unique : column.unique}
-                        onChange={handleUniqueChange}
-                        disabled={isReadOnly}
-                    />
-                </label>
-                <select
-                    value={(isEditMode ? editedColumn.type : column.type) || 'CHAR'}
-                    onChange={handleTypeChange}
-                    disabled={isReadOnly}
-                >
-                    <option value="CHAR">CHAR</option>
-                    <option value="INT">INT</option>
-                    <option value="TIMESTAMP">TIMESTAMP</option>
-                    <option value="TEXT">TEXT</option>
-                    <option value="TINYINT">TINYINT</option>
-                    <option value="JSON">JSON</option>
-                    <option value="DATE">DATE</option>
-                    <option value="DATETIME">DATETIME</option>
-                </select>
-            </div>
-            <div className="column-item-actions">
-                {isEditMode ? (
-                    isEditing ? (
-                        <>
-                            <button onClick={handleSave}>Save</button>
-                            <button onClick={handleCancel}>Cancel</button>
-                        </>
-                    ) : (
-                        <>
-                            <button onClick={onEdit}>Edit</button>
-                            <button onClick={onDelete}>Delete</button>
-                        </>
-                    )
-                ) : (
-                    <button onClick={onDelete}>Delete</button>
-                )}
-            </div>
-        </div>
+            )}
+        </>
     );
 };

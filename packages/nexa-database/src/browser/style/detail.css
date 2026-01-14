@@ -1,0 +1,54 @@
+.column-detail-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background-color: rgb(240, 240, 240);
+    justify-content: center;
+    gap: 5px;
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+.column-detail-preset-container {
+    display: flex;
+    gap: 5px;
+}
+
+.column-detail-preset-name {
+    display: flex;
+    border-radius: 5px;
+    background-color: lightskyblue;
+}
+
+.column-detail-preset-title {
+    color: blue;
+}
+
+.column-detail-preset-description {
+
+}
+
+.column-detail-button-container {
+    display: flex;
+    width: 100%;
+    gap: 10px;
+}
+
+.column-detail-button {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.column-detail-comment {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 5px;
+    margin-bottom: 5px;
+}
+
+.column-detail-comment textarea {
+    width: 98%;
+    height: 50px;
+}
