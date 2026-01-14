@@ -82,8 +82,7 @@ export const NexaDatabaseRow: React.FC<NexaDatabaseDataProps> = ({
         return result;
     };
 
-    // 3단계: 필터링된 결과를 메모이제이션
-    const filteredRowsWithIndex = React.useMemo(() => filterRows(), [rows, text, columnName]);
+    const filteredRowsWithIndex = filterRows();
 
     const refreshFilter = (): void => {
         setText('');
@@ -107,23 +106,13 @@ export const NexaDatabaseRow: React.FC<NexaDatabaseDataProps> = ({
         const importedRows: RowData[] = result.rows.map(csvRow => {
             const rowValues: Record<string, string> = {};
 
-            // 테이블의 각 컬럼에 대해
+            // 테이블의 각 컬럼에 대해 매핑된 CSV 컬럼의 값을 복사
             for (const tableColumn of columns) {
-                // 매핑에서 해당 테이블 컬럼과 매칭된 CSV 컬럼 찾기
-                let csvColumnName: string | undefined;
-                for (const [csvCol, tableCol] of result.mapping.entries()) {
-                    if (tableCol === tableColumn.name) {
-                        csvColumnName = csvCol;
-                        break;
-                    }
-                }
+                // 매핑에서 CSV 컬럼명 찾기 (csvCol -> tableCol 구조)
+                const mappingColumn = [...result.mapping.entries()];
+                const csvColumnName = mappingColumn.find(([_, tableCol]) => tableCol === tableColumn.name)?.[0];
 
-                // 매칭된 CSV 컬럼이 있으면 값 복사, 없으면 빈 문자열
-                if (csvColumnName) {
-                    rowValues[tableColumn.name] = csvRow[csvColumnName];
-                } else {
-                    rowValues[tableColumn.name] = '';
-                }
+                rowValues[tableColumn.name] = csvColumnName ? csvRow[csvColumnName] : '';
             }
 
             return {
