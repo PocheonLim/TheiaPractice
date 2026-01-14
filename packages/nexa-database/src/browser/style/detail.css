@@ -13,6 +13,7 @@
 .column-detail-preset-container {
     display: flex;
     gap: 5px;
+    margin-bottom: 5px;
 }
 
 .column-detail-preset-name {
@@ -25,14 +26,11 @@
     color: blue;
 }
 
-.column-detail-preset-description {
-
-}
-
 .column-detail-button-container {
     display: flex;
     width: 100%;
     gap: 10px;
+    margin-bottom: 5px;
 }
 
 .column-detail-button {
@@ -54,6 +52,12 @@
 .column-detail-option-container input {
     flex: 1;
     width: 100%;
+}
+
+.column-detail-option-foreignkey {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .column-detail-comment {

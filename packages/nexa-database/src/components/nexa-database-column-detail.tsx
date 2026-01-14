@@ -24,6 +24,26 @@ export interface NexaDatabaseColumnDetailProps {
     disabled?: boolean;
 }
 
+// 임시 테이블 데이터
+const availableTables = [
+    {
+        name: 'users',
+        columns: [
+            { name: 'id', type: 'INT', isUnique: true },
+            { name: 'email', type: 'VARCHAR(255)', isUnique: true },
+            { name: 'username', type: 'VARCHAR(100)', isUnique: false }
+        ]
+    },
+    {
+        name: 'posts',
+        columns: [
+            { name: 'id', type: 'INT', isUnique: true },
+            { name: 'uuid', type: 'CHAR(36)', isUnique: true },
+            { name: 'title', type: 'VARCHAR(255)', isUnique: false }
+        ]
+    }
+];
+
 export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> = ({
     column,
     onUpdate,
@@ -39,6 +59,11 @@ export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> =
     const isCheckboxPreset = column.preset === 'checkbox';
     const isNumberPreset = column.preset === 'number';
     const isDatetimePreset = column.preset === 'datetime';
+    const isForeignPreset = column.preset === 'foreign_key';
+    const isCustomPreset = column.preset === 'custom';
+
+    // Foreign Key 관련 state
+    const [selectedTable, setSelectedTable] = React.useState<string>('');
 
     const handlePrimaryKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         onUpdate({ ...column, primaryKey: e.target.checked });
@@ -51,6 +76,14 @@ export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> =
     const handleUniqueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         onUpdate({ ...column, unique: e.target.checked });
     };
+
+    const handleTableChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setSelectedTable(e.target.value);
+    };
+
+    // 선택된 테이블의 컬럼 목록 가져오기
+    const selectedTableData = availableTables.find(table => table.name === selectedTable);
+    const availableColumns = selectedTableData?.columns || [];
 
     return (
         <div className="column-detail-container">
@@ -145,6 +178,36 @@ export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> =
                     {isDatetimePreset && (
                         <input type='text' placeholder='CURRENT_TIMESTAMP'></input>
                     )}
+                    {isCustomPreset && (
+                        <>
+                            <input type='text' placeholder='e.g., 255'></input>
+                        </>
+                    )}
+                </div>
+            )}
+            {isForeignPreset && (
+                <div className='column-detail-option-foreignkey'>
+                    <select value={selectedTable} onChange={handleTableChange} disabled={disabled}>
+                        <option value="">Select Table...</option>
+                        {availableTables.map(table => (
+                            <option value={table.name}>
+                                {table.name}
+                            </option>
+                        ))}
+                    </select>
+                    <select
+                        disabled={disabled || !selectedTable}
+                    >
+                        <option value="">Select Column...</option>
+                        {availableColumns.map(col => (
+                            <option
+                                value={col.name}
+                                disabled={!col.isUnique}
+                            >
+                                {col.name} ({col.type}) {!col.isUnique ? '- Not unique' : ''}
+                            </option>
+                        ))}
+                    </select>
                 </div>
             )}
             <div className='column-detail-comment'>
