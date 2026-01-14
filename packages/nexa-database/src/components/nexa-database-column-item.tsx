@@ -17,6 +17,7 @@
 import * as React from '@theia/core/shared/react';
 import { ColumnData, Mode } from '../common/nexa-database-types';
 import { NexaDatabaseColumnDetail } from './nexa-database-column-detail';
+import { PRESET_INFO } from '../common/nexa-database-presets';
 
 export interface NexaDatabaseColumnItemProps {
     column: ColumnData;
@@ -89,14 +90,6 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
             setEditedColumn({ ...editedColumn, unique: e.target.checked });
         } else {
             onUpdate({ ...column, unique: e.target.checked });
-        }
-    };
-
-    const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        if (isEditMode) {
-            setEditedColumn({ ...editedColumn, type: e.target.value as ColumnData['type'] });
-        } else {
-            onUpdate({ ...column, type: e.target.value as ColumnData['type'] });
         }
     };
 
@@ -190,20 +183,11 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
                             disabled={isReadOnly}
                         />
                     </label>
-                    <select
-                        value={(isEditMode ? editedColumn.type : column.type) || 'CHAR'}
-                        onChange={handleTypeChange}
-                        disabled={isReadOnly}
-                    >
-                        <option value="CHAR">CHAR</option>
-                        <option value="INT">INT</option>
-                        <option value="TIMESTAMP">TIMESTAMP</option>
-                        <option value="TEXT">TEXT</option>
-                        <option value="TINYINT">TINYINT</option>
-                        <option value="JSON">JSON</option>
-                        <option value="DATE">DATE</option>
-                        <option value="DATETIME">DATETIME</option>
-                    </select>
+                    <span className="column-type-display">
+                        {column.preset && PRESET_INFO[column.preset]
+                            ? PRESET_INFO[column.preset].defaultType
+                            : (isEditMode ? editedColumn.type : column.type) || 'CHAR'}
+                    </span>
                 </div>
                 <div className="column-item-actions">
                     {isEditMode ? (

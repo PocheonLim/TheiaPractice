@@ -20,62 +20,74 @@ export interface PresetInfo {
     name: string;
     icon: string;
     description: string;
+    defaultType: String;
 }
 
 export const PRESET_INFO: Record<PresetKey, PresetInfo> = {
     uuid: {
         name: 'UUID',
         icon: '🆔',
-        description: 'Universally Unique Identifier (CHAR(36) with UUID() default)'
+        description: 'Universally Unique Identifier (CHAR(36) with UUID() default)',
+        defaultType: 'CHAR (36)'
     },
     auto_increment_id: {
         name: 'Auto-incrementing Integer ID',
         icon: '🔢',
-        description: 'Auto-incrementing primary key (INT UNSIGNED AUTO_INCREMENT)'
+        description: 'Auto-incrementing primary key (INT UNSIGNED AUTO_INCREMENT)',
+        defaultType: 'INT UNSIGNED AUTO_INCREMENT'
     },
     created_time: {
         name: 'Created Time',
         icon: '📅',
-        description: 'Record creation timestamp (TIMESTAMP with CURRENT_TIMESTAMP default)'
+        description: 'Record creation timestamp (TIMESTAMP with CURRENT_TIMESTAMP default)',
+        defaultType: 'TIMESTAMP'
     },
     text: {
         name: 'TEXT',
         icon: '📝',
-        description: 'Text column'
+        description: 'Text column',
+        defaultType: 'TEXT'
     },
     checkbox: {
         name: 'Checkbox',
         icon: '☑️',
-        description: 'Boolean/Checkbox field'
+        description: 'Boolean/Checkbox field',
+        defaultType: 'TINYINT (1)'
     },
     number: {
         name: 'Number',
         icon: '🔢',
-        description: 'Numeric column'
+        description: 'Numeric column',
+        defaultType: 'INT'
     },
     json: {
         name: 'JSON',
         icon: '{}',
-        description: 'JSON data type'
+        description: 'JSON data type',
+        defaultType: 'JSON'
     },
     date: {
         name: 'Date',
         icon: '📆',
-        description: 'Date only (no time)'
+        description: 'Date only (no time)',
+        defaultType: 'DATE'
     },
     datetime: {
         name: 'Date + Time',
         icon: '🕐',
-        description: 'Date and time'
+        description: 'Date and time',
+        defaultType: 'DATETIME'
     },
     foreign_key: {
         name: 'Foreign Key',
         icon: '🔗',
-        description: 'Reference to another table'
+        description: 'Reference to another table',
+        defaultType: 'undefined'
     },
     custom: {
         name: 'Custom',
         icon: '⚙️',
-        description: 'Manually configure all options'
+        description: 'Manually configure all options',
+        defaultType: 'VARCHAR (255)'
     }
 };

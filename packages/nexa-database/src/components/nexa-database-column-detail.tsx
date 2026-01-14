@@ -31,6 +31,15 @@ export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> =
 }) => {
     const presetInfo = column.preset ? PRESET_INFO[column.preset] : undefined;
 
+    // uuid, auto_increment_id, created_time, foreign_key는 옵션 select를 보여주지 않음
+    const shouldShowOptions = column.preset &&
+        !['uuid', 'auto_increment_id', 'created_time', 'foreign_key'].includes(column.preset);
+
+    // 프리셋별 조건
+    const isCheckboxPreset = column.preset === 'checkbox';
+    const isNumberPreset = column.preset === 'number';
+    const isDatetimePreset = column.preset === 'datetime';
+
     const handlePrimaryKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         onUpdate({ ...column, primaryKey: e.target.checked });
     };
@@ -84,7 +93,60 @@ export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> =
                     />
                     Unique
                 </div>
+                {isCheckboxPreset && (
+                    <div className='column-detail-button'>
+                        <input
+                            type="checkbox"
+                            disabled={disabled}
+                        />
+                        Default Checked
+                    </div>
+                )}
+                {isNumberPreset && (
+                    <div className='column-detail-button'>
+                        <input
+                            type="checkbox"
+                            disabled={disabled}
+                        />
+                        Unsigned (양수만)
+                    </div>
+                )}
+                {isDatetimePreset && (
+                    <div className='column-detail-button'>
+                        <input
+                            type="checkbox"
+                            disabled={disabled}
+                        />
+                        On Update Timestamp
+                    </div>
+                )}
             </div>
+            {shouldShowOptions && (
+                <div className='column-detail-option-container'>
+                    <select>
+                        <option value="json">JSON</option>
+                        <option value="date">Date</option>
+                    </select>
+                    <select>
+                        <option value="no">No Default</option>
+                        <option value="default">Default Value</option>
+                        <option value="sql">SQL Expression</option>
+                    </select>
+                    {isNumberPreset && (
+                        <>
+                            <select>
+                                <option value="int">Integer</option>
+                                <option value="dec">Decimal</option>
+                                <option value="float">Float</option>
+                            </select>
+                            <input type='text' placeholder='e.g., 0, 100, -50'></input>
+                        </>
+                    )}
+                    {isDatetimePreset && (
+                        <input type='text' placeholder='CURRENT_TIMESTAMP'></input>
+                    )}
+                </div>
+            )}
             <div className='column-detail-comment'>
                 COMMENT
                 <textarea placeholder='Add column description or notes...' />

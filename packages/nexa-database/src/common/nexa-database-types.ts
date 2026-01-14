@@ -31,16 +31,6 @@ export type PresetKey =
     | 'foreign_key'
     | 'custom';
 
-export type TypeKey =
-    | 'CHAR'
-    | 'INT'
-    | 'TIMESTAMP'
-    | 'TEXT'
-    | 'TINYINT'
-    | 'JSON'
-    | 'DATE'
-    | 'DATETIME';
-
 export interface ColumnData {
     name: string;
     preset?: PresetKey;
