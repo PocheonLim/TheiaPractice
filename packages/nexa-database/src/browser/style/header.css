@@ -15,7 +15,34 @@
 .nexa-database-header-left {
     display: flex;
     align-items: center;
+    color: black;
+    font-size: 18px;
+    font-weight: 600;
     gap: 10px;
+}
+
+.nexa-database-header-left input {
+    border: none;
+    outline: none;
+    border-bottom: 2px solid transparent;
+    font-size: 18px;
+    font-weight: 600;
+    background-color: transparent;
+}
+
+.nexa-database-header-left input::placeholder {
+    color: #666;
+}
+
+.nexa-database-header-left input:hover {
+    background-color: #d0d0d0;
+    border-bottom-color: #666;
+}
+
+.nexa-database-header-left input:focus {
+    background-color: #d0d0d0;
+    border-bottom-color: #0066ff;
+    color: #0066ff;
 }
 
 .nexa-database-header-right {
@@ -23,8 +50,15 @@
     gap: 10px;
 }
 
-.nexa-database-header input {
-    padding: 5px;
+.nexa-database-header-right button {
+    border-radius: 5px;
+    background-color: white;
+    border: 1px solid #d0d0d0;
+    padding: 8px 10px 8px 10px;
+}
+
+.nexa-database-header-right button:hover {
+    filter: brightness(0.9);
 }
 
 .nexa-database-header-textarea {
@@ -35,5 +69,7 @@
     width: 100%;
     padding: 5px;
     resize: vertical;
+    border-radius: 5px;
+    border: 1px solid #d0d0d0;
     box-sizing: border-box;
 }

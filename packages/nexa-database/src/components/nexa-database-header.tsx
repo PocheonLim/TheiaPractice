@@ -15,7 +15,7 @@
 // *****************************************************************************
 
 import * as React from '@theia/core/shared/react';
-import { ColumnData, Mode } from '../common/nexa-database-types';
+import { ColumnData, Mode, RowData } from '../common/nexa-database-types';
 import { ConfirmDialog } from '@theia/core/lib/browser/dialogs';
 import { parseCSV } from '../common/nexa-database-csv-parser';
 
@@ -25,7 +25,7 @@ export interface NexaDatabaseHeaderProps {
     columns: ColumnData[];
     onChangeMode: (mode: Mode) => void;
     onChangeTableName: (name: string) => void;
-    onImportCSV: (columns: ColumnData[], rows: Array<Record<string, string>>) => void;
+    onImportCSV: (columns: ColumnData[], rows: RowData[]) => void;
 }
 
 export const NexaDatabaseHeader: React.FC<NexaDatabaseHeaderProps> = ({ mode, tableName, columns, onChangeMode, onChangeTableName, onImportCSV }: NexaDatabaseHeaderProps) => {
@@ -103,7 +103,7 @@ export const NexaDatabaseHeader: React.FC<NexaDatabaseHeaderProps> = ({ mode, ta
                     {mode === 'NEW' ? 'New Table:' : 'Edit Table:'}
                     <input
                         type="text"
-                        placeholder="Enter table name"
+                        placeholder="New_table"
                         value={localTableName}
                         onChange={handleInputChange}
                     />
@@ -121,7 +121,7 @@ export const NexaDatabaseHeader: React.FC<NexaDatabaseHeaderProps> = ({ mode, ta
                                 onChange={handleFileChange}
                             />
                             <button onClick={handleImportClick}>📁 Import CSV</button>
-                            <button onClick={handleCreateSql}>💾 Create</button>
+                            <button onClick={handleCreateSql} style={{ backgroundColor: '#1e6fff', color: 'white' }}>💾 Create</button>
                             <button onClick={() => onChangeMode('EDIT')}>Switch to Edit</button>
                         </>
                     ) : (

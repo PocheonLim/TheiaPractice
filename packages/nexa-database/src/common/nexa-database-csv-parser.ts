@@ -14,44 +14,43 @@
 // SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-only WITH Classpath-exception-2.0
 // *****************************************************************************
 
-import { ColumnData } from './nexa-database-types';
+import { ColumnData, RowData } from './nexa-database-types';
 
 export interface ParsedCSVData {
     columns: ColumnData[];
-    rows: Array<Record<string, string>>;
+    rows: RowData[];
 }
 
 export function parseCSV(csvText: string): ParsedCSVData {
     const line = csvText.split('\n');
     const lines = line.filter(str => str.trim());
 
-    if (lines.length === 0) {
-        return { columns: [], rows: [] };
-    }
-
     const firstLine = lines[0].split(',');
     const headers = firstLine.map(h => h.trim());
 
     const parsedColumns: ColumnData[] = headers.map(header => ({
         name: header,
-        preset: 'text',
+        preset: 'custom',
         primaryKey: false,
         nullable: true,
         unique: false,
         type: 'TEXT'
     }));
 
-    const parsedRows: Array<Record<string, string>> = [];
+    const parsedRows: RowData[] = [];
     for (let i = 1; i < lines.length; i++) {
         const value = lines[i].split(',');
-        const values = value.map(v => v.trim());
-        const row: Record<string, string> = {};
+        const cellValues = value.map(v => v.trim());
+        const rowValues: Record<string, string> = {};
 
         headers.forEach((header, index) => {
-            row[header] = values[index] || '';
+            rowValues[header] = cellValues[index] || '';
         });
 
-        parsedRows.push(row);
+        parsedRows.push({
+            values: rowValues,
+            isEditing: false
+        });
     }
 
     return { columns: parsedColumns, rows: parsedRows };

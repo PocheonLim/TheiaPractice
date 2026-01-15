@@ -22,7 +22,7 @@ import { NexaDatabaseRowDialogColumn } from './nexa-database-row-dialog-column';
 
 export interface ImportDataResult {
     columns: ColumnData[];
-    rows: Array<Record<string, string>>;
+    rows: RowData[];
     mapping: Map<string, string>;
     importMode: string;
 }
@@ -83,7 +83,7 @@ export class NexaDatabaseRowDialog extends ReactDialog<ImportDataResult> {
                             <div className='nexa-database-row-mapping-grid-content'>
                                 {this.previewData.columns.map(csvCol => {
                                     const previewRow = this.previewData!.rows[0];
-                                    const previewValue = previewRow[csvCol.name];
+                                    const previewValue = previewRow.values[csvCol.name];
                                     return (
                                         <NexaDatabaseRowDialogColumn
                                             csvColumn={csvCol}
@@ -132,6 +132,7 @@ export class NexaDatabaseRowDialog extends ReactDialog<ImportDataResult> {
                                     value='upsert'
                                     checked={this.importMode === 'upsert'}
                                     onChange={this.handleImportModeChange}
+                                    disabled={!this.options.currentColumns.some(col => col.primaryKey)}
                                 />
                                 <div className='radio-option-content'>
                                     <strong>Upsert</strong>
@@ -139,6 +140,13 @@ export class NexaDatabaseRowDialog extends ReactDialog<ImportDataResult> {
                                 </div>
                             </label>
                         </div>
+                        {/* Upsert 모드 선택 시 Primary Key 정보 표시 */}
+                        {this.importMode === 'upsert' && (
+                            <div>
+                                <strong>Primary Key: </strong>
+                                {this.options.currentColumns.find(col => col.primaryKey)?.name || '어차피 없으면 클릭 못함'}
+                            </div>
+                        )}
                     </div>
                 )}
                 <hr></hr>

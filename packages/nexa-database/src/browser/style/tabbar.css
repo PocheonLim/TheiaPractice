@@ -1,6 +1,25 @@
 .nexa-database-tabbar {
     display: flex;
-    padding: 15px;
-    border-bottom: 2px solid #ccc;
+    border-bottom: 2px solid #e5e5e5;
     gap: 10px;
+    padding-left: 10px;
+}
+
+.nexa-database-tabbar button {
+    height: 40px;
+    padding: 5px;
+    color: #666;
+    border: none;
+    outline: none;
+    border-bottom: 2px solid transparent;
+    background-color: transparent;
+}
+
+.nexa-database-tabbar button:hover {
+    color: black
+}
+
+.nexa-database-tabbar button:focus {
+    border-bottom-color: #0066ff;
+    color: #0066ff;
 }

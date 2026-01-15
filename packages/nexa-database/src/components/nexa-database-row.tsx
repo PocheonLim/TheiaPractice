@@ -38,7 +38,7 @@ export const NexaDatabaseRow: React.FC<NexaDatabaseDataProps> = ({
     const [text, setText] = React.useState('');
     const [columnName, setColumnName] = React.useState('ALL');
 
-    // 1단계: 단일 row가 검색 조건에 맞는지 확인
+    // 단일 row가 검색 조건에 맞는지 확인
     const isRowMatchingSearch = (row: RowData, searchText: string, targetColumn: string): boolean => {
         // 모든 컬럼에서 검색
         if (targetColumn === 'ALL') {
@@ -59,20 +59,13 @@ export const NexaDatabaseRow: React.FC<NexaDatabaseDataProps> = ({
         return columnValue.toLowerCase().includes(searchText);
     };
 
-    // 2단계: 모든 rows를 필터링하는 함수
+    // 모든 rows를 필터링하는 함수
     const filterRows = (): Array<{ row: RowData; originalIndex: number }> => {
         const result: Array<{ row: RowData; originalIndex: number }> = [];
 
         for (let i = 0; i < rows.length; i++) {
             const row = rows[i];
 
-            // 검색어가 없으면 모든 row 포함
-            if (!text.trim()) {
-                result.push({ row, originalIndex: i });
-                continue;
-            }
-
-            // 검색어가 있으면 필터링
             const searchText = text.toLowerCase();
             if (isRowMatchingSearch(row, searchText, columnName)) {
                 result.push({ row, originalIndex: i });
@@ -108,11 +101,11 @@ export const NexaDatabaseRow: React.FC<NexaDatabaseDataProps> = ({
 
             // 테이블의 각 컬럼에 대해 매핑된 CSV 컬럼의 값을 복사
             for (const tableColumn of columns) {
-                // 매핑에서 CSV 컬럼명 찾기 (csvCol -> tableCol 구조)
-                const mappingColumn = [...result.mapping.entries()];
-                const csvColumnName = mappingColumn.find(([_, tableCol]) => tableCol === tableColumn.name)?.[0];
+                // 테이블 컬럼이 매핑에 있으면 해당 테이블 컬럼 값에는 csv row 값 넣고 아닐 경우 공백
+                const mappingColumn = Array.from(result.mapping);
+                const csvColumnName = mappingColumn.find(([csvCol, tableCol]) => tableCol === tableColumn.name)?.[0];
 
-                rowValues[tableColumn.name] = csvColumnName ? csvRow[csvColumnName] : '';
+                rowValues[tableColumn.name] = csvColumnName ? csvRow.values[csvColumnName] : '';
             }
 
             return {
@@ -178,4 +171,3 @@ export const NexaDatabaseRow: React.FC<NexaDatabaseDataProps> = ({
         </div>
     );
 };
-

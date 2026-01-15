@@ -64,9 +64,19 @@ export class NexaDatabaseWidget extends ReactWidget {
     };
 
     handleUpdateColumn = (index: number, updatedColumn: ColumnData): void => {
-        this.columns = this.columns.map((col, i) =>
-            i === index ? updatedColumn : col
-        );
+        // PK 체크박스 클릭 시: 다른 컬럼의 PK를 자동으로 false 처리
+        if (updatedColumn.primaryKey) {
+            this.columns = this.columns.map((col, i) =>
+                i === index
+                    ? updatedColumn
+                    : { ...col, primaryKey: false }
+            );
+        } else {
+            // PK가 아닌 경우 (다른 필드 변경 또는 PK 해제)
+            this.columns = this.columns.map((col, i) =>
+                i === index ? updatedColumn : col
+            );
+        }
         this.update();
     };
 
@@ -84,9 +94,19 @@ export class NexaDatabaseWidget extends ReactWidget {
     };
 
     handleSaveColumn = (index: number, updatedColumn: ColumnData): void => {
-        this.columns = this.columns.map((col, i) =>
-            i === index ? { ...updatedColumn, isEditing: false } : col
-        );
+        // PK 체크박스 클릭 시: 다른 컬럼의 PK를 자동으로 false 처리
+        if (updatedColumn.primaryKey) {
+            this.columns = this.columns.map((col, i) =>
+                i === index
+                    ? { ...updatedColumn, isEditing: false }
+                    : { ...col, primaryKey: false, isEditing: false }
+            );
+        } else {
+            // PK가 아닌 경우 (다른 필드 변경 또는 PK 해제)
+            this.columns = this.columns.map((col, i) =>
+                i === index ? { ...updatedColumn, isEditing: false } : col
+            );
+        }
         this.update();
     };
 
@@ -146,9 +166,9 @@ export class NexaDatabaseWidget extends ReactWidget {
         this.update();
     };
 
-    handleImportCSV = (columns: ColumnData[], rows: Array<Record<string, string>>): void => {
+    handleImportCSV = (columns: ColumnData[], rows: RowData[]): void => {
         this.columns = columns;
-        this.rows = rows.map(values => ({ values, isEditing: false }));
+        this.rows = rows;
         this.update();
     };
 
@@ -160,8 +180,29 @@ export class NexaDatabaseWidget extends ReactWidget {
             // Replace: 기존 데이터 삭제 후 새 데이터로 교체
             this.rows = importedRows;
         } else if (mode === 'upsert') {
-            // 이해하고 변경
-            this.rows = importedRows;
+            // Upsert: Primary Key 기준으로 업데이트 또는 삽입 / dialog에서 PK없으면 import 금지
+            // 사실 현재 RowData는 value말고 isEditing(import Data 하면 모두 false)이기 때문에 순서 유지말고는 의미 없음
+            const pkColumn = this.columns.find(col => col.primaryKey)!;
+
+            const pkName = pkColumn.name;
+            const updatedRows = [...this.rows];
+
+            // 각 import 행을 처리
+            importedRows.forEach(newRow => {
+                const pkValue = newRow.values[pkName];
+                const existingIndex = updatedRows.findIndex(row => row.values[pkName] === pkValue);
+
+                if (existingIndex >= 0) {
+                    updatedRows[existingIndex] = {
+                        values: { ...updatedRows[existingIndex].values, ...newRow.values },
+                        isEditing: false,
+                    };
+                } else {
+                    // 새 행 추가
+                    updatedRows.push(newRow);
+                }
+            });
+            this.rows = updatedRows;
         }
         this.update();
     };

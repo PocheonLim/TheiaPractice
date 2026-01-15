@@ -24,7 +24,7 @@ export interface NexaDatabaseTabbarProps {
 
 export const NexaDatabaseTabbar: React.FC<NexaDatabaseTabbarProps> = ({ activeTab, onChangeActiveTab }: NexaDatabaseTabbarProps) => (
     <div className='nexa-database-tabbar'>
-        <button onClick={() => onChangeActiveTab('COLUMN')}>Column</button>
-        <button onClick={() => onChangeActiveTab('DATA')}>Data</button>
+        <button className={activeTab === 'COLUMN' ? 'active' : ''} onClick={() => onChangeActiveTab('COLUMN')}>Column</button>
+        <button className={activeTab === 'DATA' ? 'active' : ''} onClick={() => onChangeActiveTab('DATA')}>Data</button>
     </div>
 );

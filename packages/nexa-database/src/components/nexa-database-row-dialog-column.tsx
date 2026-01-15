@@ -51,7 +51,7 @@ export const NexaDatabaseRowDialogColumn: React.FC<NexaDatabaseRowDialogColumnPr
                 <select value={selectedTableColumn} onChange={handleSelectChange}>
                     <option value=''>-- Skip --</option>
                     {tableColumns.map(col => (
-                        <option key={col.name} value={col.name}>
+                        <option value={col.name}>
                             {col.name}
                         </option>
                     ))}
