@@ -40,7 +40,7 @@
 }
 
 .nexa-database-header-left input:focus {
-    background-color: #d0d0d0;
+    background-color: #f0f7ff;
     border-bottom-color: #0066ff;
     color: #0066ff;
 }
@@ -67,9 +67,14 @@
 
 .nexa-database-header-textarea textarea {
     width: 100%;
+    height: 50px;
     padding: 5px;
     resize: vertical;
     border-radius: 5px;
     border: 1px solid #d0d0d0;
     box-sizing: border-box;
+}
+
+.nexa-database-header-textarea textarea::placeholder {
+    color: #999;
 }

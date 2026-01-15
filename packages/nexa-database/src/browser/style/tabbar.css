@@ -13,13 +13,15 @@
     outline: none;
     border-bottom: 2px solid transparent;
     background-color: transparent;
+    font-size: 15px;
+    font-weight: 500;
 }
 
 .nexa-database-tabbar button:hover {
     color: black
 }
 
-.nexa-database-tabbar button:focus {
+.nexa-database-tabbar button.active {
     border-bottom-color: #0066ff;
     color: #0066ff;
 }

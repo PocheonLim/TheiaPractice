@@ -156,58 +156,95 @@ export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> =
             </div>
             {shouldShowOptions && (
                 <div className='column-detail-option-container'>
-                    <select>
-                        <option value="json">JSON</option>
-                        <option value="date">Date</option>
-                    </select>
-                    <select>
-                        <option value="no">No Default</option>
-                        <option value="default">Default Value</option>
-                        <option value="sql">SQL Expression</option>
-                    </select>
+                    <div className='column-detail-option-container-menu'>
+                        DATABASE TYPE
+                        <select>
+                            <option value="json">JSON</option>
+                            <option value="date">Date</option>
+                        </select>
+                    </div>
+                    <div className='column-detail-option-container-menu'>
+                        DEFAULT
+                        <select>
+                            <option value="no">No Default</option>
+                            <option value="default">Default Value</option>
+                            <option value="sql">SQL Expression</option>
+                        </select>
+                    </div>
                     {isNumberPreset && (
                         <>
-                            <select>
-                                <option value="int">Integer</option>
-                                <option value="dec">Decimal</option>
-                                <option value="float">Float</option>
-                            </select>
-                            <input type='text' placeholder='e.g., 0, 100, -50'></input>
+                            <div className='column-detail-option-container-menu'>
+                                NUMBER TYPE
+                                <select>
+                                    <option value="int">Integer</option>
+                                    <option value="dec">Decimal</option>
+                                    <option value="float">Float</option>
+                                </select>
+                            </div>
+                            <div className='column-detail-option-container-menu'>
+                                DEFAULT VALUE
+                                <input type='text' placeholder='e.g., 0, 100, -50'></input>
+                            </div>
                         </>
                     )}
                     {isDatetimePreset && (
-                        <input type='text' placeholder='CURRENT_TIMESTAMP'></input>
+                        <div className='column-detail-option-container-menu'>
+                            SQL EXPRESSION
+                            <input type='text' placeholder='CURRENT_TIMESTAMP'></input>
+                        </div>
                     )}
                     {isCustomPreset && (
-                        <>
+                        <div className='column-detail-option-container-menu'>
+                            LENGTH (REQUIRED)
                             <input type='text' placeholder='e.g., 255'></input>
-                        </>
+                        </div>
                     )}
                 </div>
             )}
             {isForeignPreset && (
                 <div className='column-detail-option-foreignkey'>
-                    <select value={selectedTable} onChange={handleTableChange} disabled={disabled}>
-                        <option value="">Select Table...</option>
-                        {availableTables.map(table => (
-                            <option value={table.name}>
-                                {table.name}
-                            </option>
-                        ))}
-                    </select>
-                    <select
-                        disabled={disabled || !selectedTable}
-                    >
-                        <option value="">Select Column...</option>
-                        {availableColumns.map(col => (
-                            <option
-                                value={col.name}
-                                disabled={!col.isUnique}
-                            >
-                                {col.name} ({col.type}) {!col.isUnique ? '- Not unique' : ''}
-                            </option>
-                        ))}
-                    </select>
+                    <div className='column-detail-option-container-menu'>
+                        FOREIGN KEY CONFIGURATION
+                        <select value={selectedTable} onChange={handleTableChange} disabled={disabled}>
+                            <option value="">Select Table...</option>
+                            {availableTables.map(table => (
+                                <option value={table.name}>
+                                    {table.name}
+                                </option>
+                            ))}
+                        </select>
+                        <select
+                            disabled={disabled || !selectedTable}
+                        >
+                            <option value="">Select Column...</option>
+                            {availableColumns.map(col => (
+                                <option
+                                    value={col.name}
+                                    disabled={!col.isUnique}
+                                >
+                                    {col.name} ({col.type}) {!col.isUnique ? '- Not unique' : ''}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className='column-detail-option-foreignkey-flex'>
+                        <div className='column-detail-option-container-menu'>
+                            ON DELETE
+                            <select>
+                                <option value="Restrict">Restrict</option>
+                                <option value="Cascade">Cascade</option>
+                                <option value="SetNull">Set Null</option>
+                            </select>
+                        </div>
+                        <div className='column-detail-option-container-menu'>
+                            ON UPDATE
+                            <select>
+                                <option value="Restrict">Restrict</option>
+                                <option value="Cascade">Cascade</option>
+                                <option value="SetNull">Set Null</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
             )}
             <div className='column-detail-comment'>

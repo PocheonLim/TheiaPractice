@@ -155,17 +155,17 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
                         onChange={handlePresetChange}
                         disabled={isReadOnly}
                     >
-                        <option value="uuid">UUID</option>
-                        <option value="auto_increment_id">Auto Increment ID</option>
-                        <option value="created_time">Created Time</option>
-                        <option value="text">Text</option>
-                        <option value="checkbox">Checkbox</option>
-                        <option value="number">Number</option>
-                        <option value="json">JSON</option>
-                        <option value="date">Date</option>
-                        <option value="datetime">DateTime</option>
-                        <option value="foreign_key">Foreign Key</option>
-                        <option value="custom">Custom</option>
+                        <option value="uuid">🆔 UUID</option>
+                        <option value="auto_increment_id">🔢 Auto Increment ID</option>
+                        <option value="created_time">📅 Created Time</option>
+                        <option value="text">📝 Text</option>
+                        <option value="checkbox">☑️ Checkbox</option>
+                        <option value="number">🔢 Number</option>
+                        <option value="json">{'{}'} JSON</option>
+                        <option value="date">📆 Date</option>
+                        <option value="datetime">🕐 DateTime</option>
+                        <option value="foreign_key">🔗 Foreign Key</option>
+                        <option value="custom">⚙️ Custom</option>
                     </select>
                     <label>
                         <input
@@ -193,17 +193,17 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
                     {isEditMode ? (
                         isEditing ? (
                             <>
-                                <button onClick={handleSave}>Save</button>
-                                <button onClick={handleCancel}>Cancel</button>
+                                <button onClick={handleSave} style={{ backgroundColor: '#1e6fff', color: 'white' }}>Save</button>
+                                <button onClick={handleCancel} style={{ border: '1px solid #d0d0d0' }}>Cancel</button>
                             </>
                         ) : (
                             <>
-                                <button onClick={handleEdit}>Edit</button>
-                                <button onClick={onDelete}>Delete</button>
+                                <button onClick={handleEdit} style={{ border: '1px solid #d0d0d0' }}>Edit</button>
+                                <button onClick={onDelete} style={{ backgroundColor: 'transparent', color: '#d32f2f', border: '1px solid #d32f2f' }}>Delete</button>
                             </>
                         )
                     ) : (
-                        <button onClick={onDelete}>Delete</button>
+                        <button onClick={onDelete} style={{ backgroundColor: 'transparent', color: '#d32f2f', border: '1px solid #d32f2f' }}>Delete</button>
                     )}
                 </div>
             </div>
