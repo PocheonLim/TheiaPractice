@@ -49,6 +49,7 @@ export const NexaDatabaseColumn: React.FC<NexaDatabaseColumnProps> = ({
         <div className='nexa-database-column-grid'>
             <div className='nexa-database-column-grid-title'>
                 <div className='nexa-database-column-grid-title-left'>
+                    <span></span>
                     <span>PK</span>
                     <span>COLUMN NAME</span>
                     <span>PRESET</span>

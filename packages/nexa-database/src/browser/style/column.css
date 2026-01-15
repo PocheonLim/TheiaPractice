@@ -44,12 +44,13 @@
     background-color: whitesmoke;
     border-bottom: 1px solid #ccc;
     height: 5%;
-    padding: 5px 20px 5px 70px;
+    padding: 5px 12px;
 }
 
 .nexa-database-column-grid-title-left {
-    display: flex;
-    gap: 70px;
+    display: grid;
+    grid-template-columns: 24px 30px 100px 140px 60px 50px 100px;
+    gap: 12px;
     align-items: center;
 }
 
