@@ -12,6 +12,7 @@
 .nexa-database-data-title {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     width: 95%;
     padding: 10px 20px 10px 20px;
 }
@@ -23,7 +24,14 @@
 
 .nexa-database-data-title-right {
     display: flex;
-    gap: 5px;
+    align-items: center;
+    gap: 6px;
+}
+
+.nexa-database-data-title-right button{
+    border-radius: 5px;
+    border: 1px solid #d0d0d0;
+    padding: 5px;
 }
 
 .nexa-database-data-search-container {

@@ -38,6 +38,7 @@ export class NexaDatabaseRowDialog extends ReactDialog<ImportDataResult> {
     protected previewData: ImportDataResult | undefined = undefined;
     protected columnMapping: Map<string, string> = new Map();
     protected importMode: 'append' | 'replace' | 'upsert';
+    protected fileInputRef = React.createRef<HTMLInputElement>();
 
     constructor(
         protected readonly options: ImportDialogOptions
@@ -54,19 +55,23 @@ export class NexaDatabaseRowDialog extends ReactDialog<ImportDataResult> {
     protected render(): React.ReactNode {
         return (
             <div className="import-dialog-content">
-                <div className='info-csv'>
-                    <div><strong>{this.options.tableName} </strong>테이블에 데이터를 import합니다.</div>
+                <div className='nexa-database-row-mapping-info'>
+                    <div>{this.options.tableName} 테이블에 데이터를 import합니다.</div>
                     <div>현재 컬럼 수: {this.options.currentColumns.length}개</div>
                     <div>컬럼: {this.options.currentColumns.map(col => col.name).join(', ')}</div>
                 </div>
 
-                <div className="file-upload-section">
-                    <h3>Step 1: Upload CSV File</h3>
+                <div className="nexa-database-row-mapping-upload">
+                    <span>Step 1: Upload CSV File</span>
                     <input
+                        ref={this.fileInputRef}
                         type="file"
                         accept=".csv"
                         onChange={this.handleFileChange}
+                        style={{ display: 'none' }}
                     />
+                    <button onClick={this.handleChooseFileClick}>📂 Choose CSV File</button>
+                    {this.file && <span className="nexa-database-row-mapping-upload-filename">{this.file.name}</span>}
                 </div>
 
                 {this.previewData && (
@@ -153,6 +158,10 @@ export class NexaDatabaseRowDialog extends ReactDialog<ImportDataResult> {
             </div>
         );
     }
+
+    protected handleChooseFileClick = (): void => {
+        this.fileInputRef.current?.click();
+    };
 
     protected handleMappingChange = (csvColumnName: string, tableColumnName: string | undefined): void => {
         if (tableColumnName) {

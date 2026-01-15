@@ -125,9 +125,9 @@ export const NexaDatabaseRow: React.FC<NexaDatabaseDataProps> = ({
                 </div>
                 <div className='nexa-database-data-title-right'>
                     <span>{rows.length} rows</span>
-                    <button onClick={handleImportData}>Import Data</button>
+                    <button onClick={handleImportData}>📥 Import Data</button>
                     <button onClick={onAddRow}>+Add Row</button>
-                    <button onClick={refreshFilter}>Refresh</button>
+                    <button onClick={refreshFilter}>🔄 Refresh</button>
                 </div>
             </div>
             <div className='nexa-database-data-search-container'>

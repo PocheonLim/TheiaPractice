@@ -1,5 +1,13 @@
 .nexa-database-row-dialog-column {
     display: flex;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+.nexa-databas-row-dialog-csv-column {
+    font-size: 15px;
+    font-weight: bold;
+    color: black;
 }
 
 .nexa-database-row-dialog-column div {
