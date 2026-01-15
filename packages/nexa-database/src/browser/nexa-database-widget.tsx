@@ -166,8 +166,12 @@ export class NexaDatabaseWidget extends ReactWidget {
         this.update();
     };
 
-    handleImportCSV = (columns: ColumnData[], rows: RowData[]): void => {
-        this.columns = columns;
+    handleImportCSV = (columns: ColumnData[], rows: RowData[], append?: boolean): void => {
+        if (append) {
+            this.columns = [...this.columns, ...columns];
+        } else {
+            this.columns = columns;
+        }
         this.rows = rows;
         this.update();
     };

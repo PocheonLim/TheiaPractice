@@ -25,7 +25,7 @@ export interface NexaDatabaseHeaderProps {
     columns: ColumnData[];
     onChangeMode: (mode: Mode) => void;
     onChangeTableName: (name: string) => void;
-    onImportCSV: (columns: ColumnData[], rows: RowData[]) => void;
+    onImportCSV: (columns: ColumnData[], rows: RowData[], append?: boolean) => void;
 }
 
 export const NexaDatabaseHeader: React.FC<NexaDatabaseHeaderProps> = ({ mode, tableName, columns, onChangeMode, onChangeTableName, onImportCSV }: NexaDatabaseHeaderProps) => {
@@ -48,17 +48,49 @@ export const NexaDatabaseHeader: React.FC<NexaDatabaseHeaderProps> = ({ mode, ta
         fileInputRef.current?.click();
     };
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
         const file = e.target.files?.[0];
         if (!file) {
             return;
         }
 
+        const fileName = file.name.replace(/\.csv$/i, '');
+        const hasExistingColumns = columns.length > 0;
+
         const reader = new FileReader();
-        reader.onload = (event: ProgressEvent<FileReader>) => {
+        reader.onload = async (event: ProgressEvent<FileReader>) => {
             const csvText = event.target?.result as string;
             const { columns: parsedColumns, rows: parsedRows } = parseCSV(csvText);
-            onImportCSV(parsedColumns, parsedRows);
+
+            let shouldReplace = false;
+
+            if (hasExistingColumns) {
+                const replaceDialog = new ConfirmDialog({
+                    title: '컬럼 교체',
+                    msg: '기존 컬럼을 CSV 파일의 컬럼으로 교체하시겠습니까?',
+                    ok: '교체',
+                    cancel: '추가'
+                });
+                shouldReplace = await replaceDialog.open() ?? false;
+            }
+
+            const renameDialog = new ConfirmDialog({
+                title: '테이블명 변경',
+                msg: `테이블명을 "${fileName}"로 변경하시겠습니까?`,
+                ok: '변경',
+                cancel: '취소'
+            });
+            const shouldRename = await renameDialog.open();
+
+            if (shouldRename) {
+                setLocalTableName(fileName);
+                onChangeTableName(fileName);
+            }
+
+            const appendMode = hasExistingColumns && !shouldReplace;
+            onImportCSV(parsedColumns, parsedRows, appendMode);
+
+            alert('CSV 파일 로드 완료!\n\n' + parsedColumns.length + '개 컬럼, ' + parsedRows.length + '개 데이터 행이 추가되었습니다.');
         };
         reader.readAsText(file);
 
