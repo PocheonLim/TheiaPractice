@@ -234,6 +234,7 @@ export class NexaDatabaseWidget extends ReactWidget {
                 <NexaDatabaseTabbar activeTab={this.activeTab} onChangeActiveTab={activeTab => this.setActiveTab(activeTab)} />
                 {this.activeTab === 'COLUMN' ? (
                     <NexaDatabaseColumn
+                        tableName={this.tableName}
                         mode={this.mode}
                         columns={this.columns}
                         onAddColumn={this.handleAddColumn}

@@ -19,6 +19,7 @@ import { ColumnData, Mode } from '../common/nexa-database-types';
 import { NexaDataBaseColumnItem } from './nexa-database-column-item';
 
 export interface NexaDatabaseColumnProps {
+    tableName: string;
     mode: Mode;
     columns: ColumnData[];
     onAddColumn: () => void;
@@ -30,6 +31,7 @@ export interface NexaDatabaseColumnProps {
 }
 
 export const NexaDatabaseColumn: React.FC<NexaDatabaseColumnProps> = ({
+    tableName,
     mode,
     columns,
     onAddColumn,
@@ -63,6 +65,7 @@ export const NexaDatabaseColumn: React.FC<NexaDatabaseColumnProps> = ({
             </div>
             {columns.map((column, index) => (
                 <NexaDataBaseColumnItem
+                    tableName={tableName}
                     key={index}
                     mode={mode}
                     column={column}

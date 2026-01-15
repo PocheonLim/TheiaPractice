@@ -16,6 +16,7 @@
 
 import * as React from '@theia/core/shared/react';
 import { RowData } from '../common/nexa-database-types';
+import { ConfirmDialog } from '@theia/core/lib/browser/dialogs';
 
 export interface NexaDatabaseDataItemProps {
     rowData: RowData;
@@ -53,6 +54,19 @@ export const NexaDatabaseRowItem: React.FC<NexaDatabaseDataItemProps> = ({ rowDa
         onCancel();
     };
 
+    const handleDelete = async () => {
+        const dialog = new ConfirmDialog({
+            title: '로우 삭제',
+            msg: 'Delete this row?',
+            ok: '삭제',
+            cancel: '취소'
+        });
+        const confirmed = await dialog.open();
+        if (confirmed) {
+            onDelete();
+        }
+    };
+
     return (
         <div className='nexa-database-data-item'>
             {valueEntries.map(([columnName, value]) => (
@@ -77,7 +91,7 @@ export const NexaDatabaseRowItem: React.FC<NexaDatabaseDataItemProps> = ({ rowDa
                 ) : (
                     <>
                         <button onClick={onEdit}>Edit</button>
-                        <button onClick={onDelete}>Delete</button>
+                        <button onClick={handleDelete}>Delete</button>
                     </>
                 )}
             </div>

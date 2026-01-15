@@ -90,7 +90,13 @@ export const NexaDatabaseHeader: React.FC<NexaDatabaseHeaderProps> = ({ mode, ta
             const appendMode = hasExistingColumns && !shouldReplace;
             onImportCSV(parsedColumns, parsedRows, appendMode);
 
-            alert('CSV 파일 로드 완료!\n\n' + parsedColumns.length + '개 컬럼, ' + parsedRows.length + '개 데이터 행이 추가되었습니다.');
+            const resultDialog = new ConfirmDialog({
+                title: 'CSV 파일 로드 완료',
+                msg: `${parsedColumns.length}개 컬럼, ${parsedRows.length}개 데이터 행이 추가되었습니다.`,
+                ok: '확인',
+                cancel: ''
+            });
+            resultDialog.open();
         };
         reader.readAsText(file);
 

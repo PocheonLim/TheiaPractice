@@ -15,21 +15,24 @@
 // *****************************************************************************
 
 import * as React from '@theia/core/shared/react';
+import { ConfirmDialog } from '@theia/core/lib/browser/dialogs';
 import { ColumnData, Mode } from '../common/nexa-database-types';
 import { NexaDatabaseColumnDetail } from './nexa-database-column-detail';
 import { PRESET_INFO } from '../common/nexa-database-presets';
 
 export interface NexaDatabaseColumnItemProps {
+    tableName: string;
     column: ColumnData;
     mode: Mode;
     onUpdate: (column: ColumnData) => void;
     onDelete: () => void;
-    onEdit?: () => void;
-    onSave?: (column: ColumnData) => void;
+    onEdit: () => void;
+    onSave: (column: ColumnData) => void;
     onCancel?: () => void;
 }
 
 export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
+    tableName,
     column,
     mode,
     onUpdate,
@@ -93,8 +96,15 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
         }
     };
 
-    const handleSave = () => {
-        if (onSave) {
+    const handleSave = async () => {
+        const dialog = new ConfirmDialog({
+            title: '컬럼 저장',
+            msg: `컬럼 "${editedColumn.name}"을 저장하시겠습니까?\n\nALTER TABLE ${tableName} MODIFY COLUMN ${editedColumn.name} ${editedColumn.type};`,
+            ok: '확인',
+            cancel: '취소'
+        });
+        const confirmed = await dialog.open();
+        if (confirmed) {
             onSave(editedColumn);
             setIsDetailOpen(false);
         }
@@ -110,8 +120,26 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
 
     const handleEdit = () => {
         setIsDetailOpen(true);
-        if (onEdit) {
-            onEdit();
+        onEdit();
+    };
+
+    const handleDelete = async () => {
+        const dialog = new ConfirmDialog({
+            title: '컬럼 삭제',
+            msg: `컬럼 "${column.name}"을 삭제하시겠습니까?`,
+            ok: '확인',
+            cancel: '취소'
+        });
+        const confirmed = await dialog.open();
+        if (confirmed) {
+            onDelete();
+            const afterDialog = new ConfirmDialog({
+                title: '삭제 완료',
+                msg: `컬럼 "${column.name}"이 삭제되었습니다\n\nALTER TABLE ${tableName} DROP COLUMN ${column.name}`,
+                ok: '확인',
+                cancel: ''
+            });
+            await afterDialog.open();
         }
     };
 
@@ -199,11 +227,11 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
                         ) : (
                             <>
                                 <button onClick={handleEdit} style={{ border: '1px solid #d0d0d0' }}>Edit</button>
-                                <button onClick={onDelete} style={{ backgroundColor: 'transparent', color: '#d32f2f', border: '1px solid #d32f2f' }}>Delete</button>
+                                <button onClick={handleDelete} style={{ backgroundColor: 'transparent', color: '#d32f2f', border: '1px solid #d32f2f' }}>Delete</button>
                             </>
                         )
                     ) : (
-                        <button onClick={onDelete} style={{ backgroundColor: 'transparent', color: '#d32f2f', border: '1px solid #d32f2f' }}>Delete</button>
+                        <button onClick={handleDelete} style={{ backgroundColor: 'transparent', color: '#d32f2f', border: '1px solid #d32f2f' }}>Delete</button>
                     )}
                 </div>
             </div>
