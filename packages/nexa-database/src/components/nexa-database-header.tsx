@@ -71,6 +71,7 @@ export const NexaDatabaseHeader: React.FC<NexaDatabaseHeaderProps> = ({ mode, ta
                     ok: '교체',
                     cancel: '추가'
                 });
+                // ?? null || undefined 면 false로
                 shouldReplace = await replaceDialog.open() ?? false;
             }
 

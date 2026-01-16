@@ -52,6 +52,19 @@ export class NexaDatabaseRowDialog extends ReactDialog<ImportDataResult> {
         this.appendAcceptButton('Import Data');
     }
 
+    protected getImportInfoText(): string {
+        switch (this.importMode) {
+            case 'append':
+                return `📌 ${this.previewData?.rows.length}개 행이 테이블에 추가됩니다. (기존 데이터 유지)`;
+            case 'replace':
+                return `⚠️ 기존 데이터가 모두 삭제되고, ${this.previewData?.rows.length}개 행이 새로 삽입됩니다.`;
+            case 'upsert':
+                return `🔄 ${this.previewData?.rows.length}개 행이 Upsert됩니다. (중복 키: 업데이트 / 신규: 삽입)`;
+            default:
+                return '';
+        }
+    }
+
     protected render(): React.ReactNode {
         return (
             <div className="import-dialog-content">
@@ -70,14 +83,16 @@ export class NexaDatabaseRowDialog extends ReactDialog<ImportDataResult> {
                         onChange={this.handleFileChange}
                         style={{ display: 'none' }}
                     />
-                    <button onClick={this.handleChooseFileClick}>📂 Choose CSV File</button>
-                    {this.file && <span className="nexa-database-row-mapping-upload-filename">{this.file.name}</span>}
+                    <div className='nexa-database-row-mapping-upload-set'>
+                        <button onClick={this.handleChooseFileClick}>📂 Choose CSV File</button>
+                        {this.file && <span className="nexa-database-row-mapping-upload-filename">{this.file.name} ({this.previewData?.rows.length ?? 0} rows)</span>}
+                    </div>
                 </div>
 
                 {this.previewData && (
-                    <div>
+                    <div className='nexa-datbase-row-column-mapping'>
                         <hr></hr>
-                        <p>Step 2: Column Mapping</p>
+                        <span>Step 2: Column Mapping </span>
                         <div className='nexa-database-row-mapping-grid-container'>
                             <div className='nexa-database-row-mapping-grid-container-header'>
                                 <div>CSV COLUMN</div>
@@ -102,9 +117,14 @@ export class NexaDatabaseRowDialog extends ReactDialog<ImportDataResult> {
                             </div>
                         </div>
                         <hr></hr>
-                        <h3>Step 3: Import Mode</h3>
-                        <div className='import-mode-options'>
-                            <label className='radio-option'>
+                        <div className='mapping-info'>
+                            매핑 완료: <strong>{this.columnMapping.size}개</strong> / 건너뛰기: <strong>{this.previewData.columns.length - this.columnMapping.size}개</strong>
+                            / 총 CSV 컬럼: <strong>{this.previewData.columns.length}개</strong>
+                        </div>
+                        <hr></hr>
+                        <span>Step 3: Import Mode</span>
+                        <div className='nexa-database-row-mapping-import-mode-options'>
+                            <label className='nexa-database-row-mapping-radio-option'>
                                 <input
                                     type='radio'
                                     name='importMode'
@@ -112,12 +132,12 @@ export class NexaDatabaseRowDialog extends ReactDialog<ImportDataResult> {
                                     checked={this.importMode === 'append'}
                                     onChange={this.handleImportModeChange}
                                 />
-                                <div className='radio-option-content'>
+                                <div className='nexa-database-row-mapping-radio-option-content'>
                                     <strong>Append</strong>
                                     <span>기존 데이터 유지하고 새 데이터 추가</span>
                                 </div>
                             </label>
-                            <label className='radio-option'>
+                            <label className='nexa-database-row-mapping-radio-option'>
                                 <input
                                     type='radio'
                                     name='importMode'
@@ -125,12 +145,12 @@ export class NexaDatabaseRowDialog extends ReactDialog<ImportDataResult> {
                                     checked={this.importMode === 'replace'}
                                     onChange={this.handleImportModeChange}
                                 />
-                                <div className='radio-option-content'>
+                                <div className='nexa-database-row-mapping-radio-option-content'>
                                     <strong>Replace</strong>
                                     <span>기존 데이터 삭제 후 새 데이터로 교체</span>
                                 </div>
                             </label>
-                            <label className='radio-option'>
+                            <label className='nexa-database-row-mapping-radio-option'>
                                 <input
                                     type='radio'
                                     name='importMode'
@@ -139,17 +159,22 @@ export class NexaDatabaseRowDialog extends ReactDialog<ImportDataResult> {
                                     onChange={this.handleImportModeChange}
                                     disabled={!this.options.currentColumns.some(col => col.primaryKey)}
                                 />
-                                <div className='radio-option-content'>
+                                <div className='nexa-database-row-mapping-radio-option-content'>
                                     <strong>Upsert</strong>
                                     <span>중복 키 업데이트, 없으면 삽입</span>
                                 </div>
                             </label>
                         </div>
-                        {/* Upsert 모드 선택 시 Primary Key 정보 표시 */}
                         {this.importMode === 'upsert' && (
                             <div>
                                 <strong>Primary Key: </strong>
                                 {this.options.currentColumns.find(col => col.primaryKey)?.name || '어차피 없으면 클릭 못함'}
+                            </div>
+                        )}
+                        {this.importMode && (
+                            <div className='nexa-database-row-mapping-import-info'>
+                                <div>{this.getImportInfoText()}</div>
+                                <div>매핑된 컬럼: {this.columnMapping.size}</div>
                             </div>
                         )}
                     </div>

@@ -1,15 +1,47 @@
 .nexa-database-row-dialog-column {
     display: flex;
+    min-height: 25px;
+    align-items: center;
     padding: 10px;
+    gap: 20px;
     border-bottom: 1px solid #ccc;
 }
 
+.nexa-database-row-dialog-column > div {
+    flex: 1;
+}
+
 .nexa-databas-row-dialog-csv-column {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
     font-size: 15px;
     font-weight: bold;
     color: black;
 }
 
-.nexa-database-row-dialog-column div {
-    flex: 1;
+.nexa-database-row-dialog-column-table {
+    display: flex;
+    width: 100%;
+}
+
+.nexa-database-row-dialog-column-table select {
+    width: 80%;
+    height: 90%;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.status-matched {
+    padding: 2px;
+    border-radius: 4px;
+    color: #28a745;
+    background-color: #e8f5e9;
+}
+
+.status-skipped {
+    padding: 2px 2px;
+    border-radius: 4px;
+    color: #ffc107;
+    background-color: #fff8e1;
 }

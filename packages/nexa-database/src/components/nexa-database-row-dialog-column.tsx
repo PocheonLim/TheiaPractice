@@ -37,17 +37,15 @@ export const NexaDatabaseRowDialogColumn: React.FC<NexaDatabaseRowDialogColumnPr
         onMappingChange(csvColumn.name, value || undefined);
     };
 
-    const getMappingStatus = (): string => {
-        if (!selectedTableColumn) {
-            return 'skipped';
-        }
-        return 'Matched';
-    };
+    const isMatched = !!selectedTableColumn;
 
     return (
         <div className='nexa-database-row-dialog-column'>
-            <div className='nexa-databas-row-dialog-csv-column'>{csvColumn.name}</div>
-            <div className='select-table-column'>
+            <div className='nexa-databas-row-dialog-csv-column'>
+                <div>{csvColumn.name}</div>
+                <div>→</div>
+            </div>
+            <div className='nexa-database-row-dialog-column-table'>
                 <select value={selectedTableColumn} onChange={handleSelectChange}>
                     <option value=''>-- Skip --</option>
                     {tableColumns.map(col => (
@@ -57,7 +55,13 @@ export const NexaDatabaseRowDialogColumn: React.FC<NexaDatabaseRowDialogColumnPr
                     ))}
                 </select>
             </div>
-            <div>{getMappingStatus()}</div>
+            <div className='nexa-database-row-dialog-column-status'>
+                {isMatched ? (
+                    <span className="status-matched">✅ Matched</span>
+                ) : (
+                    <span className="status-skipped">⚠️ Skipped</span>
+                )}
+            </div>
             <div className='row-preview'>{previewData}</div>
         </div>
     );
