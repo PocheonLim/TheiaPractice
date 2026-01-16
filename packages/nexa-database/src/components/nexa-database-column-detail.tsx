@@ -99,7 +99,9 @@ export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> =
         (isCustomPreset && ON_UPDATE_TIMESTAMP_TYPES.includes(selectedType));
 
     const handlePrimaryKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        onUpdate({ ...column, primaryKey: e.target.checked });
+        const isPK = e.target.checked;
+        // PK인 경우 nullable은 자동으로 false
+        onUpdate({ ...column, primaryKey: isPK, nullable: isPK ? false : column.nullable });
     };
 
     const handleNullableChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -167,7 +169,7 @@ export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> =
                         type="checkbox"
                         checked={column.nullable || false}
                         onChange={handleNullableChange}
-                        disabled={disabled}
+                        disabled={disabled || column.primaryKey}
                     />
                     Nullable
                 </div>

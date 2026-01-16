@@ -73,10 +73,12 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
     };
 
     const handlePrimaryKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const isPK = e.target.checked;
         if (isEditMode) {
-            setEditedColumn({ ...editedColumn, primaryKey: e.target.checked });
+            // PK인 경우 nullable은 자동으로 false
+            setEditedColumn({ ...editedColumn, primaryKey: isPK, nullable: isPK ? false : editedColumn.nullable });
         } else {
-            onUpdate({ ...column, primaryKey: e.target.checked });
+            onUpdate({ ...column, primaryKey: isPK, nullable: isPK ? false : column.nullable });
         }
     };
 
@@ -202,7 +204,7 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
                             type="checkbox"
                             checked={isEditMode ? editedColumn.nullable : column.nullable}
                             onChange={handleNotNullChange}
-                            disabled={isReadOnly}
+                            disabled={isReadOnly || (isEditMode ? editedColumn.primaryKey : column.primaryKey)}
                         />
                     </label>
                     <label>
