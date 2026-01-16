@@ -40,8 +40,34 @@ export const NexaDatabaseHeader: React.FC<NexaDatabaseHeaderProps> = ({ mode, ta
         }
     };
 
-    const handleRename = (): void => {
-        onChangeTableName(localTableName);
+    const handleRename = async () => {
+        if (localTableName === tableName) {
+            const sameName = new ConfirmDialog({
+                title: 'CSV 파일 로드 완료',
+                msg: '변경된 이름이 없습니다.',
+                ok: '확인',
+                cancel: ''
+            });
+            sameName.open();
+            return;
+        }
+        const changeNameDialog = new ConfirmDialog({
+            title: '테이블 이름 변경',
+            msg: `테이블 이름을 변경하시겠습니까?\n\nALTER TABLE "${tableName}" RENAME TO "${localTableName}";`,
+            ok: '확인',
+            cancel: '취소'
+        });
+        const result = await changeNameDialog.open() ?? false;
+        if (result) {
+            onChangeTableName(localTableName);
+            const resultDialog = new ConfirmDialog({
+                title: 'CSV 파일 로드 완료',
+                msg: `✅ 테이블 이름이 "${tableName}"에서 "${localTableName}"(으)로 변경되었습니다.`,
+                ok: '확인',
+                cancel: ''
+            });
+            resultDialog.open();
+        };
     };
 
     const handleImportClick = (): void => {
@@ -94,7 +120,7 @@ export const NexaDatabaseHeader: React.FC<NexaDatabaseHeaderProps> = ({ mode, ta
 
             const resultDialog = new ConfirmDialog({
                 title: 'CSV 파일 로드 완료',
-                msg: `${parsedColumns.length}개 컬럼, ${parsedRows.length}개 데이터 행이 추가되었습니다.`,
+                msg: `✅ CSV 파일 로드 완료!\n\n${parsedColumns.length}개 컬럼, ${parsedRows.length}개 데이터 행이 추가되었습니다.`,
                 ok: '확인',
                 cancel: ''
             });
@@ -107,7 +133,7 @@ export const NexaDatabaseHeader: React.FC<NexaDatabaseHeaderProps> = ({ mode, ta
         }
     };
 
-    const handleCreateSql = (): void => {
+    const handleCreateSql = async () => {
         let sql = `CREATE TABLE ${tableName} (\n`;
         const columnDefs = columns.map(col => {
             let def = `  ${col.name} ${col.type}`;
@@ -126,14 +152,25 @@ export const NexaDatabaseHeader: React.FC<NexaDatabaseHeaderProps> = ({ mode, ta
         }
         sql += '\n);';
 
+        let sqlCreate = false;
+
         const createTableDialog = new ConfirmDialog({
             title: '테이블 ' + { localTableName } + '을 생성하시겠습니까?',
             msg: sql,
             ok: '생성',
             cancel: '취소'
         });
+        sqlCreate = await createTableDialog.open() ?? false;
 
-        createTableDialog.open();
+        if (sqlCreate) {
+            const resultDialog = new ConfirmDialog({
+                title: 'CSV 파일 로드 완료',
+                msg: '✅ 테이블이 생성되었습니다!\n\n자세한 내용은 콘솔을 확인하세요.',
+                ok: '확인',
+                cancel: ''
+            });
+            resultDialog.open();
+        }
     };
 
     return (
