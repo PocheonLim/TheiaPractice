@@ -1,19 +1,46 @@
 .nexa-database-data-item {
     display: flex;
     align-items: center;
-    padding: 8px;
-    border: 1px solid #ccc;
+    padding: 10px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.nexa-database-data-item:hover {
+    background-color: #fafafa;
 }
 
 .nexa-database-data-item-cell {
     flex: 1;
-    padding: 4px 8px;
+    padding: 0 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .nexa-database-data-item-action {
-    padding: 0 8px;
+    flex: 0 0 auto;
+    min-width: 120px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 5px;
 }
 
-.nexa-database-data-item-action button {
-    padding: 4px 12px;
+.actions-button {
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
+    background-color: transparent;
+}
+
+.actions-delete {
+    background-color: transparent;
+    color: #d32f2f;
+    border: 1px solid #d32f2f;
+    border-radius: 4px;
+}
+
+.actions-save {
+    background-color: #1e6fff;
+    color: white;
+    border-radius: 4px;
+    border: none;
 }

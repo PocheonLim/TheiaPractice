@@ -53,8 +53,22 @@
     gap: 5px;
 }
 
-.column-item-actions button{
-    border: none;
+.actions-button {
+    border: 1px solid #d0d0d0;
     border-radius: 4px;
     background-color: transparent;
+}
+
+.actions-delete {
+    background-color: transparent;
+    color: #d32f2f;
+    border: 1px solid #d32f2f;
+    border-radius: 4px;
+}
+
+.actions-save {
+    background-color: #1e6fff;
+    color: white;
+    border-radius: 4px;
+    border: none;
 }

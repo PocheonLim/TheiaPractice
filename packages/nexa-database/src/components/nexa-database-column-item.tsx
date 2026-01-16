@@ -225,17 +225,17 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
                     {isEditMode ? (
                         isEditing ? (
                             <>
-                                <button onClick={handleSave} style={{ backgroundColor: '#1e6fff', color: 'white' }}>Save</button>
-                                <button onClick={handleCancel} style={{ border: '1px solid #d0d0d0' }}>Cancel</button>
+                                <button className='actions-save' onClick={handleSave}>Save</button>
+                                <button className='actions-button' onClick={handleCancel}>Cancel</button>
                             </>
                         ) : (
                             <>
-                                <button onClick={handleEdit} style={{ border: '1px solid #d0d0d0' }}>Edit</button>
-                                <button onClick={handleDelete} style={{ backgroundColor: 'transparent', color: '#d32f2f', border: '1px solid #d32f2f' }}>Delete</button>
+                                <button className='actions-button' onClick={handleEdit}>Edit</button>
+                                <button className='actions-delete' onClick={handleDelete}>Delete</button>
                             </>
                         )
                     ) : (
-                        <button onClick={handleDelete} style={{ backgroundColor: 'transparent', color: '#d32f2f', border: '1px solid #d32f2f' }}>Delete</button>
+                        <button className='actions-delete' onClick={handleDelete}>Delete</button>
                     )}
                 </div>
             </div>

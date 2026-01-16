@@ -85,13 +85,13 @@ export const NexaDatabaseRowItem: React.FC<NexaDatabaseDataItemProps> = ({ rowDa
             <div className='nexa-database-data-item-action'>
                 {isEditing ? (
                     <>
-                        <button onClick={handleSave}>Save</button>
-                        <button onClick={handleCancel}>Cancel</button>
+                        <button className='actions-save' onClick={handleSave}>Save</button>
+                        <button className='actions-button' onClick={handleCancel}>Cancel</button>
                     </>
                 ) : (
                     <>
-                        <button onClick={onEdit}>Edit</button>
-                        <button onClick={handleDelete}>Delete</button>
+                        <button className='actions-button' onClick={onEdit}>Edit</button>
+                        <button className='actions-delete' onClick={handleDelete}>Delete</button>
                     </>
                 )}
             </div>
