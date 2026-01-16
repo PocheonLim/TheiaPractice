@@ -133,13 +133,15 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
         const confirmed = await dialog.open();
         if (confirmed) {
             onDelete();
-            const afterDialog = new ConfirmDialog({
-                title: '삭제 완료',
-                msg: `컬럼 "${column.name}"이 삭제되었습니다\n\nALTER TABLE ${tableName} DROP COLUMN ${column.name}`,
-                ok: '확인',
-                cancel: ''
-            });
-            await afterDialog.open();
+            if (mode === 'EDIT') {
+                const afterDialog = new ConfirmDialog({
+                    title: '삭제 완료',
+                    msg: `컬럼 "${column.name}"이 삭제되었습니다\n\nALTER TABLE ${tableName} DROP COLUMN ${column.name}`,
+                    ok: '확인',
+                    cancel: ''
+                });
+                await afterDialog.open();
+            }
         }
     };
 

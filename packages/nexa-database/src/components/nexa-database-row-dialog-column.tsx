@@ -46,7 +46,7 @@ export const NexaDatabaseRowDialogColumn: React.FC<NexaDatabaseRowDialogColumnPr
 
     return (
         <div className='nexa-database-row-dialog-column'>
-            <div className='csv-column'>{csvColumn.name}</div>
+            <div className='nexa-databas-row-dialog-csv-column'>{csvColumn.name}</div>
             <div className='select-table-column'>
                 <select value={selectedTableColumn} onChange={handleSelectChange}>
                     <option value=''>-- Skip --</option>

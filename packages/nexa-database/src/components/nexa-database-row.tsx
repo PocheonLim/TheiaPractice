@@ -18,6 +18,7 @@ import * as React from '@theia/core/shared/react';
 import { ColumnData, RowData } from '../common/nexa-database-types';
 import { NexaDatabaseRowItem } from './nexa-database-row-item';
 import { NexaDatabaseRowDialog } from './nexa-database-row-dialog';
+import { ConfirmDialog } from '@theia/core/lib/browser/dialogs';
 
 export interface NexaDatabaseDataProps {
     tableName: string;
@@ -53,9 +54,6 @@ export const NexaDatabaseRow: React.FC<NexaDatabaseDataProps> = ({
 
         // 특정 컬럼에서만 검색
         const columnValue = row.values[targetColumn];
-        if (!columnValue) {
-            return false;
-        }
         return columnValue.toLowerCase().includes(searchText);
     };
 
@@ -84,6 +82,24 @@ export const NexaDatabaseRow: React.FC<NexaDatabaseDataProps> = ({
     };
 
     const handleImportData = async (): Promise<void> => {
+        if (!tableName) {
+            const tableConfirm = new ConfirmDialog({
+                title: '테이블명 필요',
+                msg: '테이블명을 먼저 입력해주세요.',
+                ok: '확인'
+            });
+            tableConfirm.open();
+            return;
+        }
+        if (columns.length === 0) {
+            const columnConfirm = new ConfirmDialog({
+                title: '컬럼 필요',
+                msg: '컬럼을 생성해주세요',
+                ok: '확인'
+            });
+            columnConfirm.open();
+            return;
+        }
         const dialog = new NexaDatabaseRowDialog({
             tableName,
             currentColumns: columns,

@@ -54,7 +54,7 @@ export const NexaDatabaseHeader: React.FC<NexaDatabaseHeaderProps> = ({ mode, ta
             return;
         }
 
-        const fileName = file.name.replace(/\.csv$/i, '');
+        const fileName = file.name.toLowerCase().replace(/\.csv$/, '');
         const hasExistingColumns = columns.length > 0;
 
         const reader = new FileReader();
@@ -74,6 +74,8 @@ export const NexaDatabaseHeader: React.FC<NexaDatabaseHeaderProps> = ({ mode, ta
                 shouldReplace = await replaceDialog.open() ?? false;
             }
 
+            const appendMode = !shouldReplace;
+
             const renameDialog = new ConfirmDialog({
                 title: '테이블명 변경',
                 msg: `테이블명을 "${fileName}"로 변경하시겠습니까?`,
@@ -87,7 +89,6 @@ export const NexaDatabaseHeader: React.FC<NexaDatabaseHeaderProps> = ({ mode, ta
                 onChangeTableName(fileName);
             }
 
-            const appendMode = hasExistingColumns && !shouldReplace;
             onImportCSV(parsedColumns, parsedRows, appendMode);
 
             const resultDialog = new ConfirmDialog({
@@ -145,7 +146,7 @@ export const NexaDatabaseHeader: React.FC<NexaDatabaseHeaderProps> = ({ mode, ta
                         value={localTableName}
                         onChange={handleInputChange}
                     />
-                    {mode === 'EDIT' && <button onClick={handleRename}>Rename</button>}
+                    {mode === 'EDIT' && <button onClick={handleRename}>✓ Rename</button>}
                 </div>
 
                 <div className="nexa-database-header-right">

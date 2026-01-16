@@ -231,6 +231,7 @@ export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> =
                         <div className='column-detail-option-container-menu'>
                             ON DELETE
                             <select>
+                                <option value="NoAction">No Action</option>
                                 <option value="Restrict">Restrict</option>
                                 <option value="Cascade">Cascade</option>
                                 <option value="SetNull">Set Null</option>
@@ -239,6 +240,7 @@ export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> =
                         <div className='column-detail-option-container-menu'>
                             ON UPDATE
                             <select>
+                                <option value="NoAction">No Action</option>
                                 <option value="Restrict">Restrict</option>
                                 <option value="Cascade">Cascade</option>
                                 <option value="SetNull">Set Null</option>
