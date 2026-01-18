@@ -18,7 +18,7 @@ import * as React from '@theia/core/shared/react';
 import { RowData } from '../common/nexa-database-types';
 import { ConfirmDialog } from '@theia/core/lib/browser/dialogs';
 
-export interface NexaDatabaseDataItemProps {
+export interface NexaDatabaseRowItemProps {
     rowData: RowData;
     onEdit: () => void;
     onSave: (newValues: Record<string, string>) => void;
@@ -26,7 +26,7 @@ export interface NexaDatabaseDataItemProps {
     onDelete: () => void;
 }
 
-export const NexaDatabaseRowItem: React.FC<NexaDatabaseDataItemProps> = ({ rowData, onEdit, onSave, onCancel, onDelete }) => {
+export const NexaDatabaseRowItem: React.FC<NexaDatabaseRowItemProps> = ({ rowData, onEdit, onSave, onCancel, onDelete }) => {
     // 현재 편집 중인 값을 로컬 상태로 관리
     const [editedValues, setEditedValues] = React.useState<Record<string, string>>(rowData.values);
 
@@ -68,9 +68,9 @@ export const NexaDatabaseRowItem: React.FC<NexaDatabaseDataItemProps> = ({ rowDa
     };
 
     return (
-        <div className='nexa-database-data-item'>
+        <div className='nexa-database-row-item'>
             {valueEntries.map(([columnName, value]) => (
-                <div key={columnName} className='nexa-database-data-item-cell'>
+                <div key={columnName} className='nexa-database-row-item-cell'>
                     {isEditing ? (
                         <input
                             type='text'
@@ -82,7 +82,7 @@ export const NexaDatabaseRowItem: React.FC<NexaDatabaseDataItemProps> = ({ rowDa
                     )}
                 </div>
             ))}
-            <div className='nexa-database-data-item-action'>
+            <div className='nexa-database-row-item-action'>
                 {isEditing ? (
                     <>
                         <button className='actions-save' onClick={handleSave}>Save</button>

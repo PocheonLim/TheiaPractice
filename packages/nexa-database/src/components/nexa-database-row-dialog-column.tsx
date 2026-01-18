@@ -41,7 +41,7 @@ export const NexaDatabaseRowDialogColumn: React.FC<NexaDatabaseRowDialogColumnPr
 
     return (
         <div className='nexa-database-row-dialog-column'>
-            <div className='nexa-databas-row-dialog-csv-column'>
+            <div className='nexa-database-row-dialog-csv-column'>
                 <div>{csvColumn.name}</div>
                 <div>→</div>
             </div>

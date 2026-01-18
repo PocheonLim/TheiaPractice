@@ -90,7 +90,7 @@ export class NexaDatabaseRowDialog extends ReactDialog<ImportDataResult> {
                 </div>
 
                 {this.previewData && (
-                    <div className='nexa-datbase-row-column-mapping'>
+                    <div className='nexa-database-row-column-mapping'>
                         <hr></hr>
                         <span>Step 2: Column Mapping </span>
                         <div className='nexa-database-row-mapping-grid-container'>

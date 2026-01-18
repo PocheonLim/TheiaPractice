@@ -1,15 +1,15 @@
-.nexa-database-data-item {
+.nexa-database-row-item {
     display: flex;
     align-items: center;
     padding: 10px;
     border-bottom: 1px solid #f0f0f0;
 }
 
-.nexa-database-data-item:hover {
+.nexa-database-row-item:hover {
     background-color: #fafafa;
 }
 
-.nexa-database-data-item-cell {
+.nexa-database-row-item-cell {
     flex: 1;
     padding: 0 8px;
     overflow: hidden;
@@ -17,7 +17,7 @@
     white-space: nowrap;
 }
 
-.nexa-database-data-item-action {
+.nexa-database-row-item-action {
     flex: 0 0 auto;
     min-width: 120px;
     display: flex;

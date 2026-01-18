@@ -20,7 +20,7 @@ import { NexaDatabaseRowItem } from './nexa-database-row-item';
 import { NexaDatabaseRowDialog } from './nexa-database-row-dialog';
 import { ConfirmDialog } from '@theia/core/lib/browser/dialogs';
 
-export interface NexaDatabaseDataProps {
+export interface NexaDatabaseRowProps {
     tableName: string;
     columns: ColumnData[];
     rows: RowData[];
@@ -33,7 +33,7 @@ export interface NexaDatabaseDataProps {
     onImportData: (rows: RowData[], mode: 'append' | 'replace' | 'upsert') => void;
 }
 
-export const NexaDatabaseRow: React.FC<NexaDatabaseDataProps> = ({
+export const NexaDatabaseRow: React.FC<NexaDatabaseRowProps> = ({
     tableName, columns, rows, onAddRow, onDeleteRow, onEditRow, onSaveRow, onCancelRow, onRefresh, onImportData
 }) => {
     const [text, setText] = React.useState('');
@@ -134,20 +134,20 @@ export const NexaDatabaseRow: React.FC<NexaDatabaseDataProps> = ({
     };
 
     return (
-        <div className='nexa-database-data'>
-            <div className='nexa-database-data-title'>
-                <div className='nexa-database-data-title-left'>
+        <div className='nexa-database-row'>
+            <div className='nexa-database-row-title'>
+                <div className='nexa-database-row-title-left'>
                     Table Data
                 </div>
-                <div className='nexa-database-data-title-right'>
+                <div className='nexa-database-row-title-right'>
                     <span>{rows.length} rows</span>
                     <button onClick={handleImportData}>📥 Import Data</button>
                     <button onClick={onAddRow}>+Add Row</button>
                     <button onClick={refreshFilter}>🔄 Refresh</button>
                 </div>
             </div>
-            <div className='nexa-database-data-search-container'>
-                <div className='nexa-database-data-search'>
+            <div className='nexa-database-row-search-container'>
+                <div className='nexa-database-row-search'>
                     <input
                         type='text'
                         value={text}
@@ -155,7 +155,7 @@ export const NexaDatabaseRow: React.FC<NexaDatabaseDataProps> = ({
                         placeholder='Search across all columns...'
                     />
                 </div>
-                <div className='nexa-database-data-select-column'>
+                <div className='nexa-database-row-select-column'>
                     <select value={columnName} onChange={e => setColumnName(e.target.value)}>
                         <option value='ALL'>All Column</option>
                         {columns.map((column, index) => (
@@ -166,10 +166,10 @@ export const NexaDatabaseRow: React.FC<NexaDatabaseDataProps> = ({
                     </select>
                 </div>
             </div>
-            <div className='nexa-database-data-grid'>
-                <div className='nexa-database-data-grid-title'>
+            <div className='nexa-database-row-grid'>
+                <div className='nexa-database-row-grid-title'>
                     {columns.map((column, index) => (
-                        <div key={index} className='nexa-database-data-grid-column'>{column.name}</div>
+                        <div key={index} className='nexa-database-row-grid-column'>{column.name}</div>
                     ))}
                     <div>Action</div>
                 </div>

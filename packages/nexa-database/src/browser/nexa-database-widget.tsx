@@ -33,7 +33,7 @@ export class NexaDatabaseWidget extends ReactWidget {
     private activeTab: ActiveTab = 'COLUMN';
     private columns: ColumnData[] = [];
     private rows: RowData[] = [];
-    private tableName: string;
+    private tableName = '';
 
     setMode = (mode: Mode): void => {
         this.mode = mode;
@@ -45,10 +45,29 @@ export class NexaDatabaseWidget extends ReactWidget {
         this.update();
     };
 
-    handleReName = (name: string): void => {
+    handleRename = (name: string): void => {
         this.tableName = name;
         this.update();
     };
+
+    /**
+     * Update column with primary key handling.
+     * When a column is set as primary key, all other columns' primary key status will be set to false.
+     */
+    private updateColumnWithPrimaryKey(index: number, updatedColumn: ColumnData, clearEditing = false): ColumnData[] {
+        if (updatedColumn.primaryKey) {
+            return this.columns.map((col, i) =>
+                i === index
+                    ? clearEditing ? { ...updatedColumn, isEditing: false } : updatedColumn
+                    : { ...col, primaryKey: false, isEditing: clearEditing ? false : col.isEditing }
+            );
+        }
+        return this.columns.map((col, i) =>
+            i === index
+                ? clearEditing ? { ...updatedColumn, isEditing: false } : updatedColumn
+                : clearEditing ? { ...col, isEditing: false } : col
+        );
+    }
 
     handleAddColumn = (): void => {
         const newColumn: ColumnData = {
@@ -64,19 +83,7 @@ export class NexaDatabaseWidget extends ReactWidget {
     };
 
     handleUpdateColumn = (index: number, updatedColumn: ColumnData): void => {
-        // PK 체크박스 클릭 시: 다른 컬럼의 PK를 자동으로 false 처리
-        if (updatedColumn.primaryKey) {
-            this.columns = this.columns.map((col, i) =>
-                i === index
-                    ? updatedColumn
-                    : { ...col, primaryKey: false }
-            );
-        } else {
-            // PK가 아닌 경우 (다른 필드 변경 또는 PK 해제)
-            this.columns = this.columns.map((col, i) =>
-                i === index ? updatedColumn : col
-            );
-        }
+        this.columns = this.updateColumnWithPrimaryKey(index, updatedColumn);
         this.update();
     };
 
@@ -94,19 +101,7 @@ export class NexaDatabaseWidget extends ReactWidget {
     };
 
     handleSaveColumn = (index: number, updatedColumn: ColumnData): void => {
-        // PK 체크박스 클릭 시: 다른 컬럼의 PK를 자동으로 false 처리
-        if (updatedColumn.primaryKey) {
-            this.columns = this.columns.map((col, i) =>
-                i === index
-                    ? { ...updatedColumn, isEditing: false }
-                    : { ...col, primaryKey: false, isEditing: false }
-            );
-        } else {
-            // PK가 아닌 경우 (다른 필드 변경 또는 PK 해제)
-            this.columns = this.columns.map((col, i) =>
-                i === index ? { ...updatedColumn, isEditing: false } : col
-            );
-        }
+        this.columns = this.updateColumnWithPrimaryKey(index, updatedColumn, true);
         this.update();
     };
 
@@ -160,9 +155,7 @@ export class NexaDatabaseWidget extends ReactWidget {
     };
 
     handleRefresh = (): void => {
-        this.rows.forEach(col => {
-            col.isEditing = false;
-        });
+        this.rows = this.rows.map(row => ({ ...row, isEditing: false }));
         this.update();
     };
 
@@ -228,7 +221,7 @@ export class NexaDatabaseWidget extends ReactWidget {
                     tableName={this.tableName}
                     columns={this.columns}
                     onChangeMode={mode => this.setMode(mode)}
-                    onChangeTableName={this.handleReName}
+                    onChangeTableName={this.handleRename}
                     onImportCSV={this.handleImportCSV}
                 />
                 <NexaDatabaseTabbar activeTab={this.activeTab} onChangeActiveTab={activeTab => this.setActiveTab(activeTab)} />

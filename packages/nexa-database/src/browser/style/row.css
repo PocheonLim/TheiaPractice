@@ -1,4 +1,4 @@
-.nexa-database-data {
+.nexa-database-row {
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -6,10 +6,10 @@
     align-items: center;
     background-color: whitesmoke;
     padding: 10px;
-    gap:5px;
+    gap: 5px;
 }
 
-.nexa-database-data-title {
+.nexa-database-row-title {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -17,24 +17,24 @@
     padding: 10px 20px 10px 20px;
 }
 
-.nexa-database-data-title-left {
+.nexa-database-row-title-left {
     font-weight: bold;
     font-size: 18px;
 }
 
-.nexa-database-data-title-right {
+.nexa-database-row-title-right {
     display: flex;
     align-items: center;
     gap: 6px;
 }
 
-.nexa-database-data-title-right button{
+.nexa-database-row-title-right button {
     border-radius: 5px;
     border: 1px solid #d0d0d0;
     padding: 5px;
 }
 
-.nexa-database-data-search-container {
+.nexa-database-row-search-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -46,19 +46,19 @@
     overflow: hidden;
 }
 
-.nexa-database-data-search {
+.nexa-database-row-search {
     width: 90%;
 }
 
-.nexa-database-data-search input {
+.nexa-database-row-search input {
     width: 100%;
 }
 
-.nexa-database-data-select-column {
+.nexa-database-row-select-column {
     width: 6%;
 }
 
-.nexa-database-data-grid {
+.nexa-database-row-grid {
     display: flex;
     flex-direction: column;
     width: 95%;
@@ -68,7 +68,7 @@
     border: 2px solid #ccc;
 }
 
-.nexa-database-data-grid-title {
+.nexa-database-row-grid-title {
     display: flex;
     align-items: center;
     background-color: whitesmoke;
@@ -76,12 +76,12 @@
     padding: 10px;
 }
 
-.nexa-database-data-grid-title > div {
+.nexa-database-row-grid-title > div {
     flex: 1;
     padding: 0 8px;
 }
 
-.nexa-database-data-grid-title > div:last-child {
+.nexa-database-row-grid-title > div:last-child {
     flex: 0 0 auto;
     align-items: center;
     min-width: 120px;
