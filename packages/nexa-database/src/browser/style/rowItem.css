@@ -17,6 +17,10 @@
     white-space: nowrap;
 }
 
+.nexa-database-row-item-cell input {
+    width: 90%;
+}
+
 .nexa-database-row-item-action {
     flex: 0 0 auto;
     min-width: 120px;

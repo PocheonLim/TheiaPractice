@@ -19,6 +19,8 @@ import { ReactDialog } from '@theia/core/lib/browser/dialogs/react-dialog';
 import { parseCSV } from '../common/nexa-database-csv-parser';
 import { ColumnData, RowData } from '../common/nexa-database-types';
 import { NexaDatabaseRowDialogColumn } from './nexa-database-row-dialog-column';
+import { ConfirmDialog } from '@theia/core/lib/browser/dialogs';
+import { AlertDialog } from '../browser/nexa-database-dialog';
 
 export interface ImportDataResult {
     columns: ColumnData[];
@@ -37,8 +39,42 @@ export class NexaDatabaseRowDialog extends ReactDialog<ImportDataResult> {
     protected file: File | undefined = undefined;
     protected previewData: ImportDataResult | undefined = undefined;
     protected columnMapping: Map<string, string> = new Map();
-    protected importMode: 'append' | 'replace' | 'upsert';
+    protected importMode: 'append' | 'replace' | 'upsert' = 'append';
     protected fileInputRef = React.createRef<HTMLInputElement>();
+
+    protected override async accept(): Promise<void> {
+        if (!this.previewData) {
+            return;
+        }
+
+        const modeText =
+            this.importMode === 'append' ? '추가'
+                : this.importMode === 'replace' ? '교체'
+                    : 'upsert';
+
+        const confirm = new ConfirmDialog({
+            title: 'Import Data',
+            msg: `${this.previewData.rows.length}개 행을 ${this.options.tableName} 테이블에 ${modeText} 모드로 import 하시겠습니까?`,
+            ok: '확인',
+            cancel: '취소'
+        });
+
+        const confirmed = await confirm.open();
+
+        if (!confirmed) {
+            return;
+        }
+
+        if (confirmed) {
+            await new AlertDialog({
+                title: '테이블 이름 변경 완료',
+                msg: `✅ ${this.previewData.rows.length}개 행이 성공적으로 import 되었습니다!`,
+                ok: '확인'
+            }).open();
+
+            super.accept();
+        }
+    }
 
     constructor(
         protected readonly options: ImportDialogOptions
@@ -46,8 +82,8 @@ export class NexaDatabaseRowDialog extends ReactDialog<ImportDataResult> {
         super({
             title: `Import Data to "${options.tableName}"`
         });
-        this.contentNode.style.minWidth = '1000px';
-        this.contentNode.style.minHeight = '600px';
+        this.contentNode.style.minWidth = '80vw';
+        this.contentNode.style.minHeight = '40vh';
         this.appendCloseButton('Cancel');
         this.appendAcceptButton('Import Data');
     }

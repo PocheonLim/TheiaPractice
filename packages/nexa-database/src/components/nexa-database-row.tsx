@@ -173,6 +173,13 @@ export const NexaDatabaseRow: React.FC<NexaDatabaseRowProps> = ({
                     ))}
                     <div>Action</div>
                 </div>
+                {filteredRowsWithIndex.length === 0 && (
+                    <div className="empty-state">
+                        <div className="empty-state-icon">📭</div>
+                        <div className="empty-state-text">No data found</div>
+                        <div className="empty-state-subtext">Add a new row to get started</div>
+                    </div>
+                )}
                 {filteredRowsWithIndex.map(({ row, originalIndex }) => (
                     <NexaDatabaseRowItem
                         key={originalIndex}
