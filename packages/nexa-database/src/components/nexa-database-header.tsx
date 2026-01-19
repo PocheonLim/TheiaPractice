@@ -32,7 +32,7 @@ export const NexaDatabaseHeader: React.FC<NexaDatabaseHeaderProps> = ({ mode, ta
     const [localTableName, setLocalTableName] = React.useState<string>(tableName);
     const fileInputRef = React.useRef<HTMLInputElement>();
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
         const newName = e.target.value;
         setLocalTableName(newName);
         if (mode === 'NEW') {
@@ -97,7 +97,6 @@ export const NexaDatabaseHeader: React.FC<NexaDatabaseHeaderProps> = ({ mode, ta
                     ok: '교체',
                     cancel: '추가'
                 });
-                // ?? null || undefined 면 false로
                 shouldReplace = await replaceDialog.open() ?? false;
             }
 
@@ -137,10 +136,10 @@ export const NexaDatabaseHeader: React.FC<NexaDatabaseHeaderProps> = ({ mode, ta
         let sql = `CREATE TABLE ${tableName} (\n`;
         const columnDefs = columns.map(col => {
             let def = `  ${col.name} ${col.type}`;
-            if (col.nullable) {
+            if (!col.nullable) {
                 def += ' NOT NULL';
             }
-            if (col.unique && !col.primaryKey) {
+            if (col.unique) {
                 def += ' UNIQUE';
             }
             return def;
@@ -155,7 +154,7 @@ export const NexaDatabaseHeader: React.FC<NexaDatabaseHeaderProps> = ({ mode, ta
         let sqlCreate = false;
 
         const createTableDialog = new ConfirmDialog({
-            title: '테이블 ' + { localTableName } + '을 생성하시겠습니까?',
+            title: `테이블 ${tableName}을 생성하시겠습니까?`,
             msg: sql,
             ok: '생성',
             cancel: '취소'
@@ -182,7 +181,7 @@ export const NexaDatabaseHeader: React.FC<NexaDatabaseHeaderProps> = ({ mode, ta
                         type="text"
                         placeholder="New_table"
                         value={localTableName}
-                        onChange={handleInputChange}
+                        onChange={handleNameChange}
                     />
                     {mode === 'EDIT' && <button onClick={handleRename}>✓ Rename</button>}
                 </div>

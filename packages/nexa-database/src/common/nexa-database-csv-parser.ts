@@ -21,12 +21,17 @@ export interface ParsedCSVData {
     rows: RowData[];
 }
 
+// 컬럼명 변환: 소문자로 변환, 공백을 _로 변경
+function normalizeColumnName(name: string): string {
+    return name.trim().toLowerCase().replace(/\s+/g, '_');
+}
+
 export function parseCSV(csvText: string): ParsedCSVData {
     const line = csvText.split('\n');
     const lines = line.filter(str => str.trim());
 
     const firstLine = lines[0].split(',');
-    const headers = firstLine.map(h => h.trim());
+    const headers = firstLine.map(h => normalizeColumnName(h));
 
     const parsedColumns: ColumnData[] = headers.map(header => ({
         name: header,

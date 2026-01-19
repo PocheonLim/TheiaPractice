@@ -50,10 +50,6 @@ export class NexaDatabaseWidget extends ReactWidget {
         this.update();
     };
 
-    /**
-     * Update column with primary key handling.
-     * When a column is set as primary key, all other columns' primary key status will be set to false.
-     */
     private updateColumnWithPrimaryKey(index: number, updatedColumn: ColumnData, clearEditing = false): ColumnData[] {
         if (updatedColumn.primaryKey) {
             return this.columns.map((col, i) =>
@@ -72,9 +68,9 @@ export class NexaDatabaseWidget extends ReactWidget {
     handleAddColumn = (): void => {
         const newColumn: ColumnData = {
             name: 'new_column',
-            preset: 'uuid',
+            preset: 'text',
             primaryKey: false,
-            nullable: false,
+            nullable: true,
             unique: false,
             type: 'CHAR'
         };
@@ -89,6 +85,7 @@ export class NexaDatabaseWidget extends ReactWidget {
 
     handleDeleteColumn = (index: number): void => {
         this.columns = this.columns.filter((_, i) => i !== index);
+        this.columns = this.columns.map(col => ({ ...col, isEditing: false }));
         this.update();
     };
 

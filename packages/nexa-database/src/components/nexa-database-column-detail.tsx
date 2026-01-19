@@ -69,7 +69,6 @@ export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> =
     const isForeignPreset = column.preset === 'foreign_key';
     const isCustomPreset = column.preset === 'custom';
 
-    // Local state for dynamic fields
     const [selectedType, setSelectedType] = React.useState<string>(presetInfo?.defaultType || '');
     const [numberType, setNumberType] = React.useState<string>('integer');
     const [defaultMode, setDefaultMode] = React.useState<string>('no_default');
@@ -137,7 +136,7 @@ export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> =
         setSelectedTable(e.target.value);
     };
 
-    // 선택된 테이블의 컬럼 목록 가져오기
+    // 예시
     const selectedTableData = availableTables.find(table => table.name === selectedTable);
     const availableColumns = selectedTableData?.columns || [];
 

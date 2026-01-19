@@ -52,10 +52,19 @@
 
 .nexa-database-row-search input {
     width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 3px;
 }
 
 .nexa-database-row-select-column {
     width: 6%;
+}
+
+.nexa-database-row-select-column select {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 3px;
 }
 
 .nexa-database-row-grid {
@@ -85,5 +94,4 @@
     flex: 0 0 auto;
     align-items: center;
     min-width: 120px;
-    text-align: right;
 }

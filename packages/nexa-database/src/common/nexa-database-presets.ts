@@ -35,7 +35,7 @@ export interface PresetInfo {
     showPrecisionFor?: string[];
 }
 
-// Text preset type options
+// 프리셋 타입 옵션
 const TEXT_TYPE_OPTIONS: SelectOption[] = [
     { value: 'TEXT', label: 'TEXT (default)' },
     { value: 'VARCHAR', label: 'VARCHAR' },
@@ -45,7 +45,7 @@ const TEXT_TYPE_OPTIONS: SelectOption[] = [
     { value: 'LONGTEXT', label: 'LONGTEXT' }
 ];
 
-// Number preset options
+// Number 프리셋 옵션
 const NUMBER_TYPE_OPTIONS: SelectOption[] = [
     { value: 'integer', label: 'Integer' },
     { value: 'decimal', label: 'Decimal' },
@@ -80,28 +80,28 @@ const DECIMAL_PLACES_OPTIONS: SelectOption[] = [
     { value: '10', label: '10 (1.0000000000)' }
 ];
 
-// Checkbox preset type options
+// 체크박스 프리셋 옵션
 const CHECKBOX_TYPE_OPTIONS: SelectOption[] = [
     { value: 'TINYINT', label: 'TINYINT(1) / BOOLEAN' }
 ];
 
-// JSON preset type options
+// JSON 프리셋 옵션
 const JSON_TYPE_OPTIONS: SelectOption[] = [
     { value: 'JSON', label: 'JSON' }
 ];
 
-// Date preset type options
+// Date 프리셋 옵션
 const DATE_TYPE_OPTIONS: SelectOption[] = [
     { value: 'DATE', label: 'DATE' }
 ];
 
-// Datetime preset type options
+// Datetime 프리셋 옵션
 const DATETIME_TYPE_OPTIONS: SelectOption[] = [
     { value: 'DATETIME', label: 'DATETIME' },
     { value: 'TIMESTAMP', label: 'TIMESTAMP' }
 ];
 
-// Custom preset type options
+// Custom 프리셋 옵션
 const CUSTOM_TYPE_OPTIONS: SelectOption[] = [
     { value: 'VARCHAR', label: 'VARCHAR' },
     { value: 'CHAR', label: 'CHAR' },
@@ -133,7 +133,7 @@ const CUSTOM_TYPE_OPTIONS: SelectOption[] = [
     { value: 'SET', label: 'SET' }
 ];
 
-// Default mode options
+// Default mode 옵션
 const COMMON_DEFAULT_OPTIONS: SelectOption[] = [
     { value: 'no_default', label: 'No Default' },
     { value: 'default_value', label: 'Default Value' },
@@ -240,7 +240,7 @@ export function getNumberDbTypeOptions(numberType: string): SelectOption[] {
     }
 }
 
-// Types that need length field
+// length 필드 타입
 export const TYPES_REQUIRING_LENGTH = ['VARCHAR', 'CHAR', 'BINARY', 'VARBINARY'];
 
 // Types that need precision field
