@@ -34,6 +34,9 @@ export class NexaDatabaseWidget extends ReactWidget {
     private columns: ColumnData[] = [];
     private rows: RowData[] = [];
     private tableName = '';
+    // 모드별 description 분리
+    private newModeDescription = '';
+    private editModeDescription = 'User accounts and authentication information';
 
     setMode = (mode: Mode): void => {
         this.mode = mode;
@@ -49,6 +52,19 @@ export class NexaDatabaseWidget extends ReactWidget {
         this.tableName = name;
         this.update();
     };
+
+    handleDescriptionChange = (description: string): void => {
+        if (this.mode === 'NEW') {
+            this.newModeDescription = description;
+        } else {
+            this.editModeDescription = description;
+        }
+        this.update();
+    };
+
+    private get currentDescription(): string {
+        return this.mode === 'NEW' ? this.newModeDescription : this.editModeDescription;
+    }
 
     private updateColumnWithPrimaryKey(index: number, updatedColumn: ColumnData, clearEditing = false): ColumnData[] {
         if (updatedColumn.primaryKey) {
@@ -174,7 +190,7 @@ export class NexaDatabaseWidget extends ReactWidget {
             // Replace: 기존 데이터 삭제 후 새 데이터로 교체
             this.rows = importedRows;
         } else if (mode === 'upsert') {
-            // Upsert: Primary Key 기준으로 업데이트 또는 삽입 / dialog에서 PK없으면 import 금지
+            // Upsert: Primary Key 기준으로 업데이트 또는 삽입 / dialog에서 PK없으면 import 못 누르기 때문에 !
             // 사실 현재 RowData는 value말고 isEditing(import Data 하면 모두 false)이기 때문에 순서 유지말고는 의미 없음
             const pkColumn = this.columns.find(col => col.primaryKey)!;
 
@@ -216,9 +232,11 @@ export class NexaDatabaseWidget extends ReactWidget {
                 <NexaDatabaseHeader
                     mode={this.mode}
                     tableName={this.tableName}
+                    tableDescription={this.currentDescription}
                     columns={this.columns}
                     onChangeMode={mode => this.setMode(mode)}
                     onChangeTableName={this.handleRename}
+                    onChangeTableDescription={this.handleDescriptionChange}
                     onImportCSV={this.handleImportCSV}
                 />
                 <NexaDatabaseTabbar activeTab={this.activeTab} onChangeActiveTab={activeTab => this.setActiveTab(activeTab)} />

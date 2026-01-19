@@ -84,6 +84,8 @@
     resize: vertical;
     border-radius: 5px;
     border: 1px solid #d0d0d0;
+    min-height: 36px;
+    max-height: 80px;
     box-sizing: border-box;
 }
 

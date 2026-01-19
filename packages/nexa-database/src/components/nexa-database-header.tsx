@@ -22,15 +22,25 @@ import { parseCSV } from '../common/nexa-database-csv-parser';
 export interface NexaDatabaseHeaderProps {
     mode: Mode;
     tableName: string;
+    tableDescription: string;
     columns: ColumnData[];
     onChangeMode: (mode: Mode) => void;
     onChangeTableName: (name: string) => void;
+    onChangeTableDescription: (description: string) => void;
     onImportCSV: (columns: ColumnData[], rows: RowData[], append?: boolean) => void;
 }
 
-export const NexaDatabaseHeader: React.FC<NexaDatabaseHeaderProps> = ({ mode, tableName, columns, onChangeMode, onChangeTableName, onImportCSV }: NexaDatabaseHeaderProps) => {
+export const NexaDatabaseHeader: React.FC<NexaDatabaseHeaderProps> = ({
+    mode, tableName, tableDescription, columns, onChangeMode, onChangeTableName, onChangeTableDescription, onImportCSV
+}: NexaDatabaseHeaderProps) => {
     const [localTableName, setLocalTableName] = React.useState<string>(tableName);
+    const [localDescription, setLocalDescription] = React.useState<string>(tableDescription);
     const fileInputRef = React.useRef<HTMLInputElement>();
+
+    // props 변경 시 local state 동기화
+    React.useEffect(() => {
+        setLocalDescription(tableDescription);
+    }, [tableDescription]);
 
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
         const newName = e.target.value;
@@ -206,7 +216,14 @@ export const NexaDatabaseHeader: React.FC<NexaDatabaseHeaderProps> = ({ mode, ta
                 </div>
             </div>
             <div className='nexa-database-header-textarea'>
-                <textarea placeholder='Add Table Description' />
+                <textarea
+                    placeholder='Add Table Description'
+                    value={localDescription}
+                    onChange={e => {
+                        setLocalDescription(e.target.value);
+                        onChangeTableDescription(e.target.value);
+                    }}
+                />
             </div>
         </div>
     );
