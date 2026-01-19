@@ -119,7 +119,7 @@ export const NexaDatabaseRow: React.FC<NexaDatabaseRowProps> = ({
             for (const tableColumn of columns) {
                 // 테이블 컬럼이 매핑에 있으면 해당 테이블 컬럼 값에는 csv row 값 넣고 아닐 경우 공백
                 const mappingColumn = Array.from(result.mapping);
-                const csvColumnName = mappingColumn.find(([csvCol, tableCol]) => tableCol === tableColumn.name)?.[0];
+                const csvColumnName = mappingColumn.find(([_, tableCol]) => tableCol === tableColumn.name)?.[0];
 
                 rowValues[tableColumn.name] = csvColumnName ? csvRow.values[csvColumnName] : '';
             }

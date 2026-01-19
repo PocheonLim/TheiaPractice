@@ -17,6 +17,7 @@
 import * as React from '@theia/core/shared/react';
 import { ColumnData, Mode, RowData } from '../common/nexa-database-types';
 import { ConfirmDialog } from '@theia/core/lib/browser/dialogs';
+import { AlertDialog } from '../browser/nexa-database-dialog';
 import { parseCSV } from '../common/nexa-database-csv-parser';
 
 export interface NexaDatabaseHeaderProps {
@@ -52,13 +53,11 @@ export const NexaDatabaseHeader: React.FC<NexaDatabaseHeaderProps> = ({
 
     const handleRename = async () => {
         if (localTableName === tableName) {
-            const sameName = new ConfirmDialog({
-                title: 'CSV 파일 로드 완료',
+            new AlertDialog({
+                title: '알림',
                 msg: '변경된 이름이 없습니다.',
-                ok: '확인',
-                cancel: ''
-            });
-            sameName.open();
+                ok: '확인'
+            }).open();
             return;
         }
         const changeNameDialog = new ConfirmDialog({
@@ -70,14 +69,12 @@ export const NexaDatabaseHeader: React.FC<NexaDatabaseHeaderProps> = ({
         const result = await changeNameDialog.open() ?? false;
         if (result) {
             onChangeTableName(localTableName);
-            const resultDialog = new ConfirmDialog({
-                title: 'CSV 파일 로드 완료',
+            new AlertDialog({
+                title: '테이블 이름 변경 완료',
                 msg: `✅ 테이블 이름이 "${tableName}"에서 "${localTableName}"(으)로 변경되었습니다.`,
-                ok: '확인',
-                cancel: ''
-            });
-            resultDialog.open();
-        };
+                ok: '확인'
+            }).open();
+        }
     };
 
     const handleImportClick = (): void => {
@@ -127,13 +124,11 @@ export const NexaDatabaseHeader: React.FC<NexaDatabaseHeaderProps> = ({
 
             onImportCSV(parsedColumns, parsedRows, appendMode);
 
-            const resultDialog = new ConfirmDialog({
+            new AlertDialog({
                 title: 'CSV 파일 로드 완료',
                 msg: `✅ CSV 파일 로드 완료!\n\n${parsedColumns.length}개 컬럼, ${parsedRows.length}개 데이터 행이 추가되었습니다.`,
-                ok: '확인',
-                cancel: ''
-            });
-            resultDialog.open();
+                ok: '확인'
+            }).open();
         };
         reader.readAsText(file);
 
@@ -172,13 +167,11 @@ export const NexaDatabaseHeader: React.FC<NexaDatabaseHeaderProps> = ({
         sqlCreate = await createTableDialog.open() ?? false;
 
         if (sqlCreate) {
-            const resultDialog = new ConfirmDialog({
-                title: 'CSV 파일 로드 완료',
+            new AlertDialog({
+                title: '테이블 생성 완료',
                 msg: '✅ 테이블이 생성되었습니다!\n\n자세한 내용은 콘솔을 확인하세요.',
-                ok: '확인',
-                cancel: ''
-            });
-            resultDialog.open();
+                ok: '확인'
+            }).open();
         }
     };
 
