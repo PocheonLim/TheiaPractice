@@ -91,6 +91,11 @@ export class NexaDatabaseWidget extends ReactWidget {
             type: 'CHAR'
         };
         this.columns = [...this.columns, newColumn];
+        // 기존 row들에 새 컬럼 키 추가
+        this.rows = this.rows.map(row => ({
+            ...row,
+            values: { ...row.values, [newColumn.name]: '' }
+        }));
         this.update();
     };
 
@@ -100,8 +105,15 @@ export class NexaDatabaseWidget extends ReactWidget {
     };
 
     handleDeleteColumn = (index: number): void => {
+        const deletedColumnName = this.columns[index]?.name;
         this.columns = this.columns.filter((_, i) => i !== index);
         this.columns = this.columns.map(col => ({ ...col, isEditing: false }));
+        // 삭제된 컬럼 키를 모든 row에서도 제거
+        this.rows = this.rows.map(row => {
+            // 기존 로우 값에서 삭제 컬럼만 따로 저장 후 return에 포함 X
+            const { [deletedColumnName]: _, ...restValues } = row.values;
+            return { ...row, values: restValues };
+        });
         this.update();
     };
 

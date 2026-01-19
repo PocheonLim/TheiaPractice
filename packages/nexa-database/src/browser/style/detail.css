@@ -29,13 +29,12 @@
 .column-detail-button-container {
     display: flex;
     width: 100%;
-    gap: 15px;
+    gap: 30px;
     margin-bottom: 5px;
 }
 
 .column-detail-button {
     display: flex;
-    width: 10%;
     align-items: center;
     color: black;
     font-size: 15px;
