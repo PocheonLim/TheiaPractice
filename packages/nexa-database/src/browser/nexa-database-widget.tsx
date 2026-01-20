@@ -21,8 +21,7 @@ import { NexaDatabaseHeader } from '../components/nexa-database-header';
 import { NexaDatabaseTabbar } from '../components/nexa-database-tabbar';
 import { NexaDatabaseColumn } from '../components/nexa-database-column';
 import { NexaDatabaseRow } from '../components/nexa-database-row';
-
-import { Mode, ActiveTab, ColumnData, RowData } from '../common/nexa-database-types';
+import { Mode, ActiveTab, ColumnData, RowData, EditingColumns } from '../common/nexa-database-types';
 
 @injectable()
 export class NexaDatabaseWidget extends ReactWidget {
@@ -37,6 +36,8 @@ export class NexaDatabaseWidget extends ReactWidget {
     // 모드별 description 분리
     private newModeDescription = '';
     private editModeDescription = 'User accounts and authentication information';
+    // 편집 중인 컬럼의 임시 데이터 (탭 전환 시에도 유지)
+    private editingColumns: EditingColumns = {};
 
     setMode = (mode: Mode): void => {
         this.mode = mode;
@@ -120,13 +121,19 @@ export class NexaDatabaseWidget extends ReactWidget {
     handleEditColumn = (index: number): void => {
         this.columns = this.columns.map((col, i) => ({
             ...col,
-            isEditing: i === index
+            isEditing: i === index,
+            isDetailOpen: false
         }));
+        // 기존 editingColumns 초기화 후 새로 시작
+        this.editingColumns = {};
+        this.editingColumns[index] = { ...this.columns[index] };
         this.update();
     };
 
     handleSaveColumn = (index: number, updatedColumn: ColumnData): void => {
         this.columns = this.updateColumnWithPrimaryKey(index, updatedColumn, true);
+        // 저장 후 editingColumns에서 제거
+        delete this.editingColumns[index];
         this.update();
     };
 
@@ -134,6 +141,14 @@ export class NexaDatabaseWidget extends ReactWidget {
         this.columns = this.columns.map((col, i) =>
             i === index ? { ...col, isEditing: false } : col
         );
+        // 취소 시 editingColumns에서 제거
+        delete this.editingColumns[index];
+        this.update();
+    };
+
+    // 편집 중인 컬럼의 임시 데이터 업데이트
+    handleUpdateEditingColumn = (index: number, updatedColumn: ColumnData): void => {
+        this.editingColumns[index] = updatedColumn;
         this.update();
     };
 
@@ -257,12 +272,14 @@ export class NexaDatabaseWidget extends ReactWidget {
                         tableName={this.tableName}
                         mode={this.mode}
                         columns={this.columns}
+                        editingColumns={this.editingColumns}
                         onAddColumn={this.handleAddColumn}
                         onUpdateColumn={this.handleUpdateColumn}
                         onDeleteColumn={this.handleDeleteColumn}
                         onEditColumn={this.handleEditColumn}
                         onSaveColumn={this.handleSaveColumn}
                         onCancelColumn={this.handleCancelColumn}
+                        onUpdateEditingColumn={this.handleUpdateEditingColumn}
                     />
                 ) : (
                     <NexaDatabaseRow

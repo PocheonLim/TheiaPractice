@@ -38,10 +38,41 @@ export interface ColumnData {
     nullable?: boolean;
     unique?: boolean;
     isEditing?: boolean;
+    isDetailOpen?: boolean;
     type?: string;
+
+    // 프리셋별 상세 속성 추가
+    dbType?: string;              // Database Type (선택된 타입)
+    length?: string;              // VARCHAR(255)의 255
+    precision?: string;           // DECIMAL(10,2)의 10,2
+
+    // Number preset
+    numberType?: 'integer' | 'decimal' | 'float';
+    decimalPlaces?: string;
+    unsigned?: boolean;
+
+    // Default 관련
+    defaultMode?: 'no_default' | 'default_value' | 'sql_expression';
+    defaultValue?: string;
+    defaultChecked?: boolean;     // Checkbox preset용
+
+    // Foreign Key preset
+    fkTable?: string;
+    fkColumn?: string;
+    onDelete?: 'NO ACTION' | 'RESTRICT' | 'CASCADE' | 'SET NULL';
+    onUpdateAction?: 'NO ACTION' | 'RESTRICT' | 'CASCADE' | 'SET NULL';
+
+    // Datetime preset
+    onUpdateTimestamp?: boolean;
+
+    // Comment
+    comment?: string;
 }
 
 export interface RowData {
     values: Record<string, string>;
     isEditing?: boolean;
 }
+
+// 편집 중인 컬럼의 임시 데이터를 저장하기 위한 타입
+export type EditingColumns = Record<number, ColumnData>;

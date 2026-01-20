@@ -69,12 +69,11 @@ export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> =
     const isForeignPreset = column.preset === 'foreign_key';
     const isCustomPreset = column.preset === 'custom';
 
-    const [selectedType, setSelectedType] = React.useState<string>(presetInfo?.defaultType || '');
-    const [numberType, setNumberType] = React.useState<string>('integer');
-    const [defaultMode, setDefaultMode] = React.useState<string>('no_default');
-
-    // Foreign Key 관련 state
-    const [selectedTable, setSelectedTable] = React.useState<string>('');
+    // column에서 직접 읽기
+    const selectedType = column.dbType || presetInfo?.defaultType || '';
+    const numberType = column.numberType || 'integer';
+    const defaultMode = column.defaultMode || 'no_default';
+    const selectedTable = column.fkTable || '';
 
     // 타입에 따라 Length 필드 표시 여부
     const shouldShowLength = (isTextPreset && TYPES_REQUIRING_LENGTH.includes(selectedType)) ||
@@ -112,28 +111,135 @@ export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> =
     };
 
     const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setSelectedType(e.target.value);
+        onUpdate({
+            ...column,
+            dbType: e.target.value
+        });
     };
 
+    // Number Type 변경 (integer/decimal/float)
     const handleNumberTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const newNumberType = e.target.value;
-        setNumberType(newNumberType);
-        // number_type 변경 시 기본 database type 설정
+        const newNumberType = e.target.value as 'integer' | 'decimal' | 'float';
+        let newDbType = selectedType;
+
         if (newNumberType === 'integer') {
-            setSelectedType('INT');
+            newDbType = 'INT';
         } else if (newNumberType === 'decimal') {
-            setSelectedType('DECIMAL');
+            newDbType = 'DECIMAL';
         } else if (newNumberType === 'float') {
-            setSelectedType('DOUBLE');
+            newDbType = 'DOUBLE';
         }
+
+        onUpdate({
+            ...column,
+            numberType: newNumberType,
+            dbType: newDbType
+        });
     };
 
+    // Decimal Places 변경
+    const handleDecimalPlacesChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        onUpdate({
+            ...column,
+            decimalPlaces: e.target.value
+        });
+    };
+
+    // Unsigned 변경 (Number preset)
+    const handleUnsignedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        onUpdate({
+            ...column,
+            unsigned: e.target.checked
+        });
+    };
+
+    // Default Mode 변경
     const handleDefaultModeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setDefaultMode(e.target.value);
+        onUpdate({
+            ...column,
+            defaultMode: e.target.value as ColumnData['defaultMode']
+        });
     };
 
+    // Default Value 변경
+    const handleDefaultValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        onUpdate({
+            ...column,
+            defaultValue: e.target.value
+        });
+    };
+
+    // Default Checked 변경 (Checkbox preset)
+    const handleDefaultCheckedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        onUpdate({
+            ...column,
+            defaultChecked: e.target.checked
+        });
+    };
+
+    // Length 변경
+    const handleLengthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        onUpdate({
+            ...column,
+            length: e.target.value
+        });
+    };
+
+    // Precision 변경
+    const handlePrecisionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        onUpdate({
+            ...column,
+            precision: e.target.value
+        });
+    };
+
+    // Foreign Key Table 변경
     const handleTableChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setSelectedTable(e.target.value);
+        onUpdate({
+            ...column,
+            fkTable: e.target.value,
+            fkColumn: ''  // 테이블 변경 시 컬럼 초기화
+        });
+    };
+
+    // Foreign Key Column 변경
+    const handleColumnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        onUpdate({
+            ...column,
+            fkColumn: e.target.value
+        });
+    };
+
+    // On Delete 변경
+    const handleOnDeleteChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        onUpdate({
+            ...column,
+            onDelete: e.target.value as ColumnData['onDelete']
+        });
+    };
+
+    // On Update 변경
+    const handleOnUpdateActionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        onUpdate({
+            ...column,
+            onUpdateAction: e.target.value as ColumnData['onUpdateAction']
+        });
+    };
+
+    // On Update Timestamp 변경
+    const handleOnUpdateTimestampChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        onUpdate({
+            ...column,
+            onUpdateTimestamp: e.target.checked
+        });
+    };
+
+    // Comment 변경
+    const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        onUpdate({
+            ...column,
+            comment: e.target.value
+        });
     };
 
     // 예시
@@ -185,6 +291,8 @@ export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> =
                     <div className='column-detail-button'>
                         <input
                             type="checkbox"
+                            checked={column.unsigned || false}
+                            onChange={handleUnsignedChange}
                             disabled={disabled}
                         />
                         Unsigned (양수만)
@@ -194,6 +302,8 @@ export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> =
                     <div className='column-detail-button'>
                         <input
                             type="checkbox"
+                            checked={column.onUpdateTimestamp || false}
+                            onChange={handleOnUpdateTimestampChange}
                             disabled={disabled}
                         />
                         On Update Timestamp
@@ -218,7 +328,7 @@ export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> =
                     {shouldShowDecimalPlaces && (
                         <div className='column-detail-option-container-menu'>
                             DECIMAL PLACES
-                            <select disabled={disabled}>
+                            <select value={column.decimalPlaces || ''} onChange={handleDecimalPlacesChange} disabled={disabled}>
                                 {presetInfo.decimalPlacesOptions?.map(opt => (
                                     <option value={opt.value}>{opt.label}</option>
                                 ))}
@@ -252,7 +362,7 @@ export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> =
                     {shouldShowDefaultValue && (
                         <div className='column-detail-option-container-menu'>
                             DEFAULT VALUE
-                            <input type='text' placeholder='e.g., 0, 100, -50' disabled={disabled} />
+                            <input type='text' value={column.defaultValue || ''} onChange={handleDefaultValueChange} placeholder='e.g., 0, 100, -50' disabled={disabled} />
                         </div>
                     )}
 
@@ -260,7 +370,7 @@ export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> =
                     {shouldShowSqlExpression && (
                         <div className='column-detail-option-container-menu'>
                             SQL EXPRESSION
-                            <input type='text' placeholder='e.g., FLOOR(RAND() * 100)' disabled={disabled} />
+                            <input type='text' value={column.defaultValue || ''} onChange={handleDefaultValueChange} placeholder='e.g., FLOOR(RAND() * 100)' disabled={disabled} />
                         </div>
                     )}
                 </div>
@@ -272,7 +382,7 @@ export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> =
                     {presetInfo.typeOptions && (
                         <div className='column-detail-option-container-menu'>
                             DATABASE TYPE
-                            <select disabled={disabled}>
+                            <select value={selectedType} onChange={handleTypeChange} disabled={disabled}>
                                 {presetInfo.typeOptions.map(opt => (
                                     <option value={opt.value}>{opt.label}</option>
                                 ))}
@@ -294,7 +404,7 @@ export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> =
                     {/* Default Checked (default_value 모드일 때) */}
                     {shouldShowDefaultValue && (
                         <div className='column-detail-button'>
-                            <input type="checkbox" disabled={disabled} />
+                            <input type="checkbox" checked={column.defaultChecked || false} onChange={handleDefaultCheckedChange} disabled={disabled} />
                             Default Checked
                         </div>
                     )}
@@ -303,7 +413,7 @@ export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> =
                     {shouldShowSqlExpression && (
                         <div className='column-detail-option-container-menu'>
                             SQL EXPRESSION
-                            <input type='text' placeholder='e.g., TRUE' disabled={disabled} />
+                            <input type='text' value={column.defaultValue || ''} onChange={handleDefaultValueChange} placeholder='e.g., TRUE' disabled={disabled} />
                         </div>
                     )}
                 </div>
@@ -328,7 +438,7 @@ export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> =
                     {shouldShowLength && (
                         <div className='column-detail-option-container-menu'>
                             LENGTH
-                            <input type='text' placeholder='e.g., 255' disabled={disabled} />
+                            <input type='text' value={column.length || ''} onChange={handleLengthChange} placeholder='e.g., 255' disabled={disabled} />
                         </div>
                     )}
 
@@ -336,7 +446,7 @@ export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> =
                     {shouldShowPrecision && (
                         <div className='column-detail-option-container-menu'>
                             PRECISION
-                            <input type='text' placeholder='e.g., 10,2' disabled={disabled} />
+                            <input type='text' value={column.precision || ''} onChange={handlePrecisionChange} placeholder='e.g., 10,2' disabled={disabled} />
                         </div>
                     )}
 
@@ -356,7 +466,13 @@ export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> =
                     {shouldShowDefaultValue && (
                         <div className='column-detail-option-container-menu'>
                             DEFAULT VALUE
-                            <input type='text' placeholder={getDefaultValuePlaceholder(column.preset)} disabled={disabled} />
+                            <input
+                                type='text'
+                                value={column.defaultValue || ''}
+                                onChange={handleDefaultValueChange}
+                                placeholder={getDefaultValuePlaceholder(column.preset)}
+                                disabled={disabled}
+                            />
                         </div>
                     )}
 
@@ -364,7 +480,13 @@ export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> =
                     {shouldShowSqlExpression && (
                         <div className='column-detail-option-container-menu'>
                             SQL EXPRESSION
-                            <input type='text' placeholder={getSqlExpressionPlaceholder(column.preset)} disabled={disabled} />
+                            <input
+                                type='text'
+                                value={column.defaultValue || ''}
+                                onChange={handleDefaultValueChange}
+                                placeholder={getSqlExpressionPlaceholder(column.preset)}
+                                disabled={disabled}
+                            />
                         </div>
                     )}
                 </div>
@@ -383,7 +505,7 @@ export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> =
                                 </option>
                             ))}
                         </select>
-                        <select disabled={disabled || !selectedTable}>
+                        <select value={column.fkColumn || ''} onChange={handleColumnChange} disabled={disabled || !selectedTable}>
                             <option value="">Select Column...</option>
                             {availableColumns.map(col => (
                                 <option
@@ -398,7 +520,7 @@ export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> =
                     <div className='column-detail-option-foreignkey-flex'>
                         <div className='column-detail-option-container-menu'>
                             ON DELETE
-                            <select disabled={disabled}>
+                            <select value={column.onDelete || 'NO ACTION'} onChange={handleOnDeleteChange} disabled={disabled}>
                                 <option value="NO ACTION">No Action</option>
                                 <option value="RESTRICT">Restrict</option>
                                 <option value="CASCADE">Cascade</option>
@@ -407,7 +529,7 @@ export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> =
                         </div>
                         <div className='column-detail-option-container-menu'>
                             ON UPDATE
-                            <select disabled={disabled}>
+                            <select value={column.onUpdateAction || 'NO ACTION'} onChange={handleOnUpdateActionChange} disabled={disabled}>
                                 <option value="NO ACTION">No Action</option>
                                 <option value="RESTRICT">Restrict</option>
                                 <option value="CASCADE">Cascade</option>
@@ -420,7 +542,7 @@ export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> =
 
             <div className='column-detail-comment'>
                 COMMENT
-                <textarea placeholder='Add column description or notes...' disabled={disabled} />
+                <textarea value={column.comment || ''} onChange={handleCommentChange} placeholder='Add column description or notes...' disabled={disabled} />
             </div>
         </div>
     );

@@ -24,41 +24,47 @@ export interface NexaDatabaseColumnItemProps {
     tableName: string;
     column: ColumnData;
     mode: Mode;
+    editingColumn?: ColumnData;
     onUpdate: (column: ColumnData) => void;
     onDelete: () => void;
     onEdit: () => void;
     onSave: (column: ColumnData) => void;
     onCancel?: () => void;
+    onUpdateEditingColumn: (column: ColumnData) => void;
 }
 
 export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
     tableName,
     column,
     mode,
+    editingColumn,
     onUpdate,
     onDelete,
     onEdit,
     onSave,
-    onCancel
+    onCancel,
+    onUpdateEditingColumn
 }: NexaDatabaseColumnItemProps) => {
-    const [editedColumn, setEditedColumn] = React.useState<ColumnData>(column);
-    const [isDetailOpen, setIsDetailOpen] = React.useState(false);
-
-    React.useEffect(() => {
-        setEditedColumn(column);
-    }, [column]);
-
-    React.useEffect(() => {
-        setIsDetailOpen(false);
-    }, [mode]);
+    // editingColumn이 있으면 사용, 없으면 column 사용
+    const editedColumn = editingColumn || column;
 
     const isEditing = column.isEditing || false;
+    const isDetailOpen = column.isDetailOpen || false;
     const isEditMode = mode === 'EDIT';
     const isReadOnly = isEditMode && !isEditing;
 
+    // 편집 중인 컬럼 업데이트
+    const updateEditingColumn = (updatedColumn: ColumnData) => {
+        if (mode === 'EDIT') {
+            onUpdateEditingColumn(updatedColumn);
+        } else {
+            onUpdate(updatedColumn);
+        }
+    };
+
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (isEditMode) {
-            setEditedColumn({ ...editedColumn, name: e.target.value });
+            updateEditingColumn({ ...editedColumn, name: e.target.value });
         } else {
             onUpdate({ ...column, name: e.target.value });
         }
@@ -66,7 +72,7 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
 
     const handlePresetChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         if (isEditMode) {
-            setEditedColumn({ ...editedColumn, preset: e.target.value as ColumnData['preset'] });
+            updateEditingColumn({ ...editedColumn, preset: e.target.value as ColumnData['preset'] });
         } else {
             onUpdate({ ...column, preset: e.target.value as ColumnData['preset'] });
         }
@@ -76,7 +82,7 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
         const isPK = e.target.checked;
         if (isEditMode) {
             // PK인 경우 nullable은 자동으로 false
-            setEditedColumn({ ...editedColumn, primaryKey: isPK, nullable: isPK ? false : editedColumn.nullable });
+            updateEditingColumn({ ...editedColumn, primaryKey: isPK, nullable: isPK ? false : editedColumn.nullable });
         } else {
             onUpdate({ ...column, primaryKey: isPK, nullable: isPK ? false : column.nullable });
         }
@@ -84,7 +90,7 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
 
     const handleNotNullChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (isEditMode) {
-            setEditedColumn({ ...editedColumn, nullable: e.target.checked });
+            updateEditingColumn({ ...editedColumn, nullable: e.target.checked });
         } else {
             onUpdate({ ...column, nullable: e.target.checked });
         }
@@ -92,7 +98,7 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
 
     const handleUniqueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (isEditMode) {
-            setEditedColumn({ ...editedColumn, unique: e.target.checked });
+            updateEditingColumn({ ...editedColumn, unique: e.target.checked });
         } else {
             onUpdate({ ...column, unique: e.target.checked });
         }
@@ -107,21 +113,19 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
         });
         const confirmed = await dialog.open();
         if (confirmed) {
-            onSave(editedColumn);
-            setIsDetailOpen(false);
+            onSave({ ...editedColumn, isDetailOpen: false });
         }
     };
 
     const handleCancel = () => {
-        setEditedColumn(column);
-        setIsDetailOpen(false);
+        onUpdate({ ...column, isDetailOpen: false });
         if (onCancel) {
             onCancel();
         }
     };
 
     const handleEdit = () => {
-        setIsDetailOpen(true);
+        onUpdate({ ...column, isDetailOpen: true });
         onEdit();
     };
 
@@ -149,7 +153,7 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
 
     const toggleDetail = () => {
         if (!isReadOnly) {
-            setIsDetailOpen(!isDetailOpen);
+            onUpdate({ ...column, isDetailOpen: !isDetailOpen });
         }
     };
 
@@ -242,7 +246,7 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
             {isDetailOpen && (
                 <NexaDatabaseColumnDetail
                     column={isEditMode ? editedColumn : column}
-                    onUpdate={isEditMode ? setEditedColumn : onUpdate}
+                    onUpdate={updateEditingColumn}
                     disabled={isReadOnly}
                 />
             )}
