@@ -250,11 +250,42 @@ export class NexaDatabaseRowDialog extends ReactDialog<ImportDataResult> {
             const csvText = event.target?.result as string;
             const { columns, rows } = parseCSV(csvText);
             this.previewData = { columns, rows, mapping: new Map(), importMode: this.importMode };
-            this.columnMapping.clear();
+            this.columnMapping = this.autoMapColumns(columns, this.options.currentColumns);
             this.update();
         };
         reader.readAsText(file);
     };
+
+    protected autoMapColumns(csvColumns: ColumnData[], tableColumns: ColumnData[]): Map<string, string> {
+        const mapping = new Map<string, string>();
+
+        csvColumns.forEach(csvCol => {
+            const csvName = csvCol.name.toLowerCase();
+
+            // 1순위: 정확히 일치
+            let matched = tableColumns.find(tc => tc.name.toLowerCase() === csvName);
+
+            // 2순위: 정규화 후 일치 (언더스코어, 공백, 하이픈 무시)
+            if (!matched) {
+                const csvNorm = csvName.replace(/[_\s-]/g, '');
+                matched = tableColumns.find(tc => tc.name.toLowerCase().replace(/[_\s-]/g, '') === csvNorm);
+            }
+
+            // 3순위: 포함 관계
+            if (!matched) {
+                matched = tableColumns.find(tc => {
+                    const tcName = tc.name.toLowerCase();
+                    return tcName.includes(csvName) || csvName.includes(tcName);
+                });
+            }
+
+            if (matched) {
+                mapping.set(csvCol.name, matched.name);
+            }
+        });
+
+        return mapping;
+    }
 
     get value(): ImportDataResult {
         return this.previewData ? {
