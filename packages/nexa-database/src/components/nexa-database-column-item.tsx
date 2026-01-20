@@ -20,6 +20,22 @@ import { ColumnData, Mode } from '../common/nexa-database-types';
 import { NexaDatabaseColumnDetail } from './nexa-database-column-detail';
 import { PRESET_INFO } from '../common/nexa-database-presets';
 
+function getTypeDefinition(col: ColumnData): string {
+    let def = col.type || 'VARCHAR';
+
+    if (col.length && ['VARCHAR', 'CHAR', 'TINYINT', 'SMALLINT', 'MEDIUMINT', 'INT', 'BIGINT'].includes(col.type || '')) {
+        def += `(${col.length})`;
+    } else if (col.type === 'DECIMAL' && col.decimalPlaces) {
+        const precision = col.precision || String(10 + parseInt(col.decimalPlaces, 10));
+        def += `(${precision},${col.decimalPlaces})`;
+    }
+
+    if (col.unsigned) {
+        def += ' UNSIGNED';
+    }
+    return def;
+}
+
 export interface NexaDatabaseColumnItemProps {
     tableName: string;
     column: ColumnData;
@@ -220,9 +236,9 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
                         />
                     </label>
                     <span className="column-type-display">
-                        {column.preset && PRESET_INFO[column.preset]
+                        {column.preset && column.preset !== 'custom' && PRESET_INFO[column.preset]
                             ? PRESET_INFO[column.preset].defaultType
-                            : (isEditMode ? editedColumn.type : column.type) || 'CHAR'}
+                            : getTypeDefinition(isEditMode ? editedColumn : column)}
                     </span>
                 </div>
                 <div className="column-item-actions">

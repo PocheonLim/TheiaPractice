@@ -113,7 +113,8 @@ export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> =
     const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         onUpdate({
             ...column,
-            dbType: e.target.value
+            dbType: e.target.value,
+            type: e.target.value
         });
     };
 
@@ -133,7 +134,8 @@ export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> =
         onUpdate({
             ...column,
             numberType: newNumberType,
-            dbType: newDbType
+            dbType: newDbType,
+            type: newDbType
         });
     };
 
