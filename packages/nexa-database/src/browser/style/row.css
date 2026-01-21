@@ -14,7 +14,7 @@
     justify-content: space-between;
     align-items: center;
     width: 95%;
-    padding: 10px 20px 10px 20px;
+    box-sizing: border-box
 }
 
 .nexa-database-row-title-left {
@@ -36,35 +36,40 @@
 
 .nexa-database-row-search-container {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    width: 93%;
-    padding: 10px 20px 10px 20px;
+    width: 95%;
+    min-height: 50px;
     background-color: white;
     border-radius: 5px;
     border: 1px solid #ccc;
-    overflow: hidden;
+    padding: 0 16px;
+    gap: 12px;
+    box-sizing: border-box;
 }
 
 .nexa-database-row-search {
-    width: 90%;
+    flex: 9;
 }
 
 .nexa-database-row-search input {
     width: 100%;
-    border: 1px solid #ccc;
-    border-radius: 3px;
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 13px;
+    box-sizing: border-box;
 }
 
 .nexa-database-row-select-column {
-    width: 6%;
+    flex: 1;
 }
 
 .nexa-database-row-select-column select {
-    display: flex;
-    align-items: center;
+    width: 100%;
     border: 1px solid #ccc;
     border-radius: 3px;
+    padding: 8px 12px;
+    box-sizing: border-box;
 }
 
 .nexa-database-row-grid {
@@ -75,6 +80,7 @@
     background-color: white;
     border-radius: 5px;
     border: 2px solid #ccc;
+    box-sizing: border-box
 }
 
 .nexa-database-row-grid-title {

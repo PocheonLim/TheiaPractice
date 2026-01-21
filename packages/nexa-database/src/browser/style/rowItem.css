@@ -5,6 +5,14 @@
     border-bottom: 1px solid #f0f0f0;
 }
 
+.nexa-database-row-item.editing{
+    background: #fff9e6;
+}
+
+.nexa-database-row-item.editing:hover{
+    background: #fff9e6;
+}
+
 .nexa-database-row-item:hover {
     background-color: #fafafa;
 }
@@ -19,6 +27,8 @@
 
 .nexa-database-row-item-cell input {
     width: 90%;
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
 }
 
 .nexa-database-row-item-action {

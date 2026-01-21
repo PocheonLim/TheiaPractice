@@ -68,7 +68,7 @@ export const NexaDatabaseRowItem: React.FC<NexaDatabaseRowItemProps> = ({ column
     };
 
     return (
-        <div className='nexa-database-row-item'>
+        <div className={`nexa-database-row-item ${isEditing ? 'editing' : ''}`}>
             {columns.map(column => {
                 const value = editedValues[column.name] ?? '';
                 return (

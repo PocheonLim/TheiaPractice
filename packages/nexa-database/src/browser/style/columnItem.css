@@ -6,6 +6,11 @@
     border-bottom: 1px solid #ccc;
 }
 
+.column-item-container.editing {
+    background: #fff9e6;
+    border-left: 3px solid #f57c00;
+}
+
 .column-item-left {
     display: grid;
     grid-template-columns: 24px 30px 100px 140px 60px 50px 140px;

@@ -175,7 +175,7 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
 
     return (
         <>
-            <div className="column-item-container">
+            <div className={`column-item-container ${isEditing ? 'editing' : ''}`}>
                 <div className="column-item-left">
                     <span
                         className="drag-handle"
