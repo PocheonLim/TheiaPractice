@@ -44,6 +44,13 @@ export class NexaDatabaseWidget extends ReactWidget {
 
     setMode = (mode: Mode): void => {
         this.mode = mode;
+        const newColumn = this.columns.filter(col => {
+            if (col.isNew === undefined) {
+                return true;
+            }
+            return !col.isNew;
+        });
+        this.columns = newColumn;
         this.update();
     };
 
@@ -93,7 +100,8 @@ export class NexaDatabaseWidget extends ReactWidget {
             nullable: true,
             unique: false,
             type: 'CHAR',
-            isEditing: this.mode === 'EDIT'
+            isEditing: this.mode === 'EDIT',
+            isNew: this.mode === 'EDIT' ? true : false
         };
         this.columns.forEach(col => {
             col.isEditing = false;

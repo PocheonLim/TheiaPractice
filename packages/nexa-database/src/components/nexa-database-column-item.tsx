@@ -37,6 +37,19 @@ function getTypeDefinition(col: ColumnData): string {
     return def;
 }
 
+function generateColumnSQL(col: ColumnData): string {
+    const query = col.isNew ? 'ADD' : 'MODIFY';
+    let sql = `${query} COLUMN ${col.name} ${getTypeDefinition(col)}`;
+
+    if (!col.nullable) {
+        sql += ' NOT NULL';
+    }
+    if (col.unique) {
+        sql += ' UNIQUE';
+    }
+    return sql += ';';
+}
+
 export interface NexaDatabaseColumnItemProps {
     tableName: string;
     column: ColumnData;
@@ -121,10 +134,14 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
         }
     };
 
+    const message = column.isNew ? '추가' : '수정';
+    const sqlAction = column.isNew ? 'ADD COLUMN' : 'MODIFY COLUMN';
+
     const handleSave = async () => {
+        const sql = generateColumnSQL(editedColumn);
         const dialog = new ConfirmDialog({
-            title: '컬럼 저장',
-            msg: `컬럼 "${editedColumn.name}"을 저장하시겠습니까?\n\nALTER TABLE ${tableName} MODIFY COLUMN ${editedColumn.name} ${editedColumn.type};`,
+            title: `컬럼 ${message}`,
+            msg: `컬럼 "${editedColumn.name}"을 ${message}하시겠습니까?\n\nALTER TABLE ${tableName} ${sqlAction} ${sql}`,
             ok: '확인',
             cancel: '취소'
         });
@@ -132,11 +149,11 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
         if (confirmed) {
             const alert = new AlertDialog({
                 title: '컬럼 저장',
-                msg: '✅ 컬럼이 추가되었습니다.',
+                msg: `'✅ 컬럼이 ${message}되었습니다.'`,
                 ok: '확인'
             });
             alert.open();
-            onSave({ ...editedColumn, isDetailOpen: false });
+            onSave({ ...editedColumn, isDetailOpen: false, isNew: false });
         }
     };
 

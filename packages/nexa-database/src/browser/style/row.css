@@ -48,7 +48,7 @@
 }
 
 .nexa-database-row-search {
-    flex: 9;
+    flex: 1;
 }
 
 .nexa-database-row-search input {
@@ -60,12 +60,7 @@
     box-sizing: border-box;
 }
 
-.nexa-database-row-select-column {
-    flex: 1;
-}
-
 .nexa-database-row-select-column select {
-    width: 100%;
     border: 1px solid #ccc;
     border-radius: 3px;
     padding: 8px 12px;

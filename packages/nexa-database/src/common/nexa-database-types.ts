@@ -40,6 +40,7 @@ export interface ColumnData {
     isEditing?: boolean;
     isDetailOpen?: boolean;
     type?: string;
+    isNew?: boolean;
 
     // 프리셋별 상세 속성 추가
     dbType?: string;              // Database Type (선택된 타입)
