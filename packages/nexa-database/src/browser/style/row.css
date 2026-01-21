@@ -102,6 +102,35 @@
     min-width: 120px;
 }
 
+.nexa-database-row-grid-column {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 4px;
+}
+
+.sort-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 2px 4px;
+    font-size: 12px;
+    color: #999;
+}
+
+.sort-btn:focus {
+    outline: none;
+}
+
+.sort-btn:hover {
+    color: #1e6fff;
+}
+
+.sort-btn.active {
+    color: #1e6fff;
+    font-weight: bold;
+}
+
 .empty-state {
     padding: 60px 24px;
     text-align: center;

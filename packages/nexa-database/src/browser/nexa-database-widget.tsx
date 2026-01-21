@@ -38,6 +38,9 @@ export class NexaDatabaseWidget extends ReactWidget {
     private editModeDescription = 'User accounts and authentication information';
     // 편집 중인 컬럼의 임시 데이터 (탭 전환 시에도 유지)
     private editingColumns: EditingColumns = {};
+    // 정렬 상태 (탭 전환 시에도 유지)
+    private sortColumn: string | undefined;
+    private sortDirection: 'asc' | 'desc' | undefined;
 
     setMode = (mode: Mode): void => {
         this.mode = mode;
@@ -207,6 +210,12 @@ export class NexaDatabaseWidget extends ReactWidget {
         this.update();
     };
 
+    handleSortChange = (column: string | undefined, direction: 'asc' | 'desc' | undefined): void => {
+        this.sortColumn = column;
+        this.sortDirection = direction;
+        this.update();
+    };
+
     handleImportCSV = (columns: ColumnData[], rows: RowData[], append?: boolean): void => {
         if (append) {
             this.columns = [...this.columns, ...columns];
@@ -301,6 +310,9 @@ export class NexaDatabaseWidget extends ReactWidget {
                         onCancelRow={this.handleCancelRow}
                         onRefresh={this.handleRefresh}
                         onImportData={this.handleImportData}
+                        sortColumn={this.sortColumn}
+                        sortDirection={this.sortDirection}
+                        onSortChange={this.handleSortChange}
                     />
                 )}
             </div>

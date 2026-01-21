@@ -20,6 +20,8 @@ import { NexaDatabaseRowItem } from './nexa-database-row-item';
 import { NexaDatabaseRowDialog } from './nexa-database-row-dialog';
 import { ConfirmDialog } from '@theia/core/lib/browser/dialogs';
 
+type SortDirection = 'asc' | 'desc' | undefined;
+
 export interface NexaDatabaseRowProps {
     tableName: string;
     columns: ColumnData[];
@@ -31,10 +33,14 @@ export interface NexaDatabaseRowProps {
     onCancelRow: (index: number) => void;
     onRefresh: () => void;
     onImportData: (rows: RowData[], mode: 'append' | 'replace' | 'upsert') => void;
+    sortColumn?: string;
+    sortDirection?: SortDirection;
+    onSortChange: (column: string | undefined, direction: SortDirection) => void;
 }
 
 export const NexaDatabaseRow: React.FC<NexaDatabaseRowProps> = ({
-    tableName, columns, rows, onAddRow, onDeleteRow, onEditRow, onSaveRow, onCancelRow, onRefresh, onImportData
+    tableName, columns, rows, onAddRow, onDeleteRow, onEditRow, onSaveRow, onCancelRow, onRefresh, onImportData,
+    sortColumn, sortDirection, onSortChange
 }) => {
     const [text, setText] = React.useState('');
     const [columnName, setColumnName] = React.useState('ALL');
@@ -74,6 +80,44 @@ export const NexaDatabaseRow: React.FC<NexaDatabaseRowProps> = ({
     };
 
     const filteredRowsWithIndex = filterRows();
+
+    // 정렬 핸들러
+    const handleSort = (colName: string): void => {
+        if (sortColumn === colName) {
+            // 같은 컬럼 클릭: asc → desc → undefined 순환
+            if (sortDirection === 'asc') {
+                onSortChange(colName, 'desc');
+            } else if (sortDirection === 'desc') {
+                onSortChange(undefined, undefined);
+            }
+        } else {
+            // 다른 컬럼 클릭: 해당 컬럼 asc로 시작
+            onSortChange(colName, 'asc');
+        }
+    };
+
+    // 정렬 적용
+    const sortedRows = React.useMemo(() => {
+        if (!sortColumn || !sortDirection) {
+            return filteredRowsWithIndex;
+        }
+
+        return [...filteredRowsWithIndex].sort((a, b) => {
+            const valueA = a.row.values[sortColumn] || '';
+            const valueB = b.row.values[sortColumn] || '';
+
+            // 숫자인지 확인하여 숫자 정렬 또는 문자열 정렬
+            const numA = parseFloat(valueA);
+            const numB = parseFloat(valueB);
+
+            if (!isNaN(numA) && !isNaN(numB)) {
+                return sortDirection === 'asc' ? numA - numB : numB - numA;
+            }
+
+            const comparison = valueA.localeCompare(valueB);
+            return sortDirection === 'asc' ? comparison : -comparison;
+        });
+    }, [filteredRowsWithIndex, sortColumn, sortDirection]);
 
     const refreshFilter = (): void => {
         setText('');
@@ -168,21 +212,38 @@ export const NexaDatabaseRow: React.FC<NexaDatabaseRowProps> = ({
             </div>
             <div className='nexa-database-row-grid'>
                 <div className='nexa-database-row-grid-title'>
-                    {columns.map((column, index) => (
-                        <div key={index} className='nexa-database-row-grid-column'>{column.name}</div>
-                    ))}
+                    {columns.map((column, _) => {
+                        const isSorted = sortColumn === column.name;
+                        const sortIcon = isSorted
+                            ? (sortDirection === 'asc' ? '↑' : '↓')
+                            : '⇅';
+                        return (
+                            <div className='nexa-database-row-grid-column'>
+                                {column.primaryKey
+                                    ? <span>🔑 {column.name}</span>
+                                    : <span>{column.name}</span>
+                                }
+                                <button
+                                    className={`sort-btn ${isSorted ? 'active' : ''}`}
+                                    onClick={() => handleSort(column.name)}
+                                    title={`Sort by ${column.name}`}
+                                >
+                                    {sortIcon}
+                                </button>
+                            </div>
+                        );
+                    })}
                     <div>Action</div>
                 </div>
-                {filteredRowsWithIndex.length === 0 && (
+                {sortedRows.length === 0 && (
                     <div className="empty-state">
                         <div className="empty-state-icon">📭</div>
                         <div className="empty-state-text">No data found</div>
                         <div className="empty-state-subtext">Add a new row to get started</div>
                     </div>
                 )}
-                {filteredRowsWithIndex.map(({ row, originalIndex }) => (
+                {sortedRows.map(({ row, originalIndex }) => (
                     <NexaDatabaseRowItem
-                        key={originalIndex}
                         columns={columns}
                         rowData={row}
                         onEdit={() => onEditRow(originalIndex)}
