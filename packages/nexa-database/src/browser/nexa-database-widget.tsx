@@ -89,8 +89,12 @@ export class NexaDatabaseWidget extends ReactWidget {
             primaryKey: false,
             nullable: true,
             unique: false,
-            type: 'CHAR'
+            type: 'CHAR',
+            isEditing: this.mode === 'EDIT'
         };
+        this.columns.forEach(col => {
+            col.isEditing = false;
+        });
         this.columns = [...this.columns, newColumn];
         // 기존 row들에 새 컬럼 키 추가
         this.rows = this.rows.map(row => ({

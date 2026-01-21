@@ -19,6 +19,7 @@ import { ConfirmDialog } from '@theia/core/lib/browser/dialogs';
 import { ColumnData, Mode } from '../common/nexa-database-types';
 import { NexaDatabaseColumnDetail } from './nexa-database-column-detail';
 import { PRESET_INFO } from '../common/nexa-database-presets';
+import { AlertDialog } from '../browser/nexa-database-dialog';
 
 function getTypeDefinition(col: ColumnData): string {
     let def = col.type || 'VARCHAR';
@@ -129,6 +130,12 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
         });
         const confirmed = await dialog.open();
         if (confirmed) {
+            const alert = new AlertDialog({
+                title: '컬럼 저장',
+                msg: '✅ 컬럼이 추가되었습니다.',
+                ok: '확인'
+            });
+            alert.open();
             onSave({ ...editedColumn, isDetailOpen: false });
         }
     };
@@ -156,11 +163,10 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
         if (confirmed) {
             onDelete();
             if (mode === 'EDIT') {
-                const afterDialog = new ConfirmDialog({
+                const afterDialog = new AlertDialog({
                     title: '삭제 완료',
                     msg: `컬럼 "${column.name}"이 삭제되었습니다\n\nALTER TABLE ${tableName} DROP COLUMN ${column.name}`,
                     ok: '확인',
-                    cancel: ''
                 });
                 await afterDialog.open();
             }
