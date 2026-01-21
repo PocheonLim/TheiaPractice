@@ -80,7 +80,7 @@ export class NexaDatabaseRowDialog extends ReactDialog<ImportDataResult> {
         protected readonly options: ImportDialogOptions
     ) {
         super({
-            title: `Import Data to "${options.tableName}"`
+            title: `📥 Import Data to "${options.tableName}"`
         });
         this.contentNode.style.minWidth = '80vw';
         this.contentNode.style.minHeight = '40vh';
@@ -88,16 +88,17 @@ export class NexaDatabaseRowDialog extends ReactDialog<ImportDataResult> {
         this.appendAcceptButton('Import Data');
     }
 
-    protected getImportInfoText(): string {
+    protected getImportInfoText(): React.ReactNode {
+        const rowCount = this.previewData?.rows.length ?? 0;
         switch (this.importMode) {
             case 'append':
-                return `📌 ${this.previewData?.rows.length}개 행이 테이블에 추가됩니다. (기존 데이터 유지)`;
+                return <>📌 <strong>{rowCount}개 행</strong>이 테이블에 추가됩니다. (기존 데이터 유지)</>;
             case 'replace':
-                return `⚠️ 기존 데이터가 모두 삭제되고, ${this.previewData?.rows.length}개 행이 새로 삽입됩니다.`;
+                return <>⚠️ 기존 데이터가 모두 삭제되고, <strong>{rowCount}개 행</strong>이 새로 삽입됩니다.</>;
             case 'upsert':
-                return `🔄 ${this.previewData?.rows.length}개 행이 Upsert됩니다. (중복 키: 업데이트 / 신규: 삽입)`;
+                return <>🔄 <strong>{rowCount}개 행</strong>이 Upsert됩니다. (중복 키: 업데이트 / 신규: 삽입)</>;
             default:
-                return '';
+                return undefined;
         }
     }
 
@@ -105,13 +106,13 @@ export class NexaDatabaseRowDialog extends ReactDialog<ImportDataResult> {
         return (
             <div className="import-dialog-content">
                 <div className='nexa-database-row-mapping-info'>
-                    <div>{this.options.tableName} 테이블에 데이터를 import합니다.</div>
+                    <div><strong>{this.options.tableName}</strong> 테이블에 데이터를 import합니다.</div>
                     <div>현재 컬럼 수: {this.options.currentColumns.length}개</div>
                     <div>컬럼: {this.options.currentColumns.map(col => col.name).join(', ')}</div>
                 </div>
 
                 <div className="nexa-database-row-mapping-upload">
-                    <span>Step 1: Upload CSV File</span>
+                    <h3>Step 1: Upload CSV File</h3>
                     <input
                         ref={this.fileInputRef}
                         type="file"
@@ -127,8 +128,7 @@ export class NexaDatabaseRowDialog extends ReactDialog<ImportDataResult> {
 
                 {this.previewData && (
                     <div className='nexa-database-row-column-mapping'>
-                        <hr></hr>
-                        <span>Step 2: Column Mapping </span>
+                        <h3>Step 2: Column Mapping </h3>
                         <div className='nexa-database-row-mapping-grid-container'>
                             <div className='nexa-database-row-mapping-grid-container-header'>
                                 <div>CSV COLUMN</div>
@@ -138,27 +138,27 @@ export class NexaDatabaseRowDialog extends ReactDialog<ImportDataResult> {
                             </div>
                             <div className='nexa-database-row-mapping-grid-content'>
                                 {this.previewData.columns.map(csvCol => {
-                                    const previewRow = this.previewData!.rows[0];
-                                    const previewValue = previewRow.values[csvCol.name];
+                                    const previewValues = this.previewData!.rows
+                                        .slice(0, 3)
+                                        .map(row => row.values[csvCol.name] ?? '');
                                     return (
                                         <NexaDatabaseRowDialogColumn
+                                            key={csvCol.name}
                                             csvColumn={csvCol}
                                             tableColumns={this.options.currentColumns}
                                             selectedTableColumn={this.columnMapping.get(csvCol.name)}
-                                            previewData={previewValue}
+                                            previewValues={previewValues}
                                             onMappingChange={this.handleMappingChange}
                                         />
                                     );
                                 })}
                             </div>
                         </div>
-                        <hr></hr>
                         <div className='mapping-info'>
                             매핑 완료: <strong>{this.columnMapping.size}개</strong> / 건너뛰기: <strong>{this.previewData.columns.length - this.columnMapping.size}개</strong>
                             / 총 CSV 컬럼: <strong>{this.previewData.columns.length}개</strong>
                         </div>
-                        <hr></hr>
-                        <span>Step 3: Import Mode</span>
+                        <h3>Step 3: Import Mode</h3>
                         <div className='nexa-database-row-mapping-import-mode-options'>
                             <label className='nexa-database-row-mapping-radio-option'>
                                 <input
@@ -183,7 +183,7 @@ export class NexaDatabaseRowDialog extends ReactDialog<ImportDataResult> {
                                 />
                                 <div className='nexa-database-row-mapping-radio-option-content'>
                                     <strong>Replace</strong>
-                                    <span>기존 데이터 삭제 후 새 데이터로 교체</span>
+                                    <p>기존 데이터 삭제 후 새 데이터로 교체</p>
                                 </div>
                             </label>
                             <label className='nexa-database-row-mapping-radio-option'>
@@ -210,7 +210,7 @@ export class NexaDatabaseRowDialog extends ReactDialog<ImportDataResult> {
                         {this.importMode && (
                             <div className='nexa-database-row-mapping-import-info'>
                                 <div>{this.getImportInfoText()}</div>
-                                <div>매핑된 컬럼: {this.columnMapping.size}</div>
+                                <div>매핑된 컬럼: <strong>{this.columnMapping.size}개</strong></div>
                             </div>
                         )}
                     </div>

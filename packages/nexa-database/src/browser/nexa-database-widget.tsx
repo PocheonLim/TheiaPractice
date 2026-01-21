@@ -153,6 +153,10 @@ export class NexaDatabaseWidget extends ReactWidget {
     };
 
     handleAddRow = (): void => {
+        if (this.columns.length === 0) {
+            return;
+        }
+
         this.rows = this.rows.map(row => ({ ...row, isEditing: false }));
 
         const emptyValues: Record<string, string> = {};
@@ -217,7 +221,7 @@ export class NexaDatabaseWidget extends ReactWidget {
             // Replace: 기존 데이터 삭제 후 새 데이터로 교체
             this.rows = importedRows;
         } else if (mode === 'upsert') {
-            // Upsert: Primary Key 기준으로 업데이트 또는 삽입 / dialog에서 PK없으면 import 못 누르기 때문에 !
+            // Upsert: Primary Key 기준으로 업데이트 또는 삽입 / dialog에서 PK없으면 import 못 누르기 때문에
             // 사실 현재 RowData는 value말고 isEditing(import Data 하면 모두 false)이기 때문에 순서 유지말고는 의미 없음
             const pkColumn = this.columns.find(col => col.primaryKey)!;
 

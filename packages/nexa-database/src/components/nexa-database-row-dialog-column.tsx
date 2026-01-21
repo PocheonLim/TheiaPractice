@@ -21,7 +21,7 @@ export interface NexaDatabaseRowDialogColumnProps {
     csvColumn: ColumnData;
     tableColumns: ColumnData[];
     selectedTableColumn: string | undefined;
-    previewData: string;
+    previewValues: string[];
     onMappingChange: (csvColumnName: string, tableColumnName: string | undefined) => void;
 }
 
@@ -29,7 +29,7 @@ export const NexaDatabaseRowDialogColumn: React.FC<NexaDatabaseRowDialogColumnPr
     csvColumn,
     tableColumns,
     selectedTableColumn,
-    previewData,
+    previewValues,
     onMappingChange
 }: NexaDatabaseRowDialogColumnProps) => {
     const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>): void => {
@@ -39,18 +39,20 @@ export const NexaDatabaseRowDialogColumn: React.FC<NexaDatabaseRowDialogColumnPr
 
     const isMatched = !!selectedTableColumn;
 
+    const previewText = previewValues.slice(0, 3).join(', ');
+
     return (
         <div className='nexa-database-row-dialog-column'>
             <div className='nexa-database-row-dialog-csv-column'>
-                <div>{csvColumn.name}</div>
-                <div>→</div>
+                <div className='csv-column-name'>{csvColumn.name}</div>
+                <div className='csv-column-arrow'>→</div>
             </div>
             <div className='nexa-database-row-dialog-column-table'>
                 <select value={selectedTableColumn} onChange={handleSelectChange}>
                     <option value=''>-- Skip --</option>
                     {tableColumns.map(col => (
-                        <option value={col.name}>
-                            {col.name}
+                        <option key={col.name} value={col.name}>
+                            {col.name} ({col.type})
                         </option>
                     ))}
                 </select>
@@ -62,7 +64,7 @@ export const NexaDatabaseRowDialogColumn: React.FC<NexaDatabaseRowDialogColumnPr
                     <span className="status-skipped">⚠️ Skipped</span>
                 )}
             </div>
-            <div className='row-preview'>{previewData}</div>
+            <div className='row-preview'>{previewText}</div>
         </div>
     );
 };
