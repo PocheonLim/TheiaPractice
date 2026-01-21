@@ -153,9 +153,13 @@ export class NexaDatabaseWidget extends ReactWidget {
     };
 
     handleCancelColumn = (index: number): void => {
-        this.columns = this.columns.map((col, i) =>
-            i === index ? { ...col, isEditing: false } : col
-        );
+        if (this.columns[index]?.isNew) {
+            this.columns = this.columns.filter((_, i) => i !== index);
+        } else {
+            this.columns = this.columns.map((col, i) =>
+                i === index ? { ...col, isEditing: false } : col
+            );
+        }
         // 취소 시 editingColumns에서 제거
         delete this.editingColumns[index];
         this.update();
@@ -180,7 +184,8 @@ export class NexaDatabaseWidget extends ReactWidget {
         }
         const newRow: RowData = {
             values: emptyValues,
-            isEditing: true
+            isEditing: true,
+            isNew: true
         };
         this.rows = [newRow, ...this.rows];
         this.update();
@@ -201,15 +206,19 @@ export class NexaDatabaseWidget extends ReactWidget {
 
     handleSaveRow = (index: number, newValues: Record<string, string>): void => {
         this.rows = this.rows.map((row, i) =>
-            i === index ? { values: newValues, isEditing: false } : row
+            i === index ? { ...row, values: newValues, isEditing: false } : row
         );
         this.update();
     };
 
     handleCancelRow = (index: number): void => {
-        this.rows = this.rows.map((row, i) =>
-            i === index ? { ...row, isEditing: false } : row
-        );
+        if (this.rows[index]?.isNew) {
+            this.rows = this.rows.filter((_, i) => i !== index);
+        } else {
+            this.rows = this.rows.map((row, i) =>
+                i === index ? { ...row, isEditing: false } : row
+            );
+        }
         this.update();
     };
 

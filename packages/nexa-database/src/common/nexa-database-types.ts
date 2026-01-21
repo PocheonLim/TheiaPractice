@@ -73,6 +73,7 @@ export interface ColumnData {
 export interface RowData {
     values: Record<string, string>;
     isEditing?: boolean;
+    isNew?: boolean;
 }
 
 // 편집 중인 컬럼의 임시 데이터를 저장하기 위한 타입
