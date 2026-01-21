@@ -183,7 +183,7 @@ export class NexaDatabaseRowDialog extends ReactDialog<ImportDataResult> {
                                 />
                                 <div className='nexa-database-row-mapping-radio-option-content'>
                                     <strong>Replace</strong>
-                                    <p>기존 데이터 삭제 후 새 데이터로 교체</p>
+                                    <span>기존 데이터 삭제 후 새 데이터로 교체</span>
                                 </div>
                             </label>
                             <label className='nexa-database-row-mapping-radio-option'>

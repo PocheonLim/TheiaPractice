@@ -183,6 +183,7 @@ export const NexaDatabaseRow: React.FC<NexaDatabaseRowProps> = ({
                 {filteredRowsWithIndex.map(({ row, originalIndex }) => (
                     <NexaDatabaseRowItem
                         key={originalIndex}
+                        columns={columns}
                         rowData={row}
                         onEdit={() => onEditRow(originalIndex)}
                         onSave={newValues => onSaveRow(originalIndex, newValues)}

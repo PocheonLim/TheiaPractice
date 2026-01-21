@@ -15,10 +15,11 @@
 // *****************************************************************************
 
 import * as React from '@theia/core/shared/react';
-import { RowData } from '../common/nexa-database-types';
+import { ColumnData, RowData } from '../common/nexa-database-types';
 import { ConfirmDialog } from '@theia/core/lib/browser/dialogs';
 
 export interface NexaDatabaseRowItemProps {
+    columns: ColumnData[];
     rowData: RowData;
     onEdit: () => void;
     onSave: (newValues: Record<string, string>) => void;
@@ -26,7 +27,7 @@ export interface NexaDatabaseRowItemProps {
     onDelete: () => void;
 }
 
-export const NexaDatabaseRowItem: React.FC<NexaDatabaseRowItemProps> = ({ rowData, onEdit, onSave, onCancel, onDelete }) => {
+export const NexaDatabaseRowItem: React.FC<NexaDatabaseRowItemProps> = ({ columns, rowData, onEdit, onSave, onCancel, onDelete }) => {
     // 현재 편집 중인 값을 로컬 상태로 관리
     const [editedValues, setEditedValues] = React.useState<Record<string, string>>(rowData.values);
 
@@ -35,7 +36,6 @@ export const NexaDatabaseRowItem: React.FC<NexaDatabaseRowItemProps> = ({ rowDat
         setEditedValues(rowData.values);
     }, [rowData.values]);
 
-    const valueEntries = Object.entries(editedValues);
     const isEditing = rowData.isEditing || false;
 
     const handleInputChange = (columnName: string, newValue: string) => {
@@ -69,19 +69,22 @@ export const NexaDatabaseRowItem: React.FC<NexaDatabaseRowItemProps> = ({ rowDat
 
     return (
         <div className='nexa-database-row-item'>
-            {valueEntries.map(([columnName, value]) => (
-                <div key={columnName} className='nexa-database-row-item-cell'>
-                    {isEditing ? (
-                        <input
-                            type='text'
-                            value={value}
-                            onChange={e => handleInputChange(columnName, e.target.value)}
-                        />
-                    ) : (
-                        <span>{value}</span>
-                    )}
-                </div>
-            ))}
+            {columns.map(column => {
+                const value = editedValues[column.name] ?? '';
+                return (
+                    <div key={column.name} className='nexa-database-row-item-cell'>
+                        {isEditing ? (
+                            <input
+                                type='text'
+                                value={value}
+                                onChange={e => handleInputChange(column.name, e.target.value)}
+                            />
+                        ) : (
+                            <span>{value}</span>
+                        )}
+                    </div>
+                );
+            })}
             <div className='nexa-database-row-item-action'>
                 {isEditing ? (
                     <>

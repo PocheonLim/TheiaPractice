@@ -224,8 +224,8 @@ export class NexaDatabaseWidget extends ReactWidget {
             // Upsert: Primary Key 기준으로 업데이트 또는 삽입 / dialog에서 PK없으면 import 못 누르기 때문에
             // 사실 현재 RowData는 value말고 isEditing(import Data 하면 모두 false)이기 때문에 순서 유지말고는 의미 없음
             const pkColumn = this.columns.find(col => col.primaryKey)!;
-
             const pkName = pkColumn.name;
+
             const updatedRows = [...this.rows];
 
             // 각 import 행을 처리
