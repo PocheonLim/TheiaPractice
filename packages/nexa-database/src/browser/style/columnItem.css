@@ -2,8 +2,17 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    height: 35px;
     padding: 8px 12px;
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.column-item-container:last-child {
+    border-bottom: none;
+}
+
+.column-item-container:hover {
+    background: #fafafa;
 }
 
 .column-item-container.editing {
@@ -24,6 +33,10 @@
     align-items: center;
 }
 
+.column-item-left .drag-handle:hover {
+    color: #0066ff;
+}
+
 .column-item-left label {
     display: flex;
     justify-content: center;
@@ -32,18 +45,22 @@
 
 .column-item-left input[type="text"] {
     width: 100%;
+    height: 24px;
     box-sizing: border-box;
     border-radius: 4px;
     border: 1px solid #d0d0d0;
-    padding: 4px;
+    padding: 2px 6px;
+    font-size: 13px;
 }
 
 .column-item-left select {
     width: 100%;
+    height: 24px;
     box-sizing: border-box;
     border-radius: 4px;
     border: 1px solid #d0d0d0;
-    padding: 4px;
+    padding: 2px 6px;
+    font-size: 13px;
 }
 
 .column-item-left .column-type-display {

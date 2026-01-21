@@ -14,6 +14,8 @@
     justify-content: space-between;
     width: 95%;
     padding: 10px 0px 10px 0px;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 .nexa-database-column-title-left {
@@ -34,15 +36,15 @@
     height: 100%;
     background-color: white;
     border-radius: 5px;
-    border: 2px solid #ccc;
+    border: 1px solid #e5e5e5;
     overflow: auto;
 }
 
 .nexa-database-column-grid-title {
     display: flex;
     justify-content: space-between;
-    background-color: whitesmoke;
-    border-bottom: 1px solid #ccc;
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #e5e5e5;
     height: 5%;
     padding: 5px 12px;
 }
