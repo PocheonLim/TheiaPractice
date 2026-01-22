@@ -102,11 +102,16 @@
     color: black;
 }
 
+.nexa-database-row-mapping-radio-option input[type="radio"]:checked
+  + .nexa-database-row-mapping-radio-option-content strong {
+    color: #0066ff;
+}
+
 .nexa-database-row-mapping-radio-option {
     display: flex;
     align-items: center;
     padding: 16px;
-    border: 2px solid #999;
+    border: 2px solid #e5e5e5;
     border-radius: 8px;
     cursor: pointer;
     gap: 10px;
@@ -130,7 +135,8 @@
     border-radius: 4px;
     border-left: 3px solid #ffc107;
     background-color: #fff8e1;
-    padding-left: 10px;
+    color: black;
+    padding: 5px 10px;
     margin-top: 8px;
     margin-bottom: 8px;
 }

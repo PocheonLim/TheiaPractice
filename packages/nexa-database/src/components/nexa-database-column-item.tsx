@@ -189,7 +189,6 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
                 <div className="column-item-left">
                     <span
                         className="drag-handle"
-                        onClick={toggleDetail}
                         style={{
                             transform: isDetailOpen ? 'rotate(90deg)' : 'rotate(0deg)',
                             cursor: isReadOnly ? '' : 'pointer',
@@ -208,6 +207,7 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
                     <input
                         type="text"
                         value={isEditMode ? editedColumn.name : column.name}
+                        onClick={e => e.stopPropagation()}
                         onChange={handleNameChange}
                         placeholder="column_name"
                         disabled={isReadOnly}
@@ -216,6 +216,7 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
                         value={(isEditMode ? editedColumn.preset : column.preset) || 'custom'}
                         onChange={handlePresetChange}
                         disabled={isReadOnly}
+                        onClick={e => e.stopPropagation()}
                     >
                         <option value="uuid">🆔 UUID</option>
                         <option value="auto_increment_id">🔢 Auto Increment ID</option>
@@ -245,11 +246,11 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
                             disabled={isReadOnly}
                         />
                     </label>
-                    <span className="column-type-display">
+                    <span className="column-type-display" onClick={e => e.stopPropagation()}>
                         {getTypeDefinition(isEditMode ? editedColumn : column)}
                     </span>
                 </div>
-                <div className="column-item-actions">
+                <div className="column-item-actions" onClick={e => e.stopPropagation()}>
                     {isEditMode ? (
                         (isEditing || column.isNew) ? (
                             <>

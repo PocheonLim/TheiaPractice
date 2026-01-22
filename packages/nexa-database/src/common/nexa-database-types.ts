@@ -37,9 +37,9 @@ export interface ColumnData {
     primaryKey?: boolean;
     nullable?: boolean;
     unique?: boolean;
+    type?: string;
     isEditing?: boolean;
     isDetailOpen?: boolean;
-    type?: string;
     isNew?: boolean;
 
     // 프리셋별 상세 속성 추가
