@@ -61,12 +61,7 @@
     border: 1px solid #d0d0d0;
     padding: 2px 6px;
     font-size: 13px;
-}
-
-.column-item-left .column-type-display {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    cursor: pointer;
 }
 
 .column-item-actions {

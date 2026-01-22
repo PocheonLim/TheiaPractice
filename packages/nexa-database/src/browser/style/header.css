@@ -22,13 +22,17 @@
 }
 
 .nexa-database-header-left input {
-    border: none;
-    outline: none;
-    border-bottom: 2px solid transparent;
-    font-size: 18px;
-    font-weight: 600;
-    background-color: transparent;
     color: #0066ff;
+    font-weight: 600;
+    font-size: 24px;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 2px 8px;
+    background: transparent;
+    transition: all 0.2s;
+    font-family: inherit;
+    outline: none;
+    min-width: 200px;
 }
 
 .nexa-database-header-left input::placeholder {

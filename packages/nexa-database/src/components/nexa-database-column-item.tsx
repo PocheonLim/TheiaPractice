@@ -20,48 +20,11 @@ import { ColumnData, Mode } from '../common/nexa-database-types';
 import { NexaDatabaseColumnDetail } from './nexa-database-column-detail';
 import { AlertDialog } from '../browser/nexa-database-dialog';
 import { getPresetDefaults } from '../common/nexa-database-presets';
-
-function getTypeDefinition(col: ColumnData): string {
-    let def = col.type || 'VARCHAR';
-
-    if (col.length && ['VARCHAR', 'CHAR', 'TINYINT', 'SMALLINT', 'MEDIUMINT', 'INT', 'BIGINT'].includes(col.type || '')) {
-        def += `(${col.length})`;
-    } else if (col.type === 'DECIMAL' && col.decimalPlaces) {
-        const precision = col.precision || String(10 + parseInt(col.decimalPlaces, 10));
-        def += `(${precision},${col.decimalPlaces})`;
-    }
-
-    if (col.unsigned) {
-        def += ' UNSIGNED';
-    }
-    return def;
-}
+import { getTypeDefinition, getAlterColumnDefinition } from '../common/nexa-database-getTypeDefinition';
 
 function generateColumnSQL(col: ColumnData): string {
     const query = col.isNew ? 'ADD' : 'MODIFY';
-    let sql = `${query} COLUMN ${col.name} ${getTypeDefinition(col)}`;
-
-    if (!col.nullable) {
-        sql += ' NOT NULL';
-    }
-    if (col.autoIncrement) {
-        sql += ' AUTO_INCREMENT';
-    }
-    if (col.unique) {
-        sql += ' UNIQUE';
-    }
-    // Default value 처리
-    if (col.defaultMode === 'default_value' && col.defaultValue) {
-        sql += ` DEFAULT '${col.defaultValue}'`;
-    } else if (col.defaultMode === 'sql_expression' && col.defaultValue) {
-        // SQL expression은 따옴표 없이 그대로 사용
-        sql += ` DEFAULT ${col.defaultValue}`;
-    }
-    // Checkbox preset의 defaultChecked 처리
-    if (col.preset === 'checkbox' && col.defaultMode === 'default_value') {
-        sql += ` DEFAULT '${col.defaultChecked ? '1' : '0'}'`;
-    }
-    return sql += ';';
+    return `${query} COLUMN ${col.name} ${getAlterColumnDefinition(col)};`;
 }
 
 export interface NexaDatabaseColumnItemProps {
@@ -160,13 +123,12 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
     };
 
     const message = column.isNew ? '추가' : '수정';
-    const sqlAction = column.isNew ? 'ADD COLUMN' : 'MODIFY COLUMN';
 
     const handleSave = async () => {
         const sql = generateColumnSQL(editedColumn);
         const dialog = new ConfirmDialog({
             title: `컬럼 ${message}`,
-            msg: `컬럼 "${editedColumn.name}"을 ${message}하시겠습니까?\n\nALTER TABLE ${tableName} ${sqlAction} ${sql}`,
+            msg: `컬럼 "${editedColumn.name}"을 ${message}하시겠습니까?\n\nALTER TABLE ${tableName} ${sql}`,
             ok: '확인',
             cancel: '취소'
         });

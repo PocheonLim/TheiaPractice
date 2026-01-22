@@ -19,6 +19,7 @@ import { ColumnData, Mode, RowData } from '../common/nexa-database-types';
 import { ConfirmDialog } from '@theia/core/lib/browser/dialogs';
 import { AlertDialog } from '../browser/nexa-database-dialog';
 import { parseCSV } from '../common/nexa-database-csv-parser';
+import { getCreateColumnDefinition } from '../common/nexa-database-getTypeDefinition';
 
 export interface NexaDatabaseHeaderProps {
     mode: Mode;
@@ -139,16 +140,7 @@ export const NexaDatabaseHeader: React.FC<NexaDatabaseHeaderProps> = ({
 
     const handleCreateSql = async () => {
         let sql = `CREATE TABLE ${tableName} (\n`;
-        const columnDefs = columns.map(col => {
-            let def = `  ${col.name} ${col.type}`;
-            if (!col.nullable) {
-                def += ' NOT NULL';
-            }
-            if (col.unique) {
-                def += ' UNIQUE';
-            }
-            return def;
-        });
+        const columnDefs = columns.map(col => `  ${col.name} ${getCreateColumnDefinition(col)}`);
         sql += columnDefs.join(',\n');
         const pkColumn = columns.find(c => c.primaryKey);
         if (pkColumn) {

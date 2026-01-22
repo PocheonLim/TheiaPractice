@@ -26,7 +26,7 @@ import '../../src/browser/style/widget.css';
 import '../../src/browser/style/columnItem.css';
 import '../../src/browser/style/row.css';
 import '../../src/browser/style/rowItem.css';
-import '../../src/browser/style/mapping.css';
+import '../../src/browser/style/dialog.css';
 import '../../src/browser/style/dialogColumn.css';
 import '../../src/browser/style/detail.css';
 

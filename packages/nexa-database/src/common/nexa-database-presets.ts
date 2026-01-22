@@ -135,7 +135,6 @@ const CUSTOM_TYPE_OPTIONS: SelectOption[] = [
     { value: 'SET', label: 'SET' }
 ];
 
-// HTML PRESETS 구조 그대로 가져옴
 export const PRESETS: Record<PresetKey, PresetInfo> = {
     uuid: {
         name: 'UUID',
