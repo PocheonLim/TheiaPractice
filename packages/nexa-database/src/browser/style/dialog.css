@@ -74,6 +74,12 @@
     flex: 1;
 }
 
+.nexa-database-row-mapping-grid-content {
+    max-height: 260px;
+    overflow-y: auto;
+    border: 1px solid #e5e5e5;
+}
+
 .mapping-info {
     display: flex;
     align-items: center;
