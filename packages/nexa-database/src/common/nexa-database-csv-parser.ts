@@ -127,7 +127,8 @@ export function parseCSV(csvText: string): ParsedCSVData {
     const lines = line.filter(str => str.trim());
 
     const firstLine = lines[0].split(',');
-    const headers = firstLine.map(h => normalizeColumnName(h));
+    const originalHeaders = firstLine.map(h => h.trim());
+    const headers = originalHeaders.map(h => normalizeColumnName(h));
 
     // 각 컬럼의 모든 값 수집
     const columnValues: Record<string, string[]> = {};
@@ -170,7 +171,8 @@ export function parseCSV(csvText: string): ParsedCSVData {
             length: inferred.length?.toString(),
             precision: inferred.precision?.toString(),
             decimalPlaces: inferred.decimalPlaces?.toString(),
-            unsigned: inferred.unsigned
+            unsigned: inferred.unsigned,
+            comment: 'From CSV: ' + originalHeaders[idx]
         };
     });
 

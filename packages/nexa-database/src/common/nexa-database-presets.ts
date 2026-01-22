@@ -299,8 +299,8 @@ export const PRESET_INFO: Record<PresetKey, PresetInfo> = {
         icon: '🔗',
         description: 'Reference to another table',
         defaults: {
-            type: 'INT',
-            dbType: 'INT',
+            type: undefined,
+            dbType: undefined,
             primaryKey: false,
             nullable: true,
             fkTable: '',

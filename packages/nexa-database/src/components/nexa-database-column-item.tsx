@@ -225,7 +225,7 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
                         <option value="number">🔢 Number</option>
                         <option value="json">{'{}'} JSON</option>
                         <option value="date">📆 Date</option>
-                        <option value="datetime">🕐 DateTime</option>
+                        <option value="datetime">🕐 Date + Time</option>
                         <option value="foreign_key">🔗 Foreign Key</option>
                         <option value="custom">⚙️ Custom</option>
                     </select>

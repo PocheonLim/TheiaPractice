@@ -19,7 +19,7 @@ import { TYPES_REQUIRING_LENGTH } from './nexa-database-presets';
 
 // 타입 정의만 반환 (TYPE + LENGTH/PRECISION) - 표시용
 export function getTypeDefinition(col: ColumnData): string {
-    let def = col.type || 'VARCHAR';
+    let def = col.type || 'undefined';
 
     // LENGTH 처리
     if (col.length && TYPES_REQUIRING_LENGTH.includes(col.type || '')) {
@@ -43,7 +43,7 @@ export function getTypeDefinition(col: ColumnData): string {
 
 // ALTER TABLE용 컬럼 정의
 export function getAlterColumnDefinition(col: ColumnData): string {
-    let def = col.type || 'VARCHAR';
+    let def = String(col.type);
 
     if (col.length) {
         def += `(${col.length})`;
@@ -73,7 +73,7 @@ export function getAlterColumnDefinition(col: ColumnData): string {
 
 // CREATE TABLE용 컬럼 정의 (PK면 UNIQUE 제외)
 export function getCreateColumnDefinition(col: ColumnData): string {
-    let def = col.type || 'VARCHAR';
+    let def = col.type || 'undefined';
 
     if (col.length) {
         def += `(${col.length})`;
