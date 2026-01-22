@@ -84,11 +84,11 @@ export const NexaDatabaseRow: React.FC<NexaDatabaseRowProps> = ({
     // 정렬 핸들러
     const handleSort = (colName: string): void => {
         if (sortColumn === colName) {
-            // 같은 컬럼 클릭: asc → desc → undefined 순환
+            // 같은 컬럼 클릭: asc → desc 순환
             if (sortDirection === 'asc') {
                 onSortChange(colName, 'desc');
             } else if (sortDirection === 'desc') {
-                onSortChange(undefined, undefined);
+                onSortChange(colName, 'asc');
             }
         } else {
             // 다른 컬럼 클릭: 해당 컬럼 asc로 시작
