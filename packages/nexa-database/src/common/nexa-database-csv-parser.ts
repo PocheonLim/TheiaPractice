@@ -166,6 +166,7 @@ export function parseCSV(csvText: string): ParsedCSVData {
             nullable: !isFirstIdColumn,
             unique: false,
             type: inferred.type,
+            dbType: inferred.type,
             length: inferred.length?.toString(),
             precision: inferred.precision?.toString(),
             decimalPlaces: inferred.decimalPlaces?.toString(),

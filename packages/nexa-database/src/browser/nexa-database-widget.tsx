@@ -99,7 +99,9 @@ export class NexaDatabaseWidget extends ReactWidget {
             primaryKey: false,
             nullable: true,
             unique: false,
-            type: 'CHAR',
+            type: 'TEXT',
+            dbType: 'TEXT',
+            defaultMode: 'no_default',
             isEditing: this.mode === 'EDIT',
             isNew: this.mode === 'EDIT' ? true : false
         };

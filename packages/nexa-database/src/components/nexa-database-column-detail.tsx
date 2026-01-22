@@ -21,7 +21,9 @@ import {
     getNumberDbTypeOptions,
     TYPES_REQUIRING_LENGTH,
     TYPES_REQUIRING_PRECISION,
-    ON_UPDATE_TIMESTAMP_TYPES
+    ON_UPDATE_TIMESTAMP_TYPES,
+    UNSIGNED_SUPPORTED_TYPES,
+    AUTO_INCREMENT_SUPPORTED_TYPES
 } from '../common/nexa-database-presets';
 
 export interface NexaDatabaseColumnDetailProps {
@@ -96,6 +98,13 @@ export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> =
     const shouldShowOnUpdateTimestamp = isDatetimePreset ||
         (isCustomPreset && ON_UPDATE_TIMESTAMP_TYPES.includes(selectedType));
 
+    // Custom 프리셋에서 Unsigned 체크박스 표시 여부
+    const shouldShowUnsigned = isNumberPreset ||
+        (isCustomPreset && UNSIGNED_SUPPORTED_TYPES.includes(selectedType));
+
+    // Custom 프리셋에서 Auto Increment 체크박스 표시 여부
+    const shouldShowAutoIncrement = isCustomPreset && AUTO_INCREMENT_SUPPORTED_TYPES.includes(selectedType);
+
     const handlePrimaryKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const isPK = e.target.checked;
         // PK인 경우 nullable은 자동으로 false
@@ -147,11 +156,19 @@ export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> =
         });
     };
 
-    // Unsigned 변경 (Number preset)
+    // Unsigned 변경
     const handleUnsignedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         onUpdate({
             ...column,
             unsigned: e.target.checked
+        });
+    };
+
+    // Auto Increment 변경
+    const handleAutoIncrementChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        onUpdate({
+            ...column,
+            autoIncrement: e.target.checked
         });
     };
 
@@ -278,7 +295,7 @@ export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> =
                         onChange={handleNullableChange}
                         disabled={disabled || column.primaryKey}
                     />
-                    Nullable
+                    Nullable (PK must be NOT NULL)
                 </div>
                 <div className='column-detail-button'>
                     <input
@@ -289,7 +306,7 @@ export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> =
                     />
                     Unique
                 </div>
-                {isNumberPreset && (
+                {shouldShowUnsigned && (
                     <div className='column-detail-button'>
                         <input
                             type="checkbox"
@@ -298,6 +315,17 @@ export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> =
                             disabled={disabled}
                         />
                         Unsigned (양수만)
+                    </div>
+                )}
+                {shouldShowAutoIncrement && (
+                    <div className='column-detail-button'>
+                        <input
+                            type="checkbox"
+                            checked={column.autoIncrement || false}
+                            onChange={handleAutoIncrementChange}
+                            disabled={disabled}
+                        />
+                        Auto Increment
                     </div>
                 )}
                 {shouldShowOnUpdateTimestamp && (

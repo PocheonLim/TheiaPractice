@@ -18,7 +18,6 @@ import * as React from '@theia/core/shared/react';
 import { ConfirmDialog } from '@theia/core/lib/browser/dialogs';
 import { ColumnData, Mode } from '../common/nexa-database-types';
 import { NexaDatabaseColumnDetail } from './nexa-database-column-detail';
-import { PRESET_INFO } from '../common/nexa-database-presets';
 import { AlertDialog } from '../browser/nexa-database-dialog';
 
 function getTypeDefinition(col: ColumnData): string {
@@ -44,8 +43,22 @@ function generateColumnSQL(col: ColumnData): string {
     if (!col.nullable) {
         sql += ' NOT NULL';
     }
+    if (col.autoIncrement) {
+        sql += ' AUTO_INCREMENT';
+    }
     if (col.unique) {
         sql += ' UNIQUE';
+    }
+    // Default value 처리
+    if (col.defaultMode === 'default_value' && col.defaultValue) {
+        sql += ` DEFAULT '${col.defaultValue}'`;
+    } else if (col.defaultMode === 'sql_expression' && col.defaultValue) {
+        // SQL expression은 따옴표 없이 그대로 사용
+        sql += ` DEFAULT ${col.defaultValue}`;
+    }
+    // Checkbox preset의 defaultChecked 처리
+    if (col.preset === 'checkbox' && col.defaultMode === 'default_value') {
+        sql += ` DEFAULT '${col.defaultChecked ? '1' : '0'}'`;
     }
     return sql += ';';
 }
@@ -182,7 +195,7 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
             if (mode === 'EDIT') {
                 const afterDialog = new AlertDialog({
                     title: '삭제 완료',
-                    msg: `컬럼 "${column.name}"이 삭제되었습니다\n\nALTER TABLE ${tableName} DROP COLUMN ${column.name}`,
+                    msg: `✅ 컬럼 "${column.name}"이 삭제되었습니다\n\nALTER TABLE ${tableName} DROP COLUMN ${column.name}`,
                     ok: '확인',
                 });
                 await afterDialog.open();
@@ -259,14 +272,12 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
                         />
                     </label>
                     <span className="column-type-display">
-                        {column.preset && column.preset !== 'custom' && PRESET_INFO[column.preset]
-                            ? PRESET_INFO[column.preset].defaultType
-                            : getTypeDefinition(isEditMode ? editedColumn : column)}
+                        {getTypeDefinition(isEditMode ? editedColumn : column)}
                     </span>
                 </div>
                 <div className="column-item-actions">
                     {isEditMode ? (
-                        isEditing ? (
+                        (isEditing || column.isNew) ? (
                             <>
                                 <button className='actions-save' onClick={handleSave}>Save</button>
                                 <button className='actions-button' onClick={handleCancel}>Cancel</button>

@@ -20,8 +20,9 @@
 }
 
 .nexa-database-row-title-left {
-    font-weight: bold;
-    font-size: 18px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a1a;
 }
 
 .nexa-database-row-title-right {

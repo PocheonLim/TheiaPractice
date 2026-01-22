@@ -51,6 +51,7 @@ export interface ColumnData {
     numberType?: 'integer' | 'decimal' | 'float';
     decimalPlaces?: string;
     unsigned?: boolean;
+    autoIncrement?: boolean;
 
     // Default 관련
     defaultMode?: 'no_default' | 'default_value' | 'sql_expression';
