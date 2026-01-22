@@ -57,6 +57,9 @@ export function getAlterColumnDefinition(col: ColumnData): string {
     if (col.unique && col.primaryKey) {
         def += ' UNIQUE';
     }
+    if (col.defaultChecked) {
+        col.defaultValue = '1';
+    }
     if (col.defaultValue) {
         if (col.defaultValue.includes('CURRENT_TIMESTAMP')) {
             def += ` DEFAULT ${col.defaultValue}`;

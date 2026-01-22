@@ -135,7 +135,7 @@ const CUSTOM_TYPE_OPTIONS: SelectOption[] = [
     { value: 'SET', label: 'SET' }
 ];
 
-export const PRESETS: Record<PresetKey, PresetInfo> = {
+export const PRESET_INFO: Record<PresetKey, PresetInfo> = {
     uuid: {
         name: 'UUID',
         icon: '🆔',
@@ -148,7 +148,9 @@ export const PRESETS: Record<PresetKey, PresetInfo> = {
             nullable: false,
             unique: true,
             defaultMode: 'sql_expression',
-            defaultValue: 'UUID()'
+            defaultValue: 'UUID()',
+            autoIncrement: false,
+            unsigned: false
         }
     },
     auto_increment_id: {
@@ -161,7 +163,7 @@ export const PRESETS: Record<PresetKey, PresetInfo> = {
             nullable: false,
             primaryKey: true,
             autoIncrement: true,
-            unsigned: true
+            unsigned: true,
         }
     },
     created_time: {
@@ -174,7 +176,9 @@ export const PRESETS: Record<PresetKey, PresetInfo> = {
             primaryKey: false,
             nullable: false,
             defaultMode: 'sql_expression',
-            defaultValue: 'CURRENT_TIMESTAMP'
+            defaultValue: 'CURRENT_TIMESTAMP',
+            autoIncrement: false,
+            unsigned: false
         }
     },
     text: {
@@ -188,7 +192,9 @@ export const PRESETS: Record<PresetKey, PresetInfo> = {
             nullable: true,
             unique: false,
             defaultMode: 'no_default',
-            defaultValue: ''
+            defaultValue: '',
+            autoIncrement: false,
+            unsigned: false
         },
         typeOptions: TEXT_TYPE_OPTIONS,
         defaultOptions: COMMON_DEFAULT_OPTIONS
@@ -206,7 +212,9 @@ export const PRESETS: Record<PresetKey, PresetInfo> = {
             unique: false,
             defaultMode: 'default_value',
             defaultValue: '0',
-            defaultChecked: false
+            defaultChecked: false,
+            autoIncrement: false,
+            unsigned: false
         },
         typeOptions: CHECKBOX_TYPE_OPTIONS,
         defaultOptions: COMMON_DEFAULT_OPTIONS
@@ -224,7 +232,8 @@ export const PRESETS: Record<PresetKey, PresetInfo> = {
             unique: false,
             unsigned: false,
             defaultMode: 'default_value',
-            defaultValue: '0'
+            defaultValue: '0',
+            autoIncrement: false,
         },
         numberTypeOptions: NUMBER_TYPE_OPTIONS,
         decimalPlacesOptions: DECIMAL_PLACES_OPTIONS,
@@ -241,7 +250,9 @@ export const PRESETS: Record<PresetKey, PresetInfo> = {
             nullable: true,
             unique: false,
             defaultMode: 'no_default',
-            defaultValue: ''
+            defaultValue: '',
+            autoIncrement: false,
+            unsigned: false
         },
         typeOptions: JSON_TYPE_OPTIONS,
         defaultOptions: COMMON_DEFAULT_OPTIONS
@@ -257,7 +268,9 @@ export const PRESETS: Record<PresetKey, PresetInfo> = {
             nullable: true,
             unique: false,
             defaultMode: 'no_default',
-            defaultValue: ''
+            defaultValue: '',
+            autoIncrement: false,
+            unsigned: false
         },
         typeOptions: DATE_TYPE_OPTIONS,
         defaultOptions: COMMON_DEFAULT_OPTIONS
@@ -274,7 +287,9 @@ export const PRESETS: Record<PresetKey, PresetInfo> = {
             unique: false,
             onUpdateTimestamp: false,
             defaultMode: 'sql_expression',
-            defaultValue: 'CURRENT_TIMESTAMP'
+            defaultValue: 'CURRENT_TIMESTAMP',
+            autoIncrement: false,
+            unsigned: false
         },
         typeOptions: DATETIME_TYPE_OPTIONS,
         defaultOptions: COMMON_DEFAULT_OPTIONS
@@ -291,7 +306,9 @@ export const PRESETS: Record<PresetKey, PresetInfo> = {
             fkTable: '',
             fkColumn: '',
             onDelete: 'NO ACTION',
-            onUpdateAction: 'NO ACTION'
+            onUpdateAction: 'NO ACTION',
+            autoIncrement: false,
+            unsigned: false
         }
     },
     custom: {
@@ -306,15 +323,14 @@ export const PRESETS: Record<PresetKey, PresetInfo> = {
             nullable: true,
             unique: false,
             defaultMode: 'no_default',
-            defaultValue: ''
+            defaultValue: '',
+            autoIncrement: false,
+            unsigned: false
         },
         typeOptions: CUSTOM_TYPE_OPTIONS,
         defaultOptions: COMMON_DEFAULT_OPTIONS
     }
 };
-
-// 기존 PRESET_INFO는 PRESETS로 대체 (하위 호환용)
-export const PRESET_INFO = PRESETS;
 
 // Number preset의 DB Type 옵션 반환
 export function getNumberDbTypeOptions(numberType: string): SelectOption[] {
@@ -332,7 +348,7 @@ export function getNumberDbTypeOptions(numberType: string): SelectOption[] {
 
 // 프리셋 변경 시 기본값 적용 함수
 export function getPresetDefaults(presetKey: PresetKey): PresetDefaults {
-    return PRESETS[presetKey]?.defaults || {};
+    return PRESET_INFO[presetKey]?.defaults || {};
 }
 
 // length 필드 타입
