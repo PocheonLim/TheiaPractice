@@ -164,6 +164,9 @@ export const PRESET_INFO: Record<PresetKey, PresetInfo> = {
             primaryKey: true,
             autoIncrement: true,
             unsigned: true,
+            length: '',
+            unique: false,
+            defaultValue: undefined
         }
     },
     created_time: {
@@ -178,7 +181,9 @@ export const PRESET_INFO: Record<PresetKey, PresetInfo> = {
             defaultMode: 'sql_expression',
             defaultValue: 'CURRENT_TIMESTAMP',
             autoIncrement: false,
-            unsigned: false
+            unsigned: false,
+            length: '',
+            unique: false
         }
     },
     text: {
@@ -194,7 +199,8 @@ export const PRESET_INFO: Record<PresetKey, PresetInfo> = {
             defaultMode: 'no_default',
             defaultValue: '',
             autoIncrement: false,
-            unsigned: false
+            unsigned: false,
+            length: ''
         },
         typeOptions: TEXT_TYPE_OPTIONS,
         defaultOptions: COMMON_DEFAULT_OPTIONS
@@ -234,6 +240,7 @@ export const PRESET_INFO: Record<PresetKey, PresetInfo> = {
             defaultMode: 'default_value',
             defaultValue: '0',
             autoIncrement: false,
+            length: ''
         },
         numberTypeOptions: NUMBER_TYPE_OPTIONS,
         decimalPlacesOptions: DECIMAL_PLACES_OPTIONS,
@@ -252,7 +259,8 @@ export const PRESET_INFO: Record<PresetKey, PresetInfo> = {
             defaultMode: 'no_default',
             defaultValue: '',
             autoIncrement: false,
-            unsigned: false
+            unsigned: false,
+            length: ''
         },
         typeOptions: JSON_TYPE_OPTIONS,
         defaultOptions: COMMON_DEFAULT_OPTIONS
@@ -270,7 +278,8 @@ export const PRESET_INFO: Record<PresetKey, PresetInfo> = {
             defaultMode: 'no_default',
             defaultValue: '',
             autoIncrement: false,
-            unsigned: false
+            unsigned: false,
+            length: ''
         },
         typeOptions: DATE_TYPE_OPTIONS,
         defaultOptions: COMMON_DEFAULT_OPTIONS
@@ -289,7 +298,8 @@ export const PRESET_INFO: Record<PresetKey, PresetInfo> = {
             defaultMode: 'sql_expression',
             defaultValue: 'CURRENT_TIMESTAMP',
             autoIncrement: false,
-            unsigned: false
+            unsigned: false,
+            length: ''
         },
         typeOptions: DATETIME_TYPE_OPTIONS,
         defaultOptions: COMMON_DEFAULT_OPTIONS
@@ -301,6 +311,7 @@ export const PRESET_INFO: Record<PresetKey, PresetInfo> = {
         defaults: {
             type: undefined,
             dbType: undefined,
+            defaultValue: undefined,
             primaryKey: false,
             nullable: true,
             fkTable: '',
@@ -308,7 +319,9 @@ export const PRESET_INFO: Record<PresetKey, PresetInfo> = {
             onDelete: 'NO ACTION',
             onUpdateAction: 'NO ACTION',
             autoIncrement: false,
-            unsigned: false
+            unsigned: false,
+            length: '',
+            unique: false
         }
     },
     custom: {

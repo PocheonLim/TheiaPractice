@@ -15,14 +15,13 @@
 // *****************************************************************************
 
 import { ColumnData } from './nexa-database-types';
-import { TYPES_REQUIRING_LENGTH } from './nexa-database-presets';
 
 // 타입 정의만 반환 (TYPE + LENGTH/PRECISION) - 표시용
 export function getTypeDefinition(col: ColumnData): string {
     let def = col.type || 'undefined';
 
-    // LENGTH 처리
-    if (col.length && TYPES_REQUIRING_LENGTH.includes(col.type || '')) {
+    // LENGTH 처리 - length가 있으면 항상 표시
+    if (col.length) {
         def += `(${col.length})`;
     } else if (col.type === 'DECIMAL' && col.decimalPlaces) {
         const precision = col.precision || String(10 + parseInt(col.decimalPlaces, 10));
@@ -87,11 +86,10 @@ export function getCreateColumnDefinition(col: ColumnData): string {
     if (col.unique && !col.primaryKey) {
         def += ' UNIQUE';
     }
-    if (col.defaultValue && col.defaultMode !== 'no_default') {
-        if (col.defaultMode === 'sql_expression' ||
-            col.defaultValue.includes('CURRENT_TIMESTAMP') ||
-            col.defaultValue.includes('UUID()') ||
-            col.defaultValue.includes('(')) {
+    if (col.defaultValue) {
+        if (
+            col.defaultValue.includes('CURRENT_TIMESTAMP')
+        ) {
             def += ` DEFAULT ${col.defaultValue}`;
         } else {
             def += ` DEFAULT '${col.defaultValue}'`;

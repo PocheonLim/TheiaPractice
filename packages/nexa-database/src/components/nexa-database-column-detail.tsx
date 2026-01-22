@@ -131,20 +131,25 @@ export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> =
     const handleNumberTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const newNumberType = e.target.value as 'integer' | 'decimal' | 'float';
         let newDbType = selectedType;
+        let newDecimalPlaces = column.decimalPlaces;
 
         if (newNumberType === 'integer') {
             newDbType = 'INT';
+            newDecimalPlaces = undefined;
         } else if (newNumberType === 'decimal') {
             newDbType = 'DECIMAL';
+            newDecimalPlaces = '2';  // HTML 기본값: 2 (1.00)
         } else if (newNumberType === 'float') {
             newDbType = 'DOUBLE';
+            newDecimalPlaces = undefined;
         }
 
         onUpdate({
             ...column,
             numberType: newNumberType,
             dbType: newDbType,
-            type: newDbType
+            type: newDbType,
+            decimalPlaces: newDecimalPlaces
         });
     };
 
