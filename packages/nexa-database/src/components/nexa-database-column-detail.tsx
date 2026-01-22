@@ -72,9 +72,9 @@ export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> =
     const isCustomPreset = column.preset === 'custom';
 
     // column에서 직접 읽기
-    const selectedType = column.dbType || presetInfo?.defaultType || '';
+    const selectedType = column.dbType || presetInfo?.defaults.type || '';
     const numberType = column.numberType || 'integer';
-    const defaultMode = column.defaultMode || 'no_default';
+    const defaultMode = column.defaultMode || presetInfo?.defaults.defaultMode || 'no_default';
     const selectedTable = column.fkTable || '';
 
     // 타입에 따라 Length 필드 표시 여부

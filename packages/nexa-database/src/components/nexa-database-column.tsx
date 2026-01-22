@@ -50,7 +50,7 @@ export const NexaDatabaseColumn: React.FC<NexaDatabaseColumnProps> = ({
             <div className='nexa-database-column-title-left'>
                 Table Column
             </div>
-            <button onClick={onAddColumn}>+Add Column</button>
+            <button onClick={onAddColumn}>+ Add Column</button>
         </div>
         <div className='nexa-database-column-grid'>
             <div className='nexa-database-column-grid-title'>

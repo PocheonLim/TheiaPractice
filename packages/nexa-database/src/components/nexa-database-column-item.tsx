@@ -19,6 +19,7 @@ import { ConfirmDialog } from '@theia/core/lib/browser/dialogs';
 import { ColumnData, Mode } from '../common/nexa-database-types';
 import { NexaDatabaseColumnDetail } from './nexa-database-column-detail';
 import { AlertDialog } from '../browser/nexa-database-dialog';
+import { getPresetDefaults } from '../common/nexa-database-presets';
 
 function getTypeDefinition(col: ColumnData): string {
     let def = col.type || 'VARCHAR';
@@ -114,10 +115,21 @@ export const NexaDataBaseColumnItem: React.FC<NexaDatabaseColumnItemProps> = ({
     };
 
     const handlePresetChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const newPreset = e.target.value as ColumnData['preset'];
+        const defaults = getPresetDefaults(newPreset!);
+
         if (isEditMode) {
-            updateEditingColumn({ ...editedColumn, preset: e.target.value as ColumnData['preset'] });
+            updateEditingColumn({
+                ...editedColumn,
+                preset: newPreset,
+                ...defaults
+            });
         } else {
-            onUpdate({ ...column, preset: e.target.value as ColumnData['preset'] });
+            onUpdate({
+                ...column,
+                preset: newPreset,
+                ...defaults
+            });
         }
     };
 

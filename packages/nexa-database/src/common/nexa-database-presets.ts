@@ -14,28 +14,36 @@
 // SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-only WITH Classpath-exception-2.0
 // *****************************************************************************
 
-import { PresetKey } from './nexa-database-types';
+import { PresetKey, ColumnData } from './nexa-database-types';
 
 export interface SelectOption {
     value: string;
     label: string;
 }
 
+// 프리셋 기본값 타입
+// Partial - 모든 속성 옵셔널, Omit - a, ~ - a에서 ~ 속성들 제외한 새로운 타입
+export type PresetDefaults = Partial<Omit<ColumnData, 'name' | 'preset' | 'isEditing' | 'isDetailOpen' | 'isNew'>>;
+
 export interface PresetInfo {
     name: string;
     icon: string;
     description: string;
-    defaultType: string;
+    defaults: PresetDefaults;
     typeOptions?: SelectOption[];
     defaultOptions?: SelectOption[];
     numberTypeOptions?: SelectOption[];
     decimalPlacesOptions?: SelectOption[];
-    showLengthFor?: string[];
-    showDecimalPlacesFor?: string[];
-    showPrecisionFor?: string[];
 }
 
-// 프리셋 타입 옵션
+// Default mode 옵션
+const COMMON_DEFAULT_OPTIONS: SelectOption[] = [
+    { value: 'no_default', label: 'No Default' },
+    { value: 'default_value', label: 'Default Value' },
+    { value: 'sql_expression', label: 'SQL Expression' }
+];
+
+// 프리셋 타입 옵션들
 const TEXT_TYPE_OPTIONS: SelectOption[] = [
     { value: 'TEXT', label: 'TEXT (default)' },
     { value: 'VARCHAR', label: 'VARCHAR' },
@@ -45,7 +53,10 @@ const TEXT_TYPE_OPTIONS: SelectOption[] = [
     { value: 'LONGTEXT', label: 'LONGTEXT' }
 ];
 
-// Number 프리셋 옵션
+const CHECKBOX_TYPE_OPTIONS: SelectOption[] = [
+    { value: 'TINYINT', label: 'TINYINT(1) / BOOLEAN' }
+];
+
 const NUMBER_TYPE_OPTIONS: SelectOption[] = [
     { value: 'integer', label: 'Integer' },
     { value: 'decimal', label: 'Decimal' },
@@ -80,28 +91,19 @@ const DECIMAL_PLACES_OPTIONS: SelectOption[] = [
     { value: '10', label: '10 (1.0000000000)' }
 ];
 
-// 체크박스 프리셋 옵션
-const CHECKBOX_TYPE_OPTIONS: SelectOption[] = [
-    { value: 'TINYINT', label: 'TINYINT(1) / BOOLEAN' }
-];
-
-// JSON 프리셋 옵션
 const JSON_TYPE_OPTIONS: SelectOption[] = [
     { value: 'JSON', label: 'JSON' }
 ];
 
-// Date 프리셋 옵션
 const DATE_TYPE_OPTIONS: SelectOption[] = [
     { value: 'DATE', label: 'DATE' }
 ];
 
-// Datetime 프리셋 옵션
 const DATETIME_TYPE_OPTIONS: SelectOption[] = [
     { value: 'DATETIME', label: 'DATETIME' },
     { value: 'TIMESTAMP', label: 'TIMESTAMP' }
 ];
 
-// Custom 프리셋 옵션
 const CUSTOM_TYPE_OPTIONS: SelectOption[] = [
     { value: 'VARCHAR', label: 'VARCHAR' },
     { value: 'CHAR', label: 'CHAR' },
@@ -133,46 +135,80 @@ const CUSTOM_TYPE_OPTIONS: SelectOption[] = [
     { value: 'SET', label: 'SET' }
 ];
 
-// Default mode 옵션
-const COMMON_DEFAULT_OPTIONS: SelectOption[] = [
-    { value: 'no_default', label: 'No Default' },
-    { value: 'default_value', label: 'Default Value' },
-    { value: 'sql_expression', label: 'SQL Expression' }
-];
-
-export const PRESET_INFO: Record<PresetKey, PresetInfo> = {
+// HTML PRESETS 구조 그대로 가져옴
+export const PRESETS: Record<PresetKey, PresetInfo> = {
     uuid: {
         name: 'UUID',
         icon: '🆔',
         description: 'Universally Unique Identifier (CHAR(36) with UUID() default)',
-        defaultType: 'CHAR(36)'
+        defaults: {
+            type: 'CHAR',
+            dbType: 'CHAR',
+            length: '36',
+            primaryKey: false,
+            nullable: false,
+            unique: true,
+            defaultMode: 'sql_expression',
+            defaultValue: 'UUID()'
+        }
     },
     auto_increment_id: {
         name: 'Auto-incrementing Integer ID',
         icon: '🔢',
         description: 'Auto-incrementing primary key (INT UNSIGNED AUTO_INCREMENT)',
-        defaultType: 'INT UNSIGNED AUTO_INCREMENT'
+        defaults: {
+            type: 'INT',
+            dbType: 'INT',
+            nullable: false,
+            primaryKey: true,
+            autoIncrement: true,
+            unsigned: true
+        }
     },
     created_time: {
         name: 'Created Time',
         icon: '📅',
         description: 'Record creation timestamp (TIMESTAMP with CURRENT_TIMESTAMP default)',
-        defaultType: 'TIMESTAMP'
+        defaults: {
+            type: 'TIMESTAMP',
+            dbType: 'TIMESTAMP',
+            primaryKey: false,
+            nullable: false,
+            defaultMode: 'sql_expression',
+            defaultValue: 'CURRENT_TIMESTAMP'
+        }
     },
     text: {
         name: 'TEXT',
         icon: '📝',
         description: 'Text column',
-        defaultType: 'TEXT',
+        defaults: {
+            type: 'TEXT',
+            dbType: 'TEXT',
+            primaryKey: false,
+            nullable: true,
+            unique: false,
+            defaultMode: 'no_default',
+            defaultValue: ''
+        },
         typeOptions: TEXT_TYPE_OPTIONS,
-        defaultOptions: COMMON_DEFAULT_OPTIONS,
-        showLengthFor: ['VARCHAR', 'CHAR']
+        defaultOptions: COMMON_DEFAULT_OPTIONS
     },
     checkbox: {
         name: 'Checkbox',
         icon: '☑️',
         description: 'Boolean/Checkbox field',
-        defaultType: 'TINYINT(1)',
+        defaults: {
+            type: 'TINYINT',
+            dbType: 'TINYINT',
+            length: '1',
+            primaryKey: false,
+            nullable: true,
+            unique: false,
+            defaultMode: 'default_value',
+            defaultValue: '0',
+            defaultChecked: false
+        },
         typeOptions: CHECKBOX_TYPE_OPTIONS,
         defaultOptions: COMMON_DEFAULT_OPTIONS
     },
@@ -180,7 +216,17 @@ export const PRESET_INFO: Record<PresetKey, PresetInfo> = {
         name: 'Number',
         icon: '🔢',
         description: 'Numeric column',
-        defaultType: 'INT',
+        defaults: {
+            type: 'INT',
+            dbType: 'INT',
+            numberType: 'integer',
+            primaryKey: false,
+            nullable: true,
+            unique: false,
+            unsigned: false,
+            defaultMode: 'default_value',
+            defaultValue: '0'
+        },
         numberTypeOptions: NUMBER_TYPE_OPTIONS,
         decimalPlacesOptions: DECIMAL_PLACES_OPTIONS,
         defaultOptions: COMMON_DEFAULT_OPTIONS
@@ -189,7 +235,15 @@ export const PRESET_INFO: Record<PresetKey, PresetInfo> = {
         name: 'JSON',
         icon: '{}',
         description: 'JSON data type',
-        defaultType: 'JSON',
+        defaults: {
+            type: 'JSON',
+            dbType: 'JSON',
+            primaryKey: false,
+            nullable: true,
+            unique: false,
+            defaultMode: 'no_default',
+            defaultValue: ''
+        },
         typeOptions: JSON_TYPE_OPTIONS,
         defaultOptions: COMMON_DEFAULT_OPTIONS
     },
@@ -197,7 +251,15 @@ export const PRESET_INFO: Record<PresetKey, PresetInfo> = {
         name: 'Date',
         icon: '📆',
         description: 'Date only (no time)',
-        defaultType: 'DATE',
+        defaults: {
+            type: 'DATE',
+            dbType: 'DATE',
+            primaryKey: false,
+            nullable: true,
+            unique: false,
+            defaultMode: 'no_default',
+            defaultValue: ''
+        },
         typeOptions: DATE_TYPE_OPTIONS,
         defaultOptions: COMMON_DEFAULT_OPTIONS
     },
@@ -205,7 +267,16 @@ export const PRESET_INFO: Record<PresetKey, PresetInfo> = {
         name: 'Date + Time',
         icon: '🕐',
         description: 'Date and time',
-        defaultType: 'DATETIME',
+        defaults: {
+            type: 'DATETIME',
+            dbType: 'DATETIME',
+            primaryKey: false,
+            nullable: true,
+            unique: false,
+            onUpdateTimestamp: false,
+            defaultMode: 'sql_expression',
+            defaultValue: 'CURRENT_TIMESTAMP'
+        },
         typeOptions: DATETIME_TYPE_OPTIONS,
         defaultOptions: COMMON_DEFAULT_OPTIONS
     },
@@ -213,20 +284,40 @@ export const PRESET_INFO: Record<PresetKey, PresetInfo> = {
         name: 'Foreign Key',
         icon: '🔗',
         description: 'Reference to another table',
-        defaultType: 'INT'
+        defaults: {
+            type: 'INT',
+            dbType: 'INT',
+            primaryKey: false,
+            nullable: true,
+            fkTable: '',
+            fkColumn: '',
+            onDelete: 'NO ACTION',
+            onUpdateAction: 'NO ACTION'
+        }
     },
     custom: {
         name: 'Custom',
         icon: '⚙️',
         description: 'Manually configure all options',
-        defaultType: 'VARCHAR',
+        defaults: {
+            type: 'VARCHAR',
+            dbType: 'VARCHAR',
+            length: '255',
+            primaryKey: false,
+            nullable: true,
+            unique: false,
+            defaultMode: 'no_default',
+            defaultValue: ''
+        },
         typeOptions: CUSTOM_TYPE_OPTIONS,
-        defaultOptions: COMMON_DEFAULT_OPTIONS,
-        showLengthFor: ['VARCHAR', 'CHAR', 'BINARY', 'VARBINARY'],
-        showPrecisionFor: ['DECIMAL']
+        defaultOptions: COMMON_DEFAULT_OPTIONS
     }
 };
 
+// 기존 PRESET_INFO는 PRESETS로 대체 (하위 호환용)
+export const PRESET_INFO = PRESETS;
+
+// Number preset의 DB Type 옵션 반환
 export function getNumberDbTypeOptions(numberType: string): SelectOption[] {
     switch (numberType) {
         case 'integer':
@@ -238,6 +329,11 @@ export function getNumberDbTypeOptions(numberType: string): SelectOption[] {
         default:
             return INTEGER_DB_TYPE_OPTIONS;
     }
+}
+
+// 프리셋 변경 시 기본값 적용 함수
+export function getPresetDefaults(presetKey: PresetKey): PresetDefaults {
+    return PRESETS[presetKey]?.defaults || {};
 }
 
 // length 필드 타입
