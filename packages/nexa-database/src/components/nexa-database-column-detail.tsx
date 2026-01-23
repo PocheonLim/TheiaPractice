@@ -320,7 +320,7 @@ export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> =
                             onChange={handleUnsignedChange}
                             disabled={disabled}
                         />
-                        Unsigned (양수만)
+                        Unsigned
                     </div>
                 )}
                 {shouldShowAutoIncrement && (

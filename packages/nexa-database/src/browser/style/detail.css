@@ -100,7 +100,9 @@
 
 .column-detail-comment textarea {
     width: 98%;
-    height: 50px;
+    min-height: 60px;
+    max-height: 120px;
     border-radius: 4px;
     border: 1px solid #d0d0d0;
+    resize: vertical;
 }
