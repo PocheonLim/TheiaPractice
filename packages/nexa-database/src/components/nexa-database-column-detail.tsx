@@ -197,7 +197,8 @@ export const NexaDatabaseColumnDetail: React.FC<NexaDatabaseColumnDetailProps> =
     const handleDefaultCheckedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         onUpdate({
             ...column,
-            defaultChecked: e.target.checked
+            defaultChecked: e.target.checked,
+            defaultValue: e.target.checked ? '1' : '0'
         });
     };
 

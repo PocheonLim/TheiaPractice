@@ -42,6 +42,13 @@
     gap: 5px;
 }
 
+.column-detail-button input[type='checkbox'] {
+    width: 16px;
+    height: 16px;
+    outline: none;
+    box-shadow: none;
+}
+
 .column-detail-option-container {
     display: flex;
     align-items: center;;
