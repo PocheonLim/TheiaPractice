@@ -30,7 +30,7 @@ interface InferredType {
 }
 
 // 컬럼명 변환: 소문자로 변환, 공백을 _로 변경, 특수문자 제거
-function normalizeColumnName(name: string): string {
+function sanitizeColumnName(name: string): string {
     return name.trim()
         .toLowerCase()
         .replace(/\s+/g, '_')
@@ -128,7 +128,7 @@ export function parseCSV(csvText: string): ParsedCSVData {
 
     const firstLine = lines[0].split(',');
     const originalHeaders = firstLine.map(h => h.trim());
-    const headers = originalHeaders.map(h => normalizeColumnName(h));
+    const headers = originalHeaders.map(h => sanitizeColumnName(h));
 
     // 각 컬럼의 모든 값 수집
     const columnValues: Record<string, string[]> = {};
