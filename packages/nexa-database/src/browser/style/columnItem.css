@@ -23,12 +23,16 @@
 
 .column-item-left {
     display: grid;
-    grid-template-columns: 24px 30px 100px 140px 60px 50px 140px;
+    grid-template-columns: 24px 30px 200px 180px 60px 50px 140px;
     gap: 12px;
     align-items: center;
 }
 
 .column-item-left input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    outline: none;
+    box-shadow: none;
     cursor: pointer;
 }
 

@@ -40,6 +40,7 @@
     font-size: 13px;
     font-weight: 400;
     gap: 5px;
+    cursor: pointer;
 }
 
 .column-detail-button input[type='checkbox'] {

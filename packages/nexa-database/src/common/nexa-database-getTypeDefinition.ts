@@ -21,7 +21,7 @@ export function getTypeDefinition(col: ColumnData): string {
     let def = col.type || 'undefined';
 
     // LENGTH 처리 - length가 있으면 항상 표시
-    if (col.length) {
+    if (col.length && ['VARCHAR', 'CHAR', 'TINYINT', 'SMALLINT', 'INT', 'BIGINT'].includes(col.type!)) {
         def += `(${col.length})`;
     } else if (col.type === 'DECIMAL' && col.decimalPlaces) {
         const precision = col.precision || String(10 + parseInt(col.decimalPlaces, 10));

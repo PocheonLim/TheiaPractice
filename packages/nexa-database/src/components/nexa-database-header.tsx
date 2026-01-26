@@ -63,7 +63,7 @@ export const NexaDatabaseHeader: React.FC<NexaDatabaseHeaderProps> = ({
         }
         const changeNameDialog = new ConfirmDialog({
             title: '테이블 이름 변경',
-            msg: `테이블 이름을 변경하시겠습니까?\n\nALTER TABLE "${tableName}" RENAME TO "${localTableName}";`,
+            msg: `테이블 이름을 변경하시겠습니까?\n\nALTER TABLE ${tableName} RENAME TO ${localTableName};`,
             ok: '확인',
             cancel: '취소'
         });
