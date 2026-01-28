@@ -83,9 +83,20 @@ export class NexaDatabaseRowDialog extends ReactDialog<ImportDataResult> {
             title: `📥 Import Data to "${options.tableName}"`
         });
         this.contentNode.style.minWidth = '80vw';
-        this.contentNode.style.minHeight = '40vh';
+        this.contentNode.style.minHeight = '25vh';
+        this.contentNode.style.backgroundColor = 'white';
         this.appendCloseButton('Cancel');
         this.appendAcceptButton('Import Data');
+        if (this.closeButton) {
+            this.closeButton.style.border = '1px solid #d0d0d0';
+            this.closeButton.style.borderRadius = '4px';
+        }
+        if (this.acceptButton) {
+            this.acceptButton.style.backgroundColor = '#0066ff';
+            this.acceptButton.style.borderRadius = '4px';
+        }
+        this.controlPanel.style.backgroundColor = 'white';
+        this.controlPanel.style.borderTop = '1px solid #d0d0d0';
     }
 
     protected getImportInfoText(): React.ReactNode {
