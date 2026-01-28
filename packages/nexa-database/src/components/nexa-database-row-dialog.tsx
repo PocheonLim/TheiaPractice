@@ -226,7 +226,6 @@ export class NexaDatabaseRowDialog extends ReactDialog<ImportDataResult> {
                         )}
                     </div>
                 )}
-                <hr></hr>
             </div>
         );
     }

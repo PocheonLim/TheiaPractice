@@ -123,20 +123,24 @@ function inferColumnType(values: string[]): InferredType {
 }
 
 export function parseCSV(csvText: string): ParsedCSVData {
+    // 줄별로 나눠서 배열로 저장 후 공백줄 제거
     const line = csvText.split('\n');
     const lines = line.filter(str => str.trim());
 
+    // 컬럼 라인에서 컬럼 별로 배열 저장
     const firstLine = lines[0].split(',');
     const originalHeaders = firstLine.map(h => h.trim());
     const headers = originalHeaders.map(h => sanitizeColumnName(h));
 
     // 각 컬럼의 모든 값 수집
+    // 컬럼 배열 순회 -> 레코드 키값 입력
     const columnValues: Record<string, string[]> = {};
     headers.forEach(header => {
         columnValues[header] = [];
     });
 
     const parsedRows: RowData[] = [];
+    // 로우 순회하며 순서에 맞게 레코드에 값 저장
     for (let i = 1; i < lines.length; i++) {
         const value = lines[i].split(',');
         const cellValues = value.map(v => v.trim());
@@ -168,6 +172,7 @@ export function parseCSV(csvText: string): ParsedCSVData {
             unique: false,
             type: inferred.type,
             dbType: inferred.type,
+            autoIncrement: isFirstIdColumn,
             length: inferred.length?.toString(),
             precision: inferred.precision?.toString(),
             decimalPlaces: inferred.decimalPlaces?.toString(),
